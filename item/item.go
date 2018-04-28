@@ -15,47 +15,50 @@ type Item struct {
 	Created    time.Time
 	Updated    time.Time
 	Path       string
+	Parent     ItemNode
+	Children   []ItemNode
 }
 
-type ItemNode struct {
-	Item
-	Children []*ItemNode
-	Parent   *ItemNode
+func (item *Item) GetParentId() uuid.UUID {
+	return item.ParentID
 }
 
-type ItemMap map[uuid.UUID]*ItemNode
+func (item *Item) GetId() uuid.UUID {
+	return item.ID
+}
 
-func (t ItemNode) String() string {
+func (item *Item) GetChildren() []ItemNode {
+	return item.Children
+}
+
+func (item *Item) AddChild(node ItemNode) {
+	item.Children = append(item.Children, node)
+}
+
+func (item *Item) GetPath() string {
+	return item.Path
+}
+
+func (item *Item) SetPath(p string) {
+	item.Path = p
+}
+
+func (item *Item) GetName() string {
+	return item.Name
+}
+
+func (item *Item) GetParent() ItemNode {
+	return item.Parent
+}
+
+func (item *Item) SetParent(node ItemNode) {
+	item.Parent = item
+}
+
+func (item *Item) GetTemplateId() uuid.UUID {
+	return item.TemplateID
+}
+
+func (t *Item) String() string {
 	return fmt.Sprintf("ID: %v\nName:%v\nPath:%v\n", t.ID, t.Name, t.Path)
-}
-
-func (m ItemMap) FindItems(name string) []*ItemNode {
-	items := []*ItemNode{}
-	for _, item := range m {
-		if item.Name == name {
-			items = append(items, item)
-		}
-	}
-	return items
-}
-
-func (m ItemMap) FindItemByPath(path string) *ItemNode {
-	node := &ItemNode{}
-	for _, item := range m {
-		if item.Path == path {
-			node = item
-		}
-	}
-	return node
-}
-
-func (m ItemMap) FindItemsByTemplate(id uuid.UUID) []*ItemNode {
-	list := []*ItemNode{}
-	for _, item := range m {
-		if item.TemplateID == id {
-			list = append(list, item)
-		}
-	}
-
-	return list
 }

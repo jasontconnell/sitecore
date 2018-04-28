@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func LoadItemMap(list []*ItemNode) (root *ItemNode, m ItemMap) {
+func LoadItemMap(list []ItemNode) (root ItemNode, m ItemMap) {
 	root, m = getMap(list)
 	if root != nil {
 		setPaths(root)
@@ -25,8 +25,8 @@ func LoadFieldMap(list []*FieldValue) FieldValueMap {
 	return m
 }
 
-func getMap(list []*ItemNode) (root *ItemNode, m ItemMap) {
-	m = make(map[uuid.UUID]*ItemNode, len(list))
+func getMap(list []ItemNode) (root ItemNode, m ItemMap) {
+	m = make(map[uuid.UUID]ItemNode, len(list))
 
 	rootID, uiderr := uuid.Parse("00000000-0000-0000-0000-000000000000")
 	if uiderr != nil {
@@ -34,28 +34,29 @@ func getMap(list []*ItemNode) (root *ItemNode, m ItemMap) {
 	}
 
 	for _, item := range list {
-		m[item.ID] = item
+		id := item.GetId()
+		m[id] = item
 	}
 
 	root = nil
 	for _, item := range m {
-		if p, ok := m[item.ParentID]; ok {
-			p.Children = append(p.Children, item)
-			item.Parent = p
-		} else if item.ParentID == rootID {
+		if p, ok := m[item.GetParentId()]; ok {
+			p.AddChild(item)
+			item.SetParent(p)
+		} else if item.GetParentId() == rootID {
 			root = item
 		}
 	}
 	return root, m
 }
 
-func setPaths(root *ItemNode) {
-	if root.Parent == nil {
-		root.Path = "/" + root.Name
+func setPaths(root ItemNode) {
+	if root.GetParent() == nil {
+		root.SetPath("/" + root.GetName())
 	}
 
-	for _, item := range root.Children {
-		item.Path = root.Path + "/" + item.Name
+	for _, item := range root.GetChildren() {
+		item.SetPath(root.GetPath() + "/" + item.GetName())
 		setPaths(item)
 	}
 }

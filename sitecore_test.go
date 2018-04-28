@@ -25,9 +25,9 @@ func TestLoadItemMap(t *testing.T) {
 		t.Fatal("no items")
 	}
 
-	t.Log(root.ID, root.Path, len(itemMap))
+	t.Log(root.GetId(), root.GetPath(), len(itemMap))
 
-	fields, ferr := item.LoadFieldsParallel(connstr, 24)
+	fields, ferr := item.LoadFields(connstr)
 	if ferr != nil {
 		t.Fatal(ferr)
 	}
@@ -68,9 +68,25 @@ func TestLoadItemMap(t *testing.T) {
 	if len(fieldMap) != len(itemMap) {
 		t.Fatal("not the same amount of items in field map vs item map", len(fieldMap), len(itemMap))
 	}
+}
 
-	item.GetTemplates(itemMap, fieldMap)
-	t.Fatal("so logs are shown")
+func TestLoadTemplates(t *testing.T) {
+	tmps, err := item.LoadTemplates(connstr)
+
+	if err != nil {
+		t.Fatal("Error loading templates", err)
+	}
+
+	root, tmap := item.LoadItemMap(tmps)
+
+	item.LoadTemplateData(tmap)
+
+	t.Log(root.GetId(), len(tmap))
+
+	list := item.GetTemplates(tmap)
+	if len(list) == 0 {
+		t.Fatal("No templates")
+	}
 }
 
 func BenchmarkFieldLoad(b *testing.B) {
