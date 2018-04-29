@@ -6,10 +6,10 @@ import (
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/google/uuid"
 	"github.com/jasontconnell/sqlhelp"
+	"sitecore/data"
 	"strings"
 	"sync"
 	"time"
-    "sitecore/data"
 )
 
 var emptyUuid uuid.UUID = uuid.Must(uuid.Parse("00000000-0000-0000-0000-000000000000"))
@@ -66,7 +66,7 @@ func LoadFields(connstr string) ([]*data.FieldValue, error) {
 // Load Fields can return a ton of results. Pass in 'c' to specify how many goroutines should be spawned
 func LoadFieldsParallel(connstr string, c int) ([]*data.FieldValue, error) {
 	if c <= 0 {
-		c = 24
+		c = 12
 	}
 	conn, cerr := sql.Open("mssql", connstr)
 	if cerr != nil {
@@ -113,7 +113,7 @@ func LoadFieldsParallel(connstr string, c int) ([]*data.FieldValue, error) {
 		return nil, rserr
 	}
 
-	fvchan := make(chan *data.FieldValue, 5000000)
+	fvchan := make(chan *data.FieldValue, 20000000)
 
 	var wg sync.WaitGroup
 	for i := 0; i < c; i++ {
@@ -141,6 +141,7 @@ func LoadFieldsParallel(connstr string, c int) ([]*data.FieldValue, error) {
 	}
 
 	wg.Wait()
+
 	close(fvchan)
 
 	wg.Add(1)

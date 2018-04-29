@@ -35,7 +35,7 @@ func getFields(tmp *data.Template, children []data.ItemNode) {
 			return
 		} else if ct.TemplateID == fieldId {
 
-			tf := data.TemplateField{Type: ct.Type, Item: c }
+			tf := data.TemplateField{Type: ct.Type, Item: c}
 			tmp.Fields = append(tmp.Fields, tf)
 		}
 	}
