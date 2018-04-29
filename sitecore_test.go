@@ -2,20 +2,20 @@ package sitecore
 
 import (
 	"github.com/google/uuid"
-	"sitecore/item"
+	"sitecore/api"
 	"testing"
 )
 
 var connstr string = `user id=sa;password=S4M3amg;server=localhost\MSSQL_2014;Database=JGWentworth_Dev_Master`
 
 func TestLoadItemMap(t *testing.T) {
-	items, err := item.LoadItems(connstr)
+	items, err := api.LoadItems(connstr)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	root, itemMap := item.LoadItemMap(items)
+	root, itemMap := api.LoadItemMap(items)
 
 	if root == nil {
 		t.Fatal("couldn't find root")
@@ -27,7 +27,7 @@ func TestLoadItemMap(t *testing.T) {
 
 	t.Log(root.GetId(), root.GetPath(), len(itemMap))
 
-	fields, ferr := item.LoadFields(connstr)
+	fields, ferr := api.LoadFields(connstr)
 	if ferr != nil {
 		t.Fatal(ferr)
 	}
@@ -36,7 +36,7 @@ func TestLoadItemMap(t *testing.T) {
 		t.Fatal("no fields received")
 	}
 
-	npfields, nperr := item.LoadFields(connstr)
+	npfields, nperr := api.LoadFields(connstr)
 	if nperr != nil {
 		t.Fatal(nperr)
 	}
@@ -54,7 +54,7 @@ func TestLoadItemMap(t *testing.T) {
 
 	testuid, _ := uuid.Parse("9541e67d-ce8c-4225-803d-33f7f29f09ef")
 
-	fieldMap := item.LoadFieldMap(fields)
+	fieldMap := api.LoadFieldMap(fields)
 
 	fl, ok := fieldMap[testuid]
 	if !ok {
@@ -71,26 +71,26 @@ func TestLoadItemMap(t *testing.T) {
 }
 
 func TestLoadTemplates(t *testing.T) {
-	tmps, err := item.LoadTemplates(connstr)
+	tmps, err := api.LoadTemplates(connstr)
 
 	if err != nil {
 		t.Fatal("Error loading templates", err)
 	}
 
-	root, tmap := item.LoadItemMap(tmps)
+	root, tmap := api.LoadItemMap(tmps)
 
-	item.LoadTemplateData(tmap)
+	api.LoadTemplateData(tmap)
 
 	t.Log(root.GetId(), len(tmap))
 
-	list := item.GetTemplates(tmap)
+	list := api.GetTemplates(tmap)
 	if len(list) == 0 {
 		t.Fatal("No templates")
 	}
 }
 
 func BenchmarkFieldLoad(b *testing.B) {
-	fields, err := item.LoadFields(connstr)
+	fields, err := api.LoadFields(connstr)
 	b.ReportAllocs()
 
 	if err != nil {
@@ -103,7 +103,7 @@ func BenchmarkFieldLoad(b *testing.B) {
 }
 
 func BenchmarkFieldLoadParallel(b *testing.B) {
-	fields, err := item.LoadFieldsParallel(connstr, 20)
+	fields, err := api.LoadFieldsParallel(connstr, 20)
 
 	b.ReportAllocs()
 

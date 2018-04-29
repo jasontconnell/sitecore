@@ -1,4 +1,4 @@
-package item
+package api
 
 import (
 	"database/sql"
@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+    "sitecore/data"
 )
 
 var emptyUuid uuid.UUID = uuid.Must(uuid.Parse("00000000-0000-0000-0000-000000000000"))
@@ -25,7 +26,7 @@ const itemSelect = `select
         from Items i %v
         order by i.Name`
 
-func LoadItems(connstr string) ([]ItemNode, error) {
+func LoadItems(connstr string) ([]data.ItemNode, error) {
 	conn, cerr := sql.Open("mssql", connstr)
 	if cerr != nil {
 		return nil, cerr
@@ -40,9 +41,9 @@ func LoadItems(connstr string) ([]ItemNode, error) {
 		return nil, rerr
 	}
 
-	var items []ItemNode
+	var items []data.ItemNode
 	for _, row := range records {
-		item := &Item{
+		item := &data.Item{
 			ID:         getUUID(row["ID"]),
 			Name:       row["Name"].(string),
 			TemplateID: getUUID(row["TemplateID"]),
@@ -58,12 +59,12 @@ func LoadItems(connstr string) ([]ItemNode, error) {
 	return items, nil
 }
 
-func LoadFields(connstr string) ([]*FieldValue, error) {
+func LoadFields(connstr string) ([]*data.FieldValue, error) {
 	return LoadFieldsParallel(connstr, 1)
 }
 
 // Load Fields can return a ton of results. Pass in 'c' to specify how many goroutines should be spawned
-func LoadFieldsParallel(connstr string, c int) ([]*FieldValue, error) {
+func LoadFieldsParallel(connstr string, c int) ([]*data.FieldValue, error) {
 	if c <= 0 {
 		c = 24
 	}
@@ -112,16 +113,16 @@ func LoadFieldsParallel(connstr string, c int) ([]*FieldValue, error) {
 		return nil, rserr
 	}
 
-	fvchan := make(chan *FieldValue, 5000000)
+	fvchan := make(chan *data.FieldValue, 5000000)
 
 	var wg sync.WaitGroup
 	for i := 0; i < c; i++ {
 		wg.Add(1)
-		go func(id int, records chan map[string]interface{}, fv chan *FieldValue) {
+		go func(id int, records chan map[string]interface{}, fv chan *data.FieldValue) {
 			count := 0
 
 			for row := range records {
-				fieldValue := &FieldValue{
+				fieldValue := &data.FieldValue{
 					FieldValueID: getUUID(row["ValueID"]),
 					ItemID:       getUUID(row["ItemID"]),
 					Name:         row["Name"].(string),
@@ -143,8 +144,8 @@ func LoadFieldsParallel(connstr string, c int) ([]*FieldValue, error) {
 	close(fvchan)
 
 	wg.Add(1)
-	fieldValues := []*FieldValue{}
-	go func(fv chan *FieldValue) {
+	fieldValues := []*data.FieldValue{}
+	go func(fv chan *data.FieldValue) {
 		for fieldValue := range fvchan {
 			fieldValues = append(fieldValues, fieldValue)
 		}
@@ -156,7 +157,7 @@ func LoadFieldsParallel(connstr string, c int) ([]*FieldValue, error) {
 	return fieldValues, nil
 }
 
-func LoadTemplates(connstr string) ([]ItemNode, error) {
+func LoadTemplates(connstr string) ([]data.ItemNode, error) {
 	query := fmt.Sprintf(itemSelect, `isnull(sf.Value, '') as Type, isnull(Replace(Replace(UPPER(b.Value), '}',''), '{', ''), '') as BaseTemplates`,
 		`left join SharedFields sf
                     on i.ID = sf.ItemId
@@ -178,10 +179,10 @@ func LoadTemplates(connstr string) ([]ItemNode, error) {
 		return nil, rerr
 	}
 
-	var items []ItemNode
+	var items []data.ItemNode
 	for _, row := range records {
-		tmp := &Template{
-			Item: Item{
+		tmp := &data.Template{
+			Item: data.Item{
 				ID:         getUUID(row["ID"]),
 				Name:       row["Name"].(string),
 				TemplateID: getUUID(row["TemplateID"]),
@@ -190,12 +191,12 @@ func LoadTemplates(connstr string) ([]ItemNode, error) {
 				Created:    row["Created"].(time.Time),
 				Updated:    row["Updated"].(time.Time),
 			},
-			templateMeta: templateMeta{
+			TemplateMeta: data.TemplateMeta{
 				Type:            row["Type"].(string),
 				BaseTemplateIds: getUUIDs(row["BaseTemplates"]),
 			},
-			Fields:        []TemplateField{},
-			BaseTemplates: []*Template{},
+			Fields:        []data.TemplateField{},
+			BaseTemplates: []*data.Template{},
 		}
 
 		items = append(items, tmp)

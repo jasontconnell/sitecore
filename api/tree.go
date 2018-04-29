@@ -1,10 +1,11 @@
-package item
+package api
 
 import (
 	"github.com/google/uuid"
+	"sitecore/data"
 )
 
-func LoadItemMap(list []ItemNode) (root ItemNode, m ItemMap) {
+func LoadItemMap(list []data.ItemNode) (root data.ItemNode, m data.ItemMap) {
 	root, m = getMap(list)
 	if root != nil {
 		setPaths(root)
@@ -12,12 +13,12 @@ func LoadItemMap(list []ItemNode) (root ItemNode, m ItemMap) {
 	return root, m
 }
 
-func LoadFieldMap(list []*FieldValue) FieldValueMap {
-	m := FieldValueMap{}
+func LoadFieldMap(list []*data.FieldValue) data.FieldValueMap {
+	m := data.FieldValueMap{}
 	for _, fv := range list {
 		l, ok := m[fv.ItemID]
 		if !ok {
-			l = []*FieldValue{}
+			l = []*data.FieldValue{}
 		}
 		l = append(l, fv)
 		m[fv.ItemID] = l
@@ -25,8 +26,8 @@ func LoadFieldMap(list []*FieldValue) FieldValueMap {
 	return m
 }
 
-func getMap(list []ItemNode) (root ItemNode, m ItemMap) {
-	m = make(map[uuid.UUID]ItemNode, len(list))
+func getMap(list []data.ItemNode) (root data.ItemNode, m data.ItemMap) {
+	m = make(map[uuid.UUID]data.ItemNode, len(list))
 
 	rootID, uiderr := uuid.Parse("00000000-0000-0000-0000-000000000000")
 	if uiderr != nil {
@@ -50,7 +51,7 @@ func getMap(list []ItemNode) (root ItemNode, m ItemMap) {
 	return root, m
 }
 
-func setPaths(root ItemNode) {
+func setPaths(root data.ItemNode) {
 	if root.GetParent() == nil {
 		root.SetPath("/" + root.GetName())
 	}
