@@ -1,7 +1,6 @@
 package sitecore
 
 import (
-	"github.com/google/uuid"
 	"sitecore/api"
 	"testing"
 	"time"
