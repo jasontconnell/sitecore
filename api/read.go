@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-var emptyUuid uuid.UUID = uuid.Must(uuid.Parse("00000000-0000-0000-0000-000000000000"))
+var emptyUuid uuid.UUID = MustParseUUID("00000000-0000-0000-0000-000000000000")
 
 const itemSelect = `select 
             cast(i.ID as char(36)) ID, 
@@ -225,7 +225,7 @@ func getUUID(val interface{}) uuid.UUID {
 	if val == nil {
 		return emptyUuid
 	}
-	id, iderr := uuid.Parse(val.(string))
+	id, iderr := TryParseUUID(val.(string))
 	if iderr != nil {
 		id = emptyUuid
 	}

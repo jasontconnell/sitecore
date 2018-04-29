@@ -63,7 +63,7 @@ func TestLoadItemMap(t *testing.T) {
 		t.Fatal("len received from non-parallel is not equal to parallel version")
 	}
 
-	testuid, _ := uuid.Parse("9541e67d-ce8c-4225-803d-33f7f29f09ef")
+	testuid := api.MustParseUUID("9541e67d-ce8c-4225-803d-33f7f29f09ef")
 
 	start = time.Now()
 	fieldMap := api.LoadFieldMap(fields)

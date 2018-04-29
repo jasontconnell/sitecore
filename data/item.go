@@ -19,10 +19,6 @@ type Item struct {
 	Children   []ItemNode
 }
 
-func (item *Item) GetParentId() uuid.UUID {
-	return item.ParentID
-}
-
 func (item *Item) GetId() uuid.UUID {
 	return item.ID
 }
@@ -47,12 +43,20 @@ func (item *Item) GetName() string {
 	return item.Name
 }
 
+func (item *Item) GetParentId() uuid.UUID {
+	return item.ParentID
+}
+
 func (item *Item) GetParent() ItemNode {
 	return item.Parent
 }
 
 func (item *Item) SetParent(node ItemNode) {
 	item.Parent = item
+}
+
+func (item *Item) GetMasterId() uuid.UUID {
+	return item.MasterID
 }
 
 func (item *Item) GetTemplateId() uuid.UUID {

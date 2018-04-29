@@ -5,6 +5,9 @@ import (
 	"sitecore/data"
 )
 
+var rootID uuid.UUID = MustParseUUID("00000000-0000-0000-0000-000000000000")
+
+
 func LoadItemMap(list []data.ItemNode) (root data.ItemNode, m data.ItemMap) {
 	root, m = getMap(list)
 	if root != nil {
@@ -26,13 +29,9 @@ func LoadFieldMap(list []*data.FieldValue) data.FieldValueMap {
 	return m
 }
 
+
 func getMap(list []data.ItemNode) (root data.ItemNode, m data.ItemMap) {
 	m = make(map[uuid.UUID]data.ItemNode, len(list))
-
-	rootID, uiderr := uuid.Parse("00000000-0000-0000-0000-000000000000")
-	if uiderr != nil {
-		return nil, nil
-	}
 
 	for _, item := range list {
 		id := item.GetId()
@@ -41,11 +40,12 @@ func getMap(list []data.ItemNode) (root data.ItemNode, m data.ItemMap) {
 
 	root = nil
 	for _, item := range m {
-		if p, ok := m[item.GetParentId()]; ok {
+		pid := item.GetParentId()
+		if pid == rootID {
+			root = item
+		} else if p, ok := m[pid]; ok {
 			p.AddChild(item)
 			item.SetParent(p)
-		} else if item.GetParentId() == rootID {
-			root = item
 		}
 	}
 	return root, m

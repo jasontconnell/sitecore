@@ -15,6 +15,8 @@ type ItemNode interface {
 	GetParent() ItemNode
 	SetParent(node ItemNode)
 
+	GetMasterId() uuid.UUID
+
 	GetPath() string
 	SetPath(p string)
 
