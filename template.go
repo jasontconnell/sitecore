@@ -1,4 +1,4 @@
-package api
+package sitecore
 
 import (
 	"sitecore/data"

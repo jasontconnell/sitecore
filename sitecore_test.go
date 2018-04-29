@@ -1,7 +1,6 @@
 package sitecore
 
 import (
-	"sitecore/api"
 	"testing"
 	"time"
 )
@@ -10,7 +9,7 @@ var connstr string = `user id=sa;password=S4M3amg;server=localhost\MSSQL_2014;Da
 
 func TestLoadItemMap(t *testing.T) {
 	start := time.Now()
-	items, err := api.LoadItems(connstr)
+	items, err := LoadItems(connstr)
 	t.Log("Loaded items", time.Since(start))
 
 	if err != nil {
@@ -18,7 +17,7 @@ func TestLoadItemMap(t *testing.T) {
 	}
 
 	start = time.Now()
-	root, itemMap := api.LoadItemMap(items)
+	root, itemMap := LoadItemMap(items)
 	t.Log("Loaded item map", time.Since(start))
 
 	if root == nil {
@@ -32,7 +31,7 @@ func TestLoadItemMap(t *testing.T) {
 	t.Log(root.GetId(), root.GetPath(), len(itemMap), time.Since(start))
 
 	start = time.Now()
-	fields, ferr := api.LoadFields(connstr)
+	fields, ferr := LoadFields(connstr)
 	if ferr != nil {
 		t.Fatal(ferr)
 	}
@@ -44,7 +43,7 @@ func TestLoadItemMap(t *testing.T) {
 	}
 
 	start = time.Now()
-	npfields, nperr := api.LoadFieldsParallel(connstr, 12)
+	npfields, nperr := LoadFieldsParallel(connstr, 12)
 	if nperr != nil {
 		t.Fatal(nperr)
 	}
@@ -62,10 +61,10 @@ func TestLoadItemMap(t *testing.T) {
 		t.Fatal("len received from non-parallel is not equal to parallel version")
 	}
 
-	testuid := api.MustParseUUID("9541e67d-ce8c-4225-803d-33f7f29f09ef")
+	testuid := MustParseUUID("9541e67d-ce8c-4225-803d-33f7f29f09ef")
 
 	start = time.Now()
-	fieldMap := api.LoadFieldMap(fields)
+	fieldMap := LoadFieldMap(fields)
 
 	t.Log("Loaded field map", time.Since(start))
 	fl, ok := fieldMap[testuid]
@@ -83,26 +82,26 @@ func TestLoadItemMap(t *testing.T) {
 }
 
 func TestLoadTemplates(t *testing.T) {
-	tmps, err := api.LoadTemplates(connstr)
+	tmps, err := LoadTemplates(connstr)
 
 	if err != nil {
 		t.Fatal("Error loading templates", err)
 	}
 
-	root, tmap := api.LoadItemMap(tmps)
+	root, tmap := LoadItemMap(tmps)
 
-	api.LoadTemplateData(tmap)
+	LoadTemplateData(tmap)
 
 	t.Log(root.GetId(), len(tmap))
 
-	list := api.GetTemplates(tmap)
+	list := GetTemplates(tmap)
 	if len(list) == 0 {
 		t.Fatal("No templates")
 	}
 }
 
 func BenchmarkFieldLoad(b *testing.B) {
-	fields, err := api.LoadFields(connstr)
+	fields, err := LoadFields(connstr)
 	b.ReportAllocs()
 
 	if err != nil {
@@ -115,7 +114,7 @@ func BenchmarkFieldLoad(b *testing.B) {
 }
 
 func BenchmarkFieldLoadParallel(b *testing.B) {
-	fields, err := api.LoadFieldsParallel(connstr, 20)
+	fields, err := LoadFieldsParallel(connstr, 20)
 
 	b.ReportAllocs()
 

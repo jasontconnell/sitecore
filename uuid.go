@@ -1,4 +1,4 @@
-package api
+package sitecore
 
 import (
     "github.com/google/uuid"
