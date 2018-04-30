@@ -4,8 +4,11 @@
 [[projects]]
   branch = "master"
   name = "github.com/denisenkom/go-mssqldb"
-  packages = ["."]
-  revision = "88555645b640cc621e32f8693d7586a1aa1575f4"
+  packages = [
+    ".",
+    "internal/cp"
+  ]
+  revision = "e32faac87a2220f9342289f2c3b567d1424b8ec5"
 
 [[projects]]
   name = "github.com/google/uuid"
@@ -17,19 +20,13 @@
   branch = "master"
   name = "github.com/jasontconnell/sqlhelp"
   packages = ["."]
-  revision = "24c77abbe705c4b0f603daaf33295f8a2f24ed1e"
+  revision = "9375c25243c8cfb67dac36231d0dee13e01bccfa"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["md4"]
-  revision = "bd6f299fb381e4c3393d1c4b1f0b94f5e77650c8"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/net"
-  packages = ["context"]
-  revision = "01c190206fbdffa42f334f4b2bf2220f50e64920"
+  revision = "db7d12313a59cd5b727192a287195e2cdfa40049"
 
 [solve-meta]
   analyzer-name = "dep"

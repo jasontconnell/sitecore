@@ -1,7 +1,7 @@
 package sitecore
 
 import (
-	"sitecore/api"
+	"github.com/jasontconnell/sitecore/api"
 	"testing"
 	"time"
 )

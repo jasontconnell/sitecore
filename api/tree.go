@@ -2,11 +2,10 @@ package api
 
 import (
 	"github.com/google/uuid"
-	"sitecore/data"
+	"github.com/jasontconnell/sitecore/data"
 )
 
 var rootID uuid.UUID = MustParseUUID("00000000-0000-0000-0000-000000000000")
-
 
 func LoadItemMap(list []data.ItemNode) (root data.ItemNode, m data.ItemMap) {
 	root, m = getMap(list)
@@ -28,7 +27,6 @@ func LoadFieldMap(list []*data.FieldValue) data.FieldValueMap {
 	}
 	return m
 }
-
 
 func getMap(list []data.ItemNode) (root data.ItemNode, m data.ItemMap) {
 	m = make(map[uuid.UUID]data.ItemNode, len(list))

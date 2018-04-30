@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/denisenkom/go-mssqldb"
-    "sitecore/data"
-    "sync"
-    "strings"
+	"github.com/jasontconnell/sitecore/data"
+	"strings"
+	"sync"
 )
 
 func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) int64 {

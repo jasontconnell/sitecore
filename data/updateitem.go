@@ -1,8 +1,7 @@
 package data
 
 import (
-    "github.com/google/uuid"
-
+	"github.com/google/uuid"
 )
 
 type UpdateType string
@@ -35,24 +34,24 @@ type UpdateField struct {
 }
 
 func UpdateItemFromItemNode(node ItemNode) UpdateItem {
-    item := UpdateItem{}
-    item.ID = node.GetId()
-    item.Name = node.GetName()
-    item.TemplateID = node.GetTemplateId()
-    item.ParentID = node.GetParentId()
-    item.MasterID = node.GetMasterId()
-    item.UpdateType = Update
+	item := UpdateItem{}
+	item.ID = node.GetId()
+	item.Name = node.GetName()
+	item.TemplateID = node.GetTemplateId()
+	item.ParentID = node.GetParentId()
+	item.MasterID = node.GetMasterId()
+	item.UpdateType = Update
 
-    return item
+	return item
 }
 
 func UpdateFieldFromFieldValue(fv FieldValue) UpdateField {
-    fld := UpdateField{}
-    fld.ItemID = fv.ItemID
-    fld.FieldID = fv.FieldID
-    fld.Value = fv.Value
-    fld.Source = fv.Source
-    fld.Version = fv.Version
-    fld.Language = fv.Language
-    return fld
+	fld := UpdateField{}
+	fld.ItemID = fv.ItemID
+	fld.FieldID = fv.FieldID
+	fld.Value = fv.Value
+	fld.Source = fv.Source
+	fld.Version = fv.Version
+	fld.Language = fv.Language
+	return fld
 }
