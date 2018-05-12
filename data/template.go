@@ -14,6 +14,7 @@ type Template struct {
 	Item
 	Fields        []TemplateFieldNode
 	BaseTemplates []TemplateNode
+	Namespace     string
 }
 
 func (t Template) GetFields() []TemplateFieldNode {
@@ -28,11 +29,21 @@ func (t Template) GetBaseTemplateIds() []uuid.UUID {
 	return t.BaseTemplateIds
 }
 
+func (t Template) GetNamespace() string {
+	return t.Namespace
+}
+
+func (t *Template) SetNamespace(ns string) {
+	t.Namespace = ns
+}
+
 type TemplateNode interface {
 	ItemNode
 	GetFields() []TemplateFieldNode
 	GetBaseTemplates() []TemplateNode
 	GetBaseTemplateIds() []uuid.UUID
+	GetNamespace() string
+	SetNamespace(ns string)
 }
 
 type TemplateFieldNode interface {
