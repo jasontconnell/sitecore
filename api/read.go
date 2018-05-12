@@ -158,7 +158,7 @@ func LoadFieldsParallel(connstr string, c int) ([]*data.FieldValue, error) {
 	return fieldValues, nil
 }
 
-func LoadTemplates(connstr string) ([]data.ItemNode, error) {
+func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 	query := fmt.Sprintf(itemSelect, `isnull(sf.Value, '') as Type, isnull(Replace(Replace(UPPER(b.Value), '}',''), '{', ''), '') as BaseTemplates`,
 		`left join SharedFields sf
                     on i.ID = sf.ItemId
@@ -180,7 +180,7 @@ func LoadTemplates(connstr string) ([]data.ItemNode, error) {
 		return nil, rerr
 	}
 
-	var items []data.ItemNode
+	var items []data.TemplateNode
 	for _, row := range records {
 		tmp := &data.Template{
 			Item: data.Item{
@@ -196,8 +196,8 @@ func LoadTemplates(connstr string) ([]data.ItemNode, error) {
 				Type:            row["Type"].(string),
 				BaseTemplateIds: getUUIDs(row["BaseTemplates"]),
 			},
-			Fields:        []data.TemplateField{},
-			BaseTemplates: []*data.Template{},
+			Fields:        []data.TemplateFieldNode{},
+			BaseTemplates: []data.TemplateNode{},
 		}
 
 		items = append(items, tmp)

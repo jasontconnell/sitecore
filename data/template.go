@@ -12,11 +12,39 @@ type TemplateMeta struct {
 type Template struct {
 	TemplateMeta
 	Item
-	Fields        []TemplateField
-	BaseTemplates []*Template
+	Fields        []TemplateFieldNode
+	BaseTemplates []TemplateNode
+}
+
+func (t Template) GetFields() []TemplateFieldNode {
+	return t.Fields
+}
+
+func (t Template) GetBaseTemplates() []TemplateNode {
+	return t.BaseTemplates
+}
+
+func (t Template) GetBaseTemplateIds() []uuid.UUID {
+	return t.BaseTemplateIds
+}
+
+type TemplateNode interface {
+	ItemNode
+	GetFields() []TemplateFieldNode
+	GetBaseTemplates() []TemplateNode
+	GetBaseTemplateIds() []uuid.UUID
+}
+
+type TemplateFieldNode interface {
+	ItemNode
+	GetType() string
 }
 
 type TemplateField struct {
-	Item ItemNode
+	ItemNode
 	Type string
+}
+
+func (tf TemplateField) GetType() string {
+	return tf.Type
 }
