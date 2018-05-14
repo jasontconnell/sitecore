@@ -55,9 +55,7 @@ func getFields(tmp *data.Template, children []data.ItemNode) {
 		ct := c.(*data.Template)
 		if ct.TemplateID == templateSectionId {
 			getFields(tmp, ct.Children)
-			return
 		} else if ct.TemplateID == fieldId {
-
 			tf := data.TemplateField{Type: ct.Type, ItemNode: c}
 			tmp.Fields = append(tmp.Fields, tf)
 		}
