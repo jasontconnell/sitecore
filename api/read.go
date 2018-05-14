@@ -194,7 +194,7 @@ func loadTemplatesFromDb(connstr string) ([]data.TemplateNode, error) {
 			},
 			TemplateMeta: data.TemplateMeta{
 				Type:            row["Type"].(string),
-				BaseTemplateIds: getUUIDs(row["BaseTemplates"]),
+				BaseTemplateIds: getUUIDs(row["BaseTemplates"], "|"),
 			},
 			Fields:        []data.TemplateFieldNode{},
 			BaseTemplates: []data.TemplateNode{},
@@ -206,13 +206,13 @@ func loadTemplatesFromDb(connstr string) ([]data.TemplateNode, error) {
 	return items, nil
 }
 
-func getUUIDs(val interface{}) []uuid.UUID {
+func getUUIDs(val interface{}, splitchar string) []uuid.UUID {
 	if val == nil {
 		return nil
 	}
 
 	s := val.(string)
-	ss := strings.Split(s, ",")
+	ss := strings.Split(s, splitchar)
 	list := []uuid.UUID{}
 	for _, id := range ss {
 		u := getUUID(id)
