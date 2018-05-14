@@ -12,6 +12,30 @@ func GetTemplates(m data.ItemMap) []data.ItemNode {
 	return m.FindItemsByTemplate(templateId)
 }
 
+func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
+	list, err := loadTemplatesFromDb(connstr)
+	if err != nil {
+		return nil, err
+	}
+
+	itemNodes := []data.ItemNode{}
+	for _, t := range list {
+		itemNodes = append(itemNodes, t.(data.ItemNode))
+	}
+	_, m := LoadItemMap(itemNodes) // don't care about root
+
+	LoadTemplateData(m)
+	retList := []data.TemplateNode{}
+
+	for _, item := range itemNodes {
+		if item.GetTemplateId() == templateId {
+			retList = append(retList, item.(data.TemplateNode))
+		}
+	}
+
+	return retList, nil
+}
+
 func LoadTemplateData(m data.ItemMap) {
 	for _, tmp := range m {
 		t := tmp.(*data.Template)

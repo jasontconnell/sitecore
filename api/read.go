@@ -158,7 +158,7 @@ func LoadFieldsParallel(connstr string, c int) ([]*data.FieldValue, error) {
 	return fieldValues, nil
 }
 
-func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
+func loadTemplatesFromDb(connstr string) ([]data.TemplateNode, error) {
 	query := fmt.Sprintf(itemSelect, `isnull(sf.Value, '') as Type, isnull(Replace(Replace(UPPER(b.Value), '}',''), '{', ''), '') as BaseTemplates`,
 		`left join SharedFields sf
                     on i.ID = sf.ItemId

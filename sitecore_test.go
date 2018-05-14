@@ -2,7 +2,6 @@ package sitecore
 
 import (
 	"github.com/jasontconnell/sitecore/api"
-	"github.com/jasontconnell/sitecore/data"
 	"testing"
 	"time"
 )
@@ -84,25 +83,10 @@ func TestLoadItemMap(t *testing.T) {
 }
 
 func TestLoadTemplates(t *testing.T) {
-	tmps, err := api.LoadTemplates(connstr)
+	_, err := api.LoadTemplates(connstr)
 
 	if err != nil {
-		t.Fatal("Error loading templates", err)
-	}
-
-	nodes := []data.ItemNode{}
-	for _, t := range tmps {
-		nodes = append(nodes, t.(data.ItemNode))
-	}
-	root, tmap := api.LoadItemMap(nodes)
-
-	api.LoadTemplateData(tmap)
-
-	t.Log(root.GetId(), len(tmap))
-
-	list := api.GetTemplates(tmap)
-	if len(list) == 0 {
-		t.Fatal("No templates")
+		t.Fatal(err)
 	}
 }
 
