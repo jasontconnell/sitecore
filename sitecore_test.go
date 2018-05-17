@@ -29,6 +29,11 @@ func TestLoadItemMap(t *testing.T) {
 		t.Fatal("no items")
 	}
 
+	t.Log("Root path", root.GetPath())
+
+	filtered := api.FilterItemMap(itemMap, []string{"/sitecore/templates"})
+	t.Log("Filtered item map", len(filtered))
+
 	t.Log(root.GetId(), root.GetPath(), len(itemMap), time.Since(start))
 
 	start = time.Now()

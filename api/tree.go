@@ -43,9 +43,10 @@ func FilterItemMap(m data.ItemMap, paths []string) data.ItemMap {
 				break
 			} else {
 				parent := path.Dir(b)
+
 				for parent != "/" && parent != "" && !include {
 					include = item.GetPath() == parent
-					parent = path.Dir(b)
+					parent = path.Dir(parent)
 				}
 			}
 		}
