@@ -17,15 +17,15 @@ func LoadItemMap(list []data.ItemNode) (root data.ItemNode, m data.ItemMap) {
 	return root, m
 }
 
-func LoadFieldMap(list []*data.FieldValue) data.FieldValueMap {
+func LoadFieldMap(list []data.FieldValueNode) data.FieldValueMap {
 	m := data.FieldValueMap{}
 	for _, fv := range list {
-		l, ok := m[fv.ItemID]
+		l, ok := m[fv.GetItemId()]
 		if !ok {
-			l = []*data.FieldValue{}
+			l = []data.FieldValueNode{}
 		}
 		l = append(l, fv)
-		m[fv.ItemID] = l
+		m[fv.GetItemId()] = l
 	}
 	return m
 }
@@ -56,6 +56,14 @@ func FilterItemMap(m data.ItemMap, paths []string) data.ItemMap {
 	}
 
 	return filteredMap
+}
+
+func AssignFieldValues(m data.ItemMap, values []data.FieldValueNode) {
+	for _, fv := range values {
+		if item, ok := m[fv.GetItemId()]; ok {
+			item.AddFieldValue(fv)
+		}
+	}
 }
 
 func getMap(list []data.ItemNode) (root data.ItemNode, m data.ItemMap) {

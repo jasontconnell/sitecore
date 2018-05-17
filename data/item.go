@@ -17,6 +17,8 @@ type Item struct {
 	Path       string
 	Parent     ItemNode
 	Children   []ItemNode
+
+	FieldValues []FieldValueNode
 }
 
 func (item *Item) GetId() uuid.UUID {
@@ -65,4 +67,12 @@ func (item *Item) GetTemplateId() uuid.UUID {
 
 func (t *Item) String() string {
 	return fmt.Sprintf("ID: %v\nName:%v\nPath:%v\n", t.ID, t.Name, t.Path)
+}
+
+func (t *Item) GetFieldValues() []FieldValueNode {
+	return t.FieldValues
+}
+
+func (t *Item) AddFieldValue(fv FieldValueNode) {
+	t.FieldValues = append(t.FieldValues, fv)
 }

@@ -59,12 +59,12 @@ func LoadItems(connstr string) ([]data.ItemNode, error) {
 	return items, nil
 }
 
-func LoadFields(connstr string) ([]*data.FieldValue, error) {
+func LoadFields(connstr string) ([]data.FieldValueNode, error) {
 	return LoadFieldsParallel(connstr, 1)
 }
 
 // Load Fields can return a ton of results. Pass in 'c' to specify how many goroutines should be spawned
-func LoadFieldsParallel(connstr string, c int) ([]*data.FieldValue, error) {
+func LoadFieldsParallel(connstr string, c int) ([]data.FieldValueNode, error) {
 	if c <= 0 {
 		c = 12
 	}
@@ -113,12 +113,12 @@ func LoadFieldsParallel(connstr string, c int) ([]*data.FieldValue, error) {
 		return nil, rserr
 	}
 
-	fvchan := make(chan *data.FieldValue, 20000000)
+	fvchan := make(chan data.FieldValueNode, 20000000)
 
 	var wg sync.WaitGroup
 	for i := 0; i < c; i++ {
 		wg.Add(1)
-		go func(id int, records chan map[string]interface{}, fv chan *data.FieldValue) {
+		go func(id int, records chan map[string]interface{}, fv chan data.FieldValueNode) {
 			count := 0
 
 			for row := range records {
@@ -132,7 +132,6 @@ func LoadFieldsParallel(connstr string, c int) ([]*data.FieldValue, error) {
 					Version:      row["Version"].(int64),
 					Source:       row["Source"].(string),
 				}
-				//fieldValues = append(fieldValues, fieldValue)
 				fv <- fieldValue
 				count++
 			}
@@ -145,8 +144,8 @@ func LoadFieldsParallel(connstr string, c int) ([]*data.FieldValue, error) {
 	close(fvchan)
 
 	wg.Add(1)
-	fieldValues := []*data.FieldValue{}
-	go func(fv chan *data.FieldValue) {
+	fieldValues := []data.FieldValueNode{}
+	go func(fv chan data.FieldValueNode) {
 		for fieldValue := range fvchan {
 			fieldValues = append(fieldValues, fieldValue)
 		}

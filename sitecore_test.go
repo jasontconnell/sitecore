@@ -55,6 +55,8 @@ func TestLoadItemMap(t *testing.T) {
 		t.Fatal("non parallel fields is empty")
 	}
 
+	api.AssignFieldValues(itemMap, npfields)
+
 	if len(fields) != len(npfields) {
 		t.Log("len of non parallel fields", len(npfields))
 		t.Log("len of parallel fields", len(fields))

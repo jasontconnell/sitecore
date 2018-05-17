@@ -21,6 +21,9 @@ type ItemNode interface {
 	SetPath(p string)
 
 	GetName() string
+
+	GetFieldValues() []FieldValueNode
+	AddFieldValue(fv FieldValueNode)
 }
 
 type ItemMap map[uuid.UUID]ItemNode
