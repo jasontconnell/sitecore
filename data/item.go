@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type Item struct {
+type item struct {
 	ID         uuid.UUID
 	Name       string
 	TemplateID uuid.UUID
@@ -22,11 +22,11 @@ type Item struct {
 }
 
 func NewBlankItemNode() ItemNode {
-	return new(Item)
+	return new(item)
 }
 
 func NewItemNode(id uuid.UUID, name string, templateId, parentId, masterId uuid.UUID) ItemNode {
-	item := &Item{}
+	item := &item{}
 	item.ID = id
 	item.Name = name
 	item.TemplateID = templateId
@@ -35,58 +35,58 @@ func NewItemNode(id uuid.UUID, name string, templateId, parentId, masterId uuid.
 	return item
 }
 
-func (item *Item) GetId() uuid.UUID {
+func (item *item) GetId() uuid.UUID {
 	return item.ID
 }
 
-func (item *Item) GetChildren() []ItemNode {
+func (item *item) GetChildren() []ItemNode {
 	return item.Children
 }
 
-func (item *Item) AddChild(node ItemNode) {
+func (item *item) AddChild(node ItemNode) {
 	item.Children = append(item.Children, node)
 }
 
-func (item *Item) GetPath() string {
+func (item *item) GetPath() string {
 	return item.Path
 }
 
-func (item *Item) SetPath(p string) {
+func (item *item) SetPath(p string) {
 	item.Path = p
 }
 
-func (item *Item) GetName() string {
+func (item *item) GetName() string {
 	return item.Name
 }
 
-func (item *Item) GetParentId() uuid.UUID {
+func (item *item) GetParentId() uuid.UUID {
 	return item.ParentID
 }
 
-func (item *Item) GetParent() ItemNode {
+func (item *item) GetParent() ItemNode {
 	return item.Parent
 }
 
-func (item *Item) SetParent(node ItemNode) {
+func (item *item) SetParent(node ItemNode) {
 	item.Parent = item
 }
 
-func (item *Item) GetMasterId() uuid.UUID {
+func (item *item) GetMasterId() uuid.UUID {
 	return item.MasterID
 }
 
-func (item *Item) GetTemplateId() uuid.UUID {
+func (item *item) GetTemplateId() uuid.UUID {
 	return item.TemplateID
 }
 
-func (t *Item) String() string {
+func (t *item) String() string {
 	return fmt.Sprintf("ID: %v\nName:%v\nPath:%v\n", t.ID, t.Name, t.Path)
 }
 
-func (t *Item) GetFieldValues() []FieldValueNode {
+func (t *item) GetFieldValues() []FieldValueNode {
 	return t.FieldValues
 }
 
-func (t *Item) AddFieldValue(fv FieldValueNode) {
+func (t *item) AddFieldValue(fv FieldValueNode) {
 	t.FieldValues = append(t.FieldValues, fv)
 }

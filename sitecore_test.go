@@ -2,11 +2,12 @@ package sitecore
 
 import (
 	"github.com/jasontconnell/sitecore/api"
+	"os"
 	"testing"
 	"time"
 )
 
-var connstr string = `user id=sa;password=S4M3amg;server=localhost\MSSQL_2014;Database=JGWentworth_Dev_Master`
+var connstr string = os.Getenv("SitecoreAPITestConnectionString")
 
 func TestLoadItemMap(t *testing.T) {
 	start := time.Now()

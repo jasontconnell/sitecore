@@ -9,7 +9,6 @@ import (
 	"github.com/jasontconnell/sqlhelp"
 	"strings"
 	"sync"
-	"time"
 )
 
 var emptyUuid uuid.UUID = MustParseUUID("00000000-0000-0000-0000-000000000000")
@@ -43,16 +42,7 @@ func LoadItems(connstr string) ([]data.ItemNode, error) {
 
 	var items []data.ItemNode
 	for _, row := range records {
-		item := &data.Item{
-			ID:         getUUID(row["ID"]),
-			Name:       row["Name"].(string),
-			TemplateID: getUUID(row["TemplateID"]),
-			ParentID:   getUUID(row["ParentID"]),
-			MasterID:   getUUID(row["MasterID"]),
-			Created:    row["Created"].(time.Time),
-			Updated:    row["Updated"].(time.Time),
-		}
-
+		item := data.NewItemNode(getUUID(row["ID"]), row["Name"].(string), getUUID(row["TemplateID"]), getUUID(row["ParentID"]), getUUID(row["MasterID"]))
 		items = append(items, item)
 	}
 
@@ -181,23 +171,8 @@ func loadTemplatesFromDb(connstr string) ([]data.TemplateNode, error) {
 
 	var items []data.TemplateNode
 	for _, row := range records {
-		tmp := &data.Template{
-			Item: data.Item{
-				ID:         getUUID(row["ID"]),
-				Name:       row["Name"].(string),
-				TemplateID: getUUID(row["TemplateID"]),
-				ParentID:   getUUID(row["ParentID"]),
-				MasterID:   getUUID(row["MasterID"]),
-				Created:    row["Created"].(time.Time),
-				Updated:    row["Updated"].(time.Time),
-			},
-			TemplateMeta: data.TemplateMeta{
-				Type:            row["Type"].(string),
-				BaseTemplateIds: getUUIDs(row["BaseTemplates"], "|"),
-			},
-			Fields:        []data.TemplateFieldNode{},
-			BaseTemplates: []data.TemplateNode{},
-		}
+		inner := data.NewItemNode(getUUID(row["ID"]), row["Name"].(string), getUUID(row["TemplateID"]), getUUID(row["ParentID"]), getUUID(row["MasterID"]))
+		tmp := data.NewTemplateNode(inner, row["Type"].(string), getUUIDs(row["BaseTemplates"], "|"))
 
 		items = append(items, tmp)
 	}

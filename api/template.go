@@ -38,38 +38,38 @@ func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 
 func LoadTemplateData(m data.ItemMap) {
 	for _, tmp := range m {
-		t := tmp.(*data.Template)
-		if t.TemplateID == templateId {
+		t := tmp.(data.TemplateNode)
+		if t.GetTemplateId() == templateId {
 			getBaseTemplates(m, t)
 			mapFields(t)
 		}
 	}
 }
 
-func mapFields(tmp *data.Template) {
-	getFields(tmp, tmp.Children)
+func mapFields(tmp data.TemplateNode) {
+	getFields(tmp, tmp.GetChildren())
 }
 
-func getFields(tmp *data.Template, children []data.ItemNode) {
+func getFields(tmp data.TemplateNode, children []data.ItemNode) {
 	for _, c := range children {
-		ct := c.(*data.Template)
-		if ct.TemplateID == templateSectionId {
-			getFields(tmp, ct.Children)
-		} else if ct.TemplateID == fieldId {
-			tf := data.TemplateField{Type: ct.Type, ItemNode: c}
-			tmp.Fields = append(tmp.Fields, tf)
+		ct := c.(data.TemplateNode)
+		if ct.GetTemplateId() == templateSectionId {
+			getFields(tmp, ct.GetChildren())
+		} else if ct.GetTemplateId() == fieldId {
+			tf := data.NewTemplateField(c, ct.GetType())
+			tmp.AddField(tf)
 		}
 	}
 }
 
-func getBaseTemplates(m data.ItemMap, tmp *data.Template) {
-	if len(tmp.BaseTemplateIds) == 0 {
+func getBaseTemplates(m data.ItemMap, tmp data.TemplateNode) {
+	if len(tmp.GetBaseTemplateIds()) == 0 {
 		return
 	}
 
-	for _, id := range tmp.BaseTemplateIds {
+	for _, id := range tmp.GetBaseTemplateIds() {
 		if t, ok := m[id]; ok {
-			tmp.BaseTemplates = append(tmp.BaseTemplates, t.(*data.Template))
+			tmp.AddBaseTemplate(t.(data.TemplateNode))
 		}
 	}
 }
