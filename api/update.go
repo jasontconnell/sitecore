@@ -167,7 +167,7 @@ func getSqlForFields(fields []data.UpdateField) []string {
 	return sqllist
 }
 
-func cleanOrphanedItems(connstr string) (rows int64) {
+func CleanOrphanedItems(connstr string) (rows int64) {
 	subq := "select ID from Items where ParentID not in (select ID from Items) and ParentID <> '00000000-0000-0000-0000-000000000000'"
 	sqlfmt := `
         delete from SharedFields where ItemID in ( %[1]v )
