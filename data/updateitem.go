@@ -33,25 +33,26 @@ type UpdateField struct {
 	UpdateType UpdateType
 }
 
-func UpdateItemFromItemNode(node ItemNode) UpdateItem {
+func UpdateItemFromItemNode(node ItemNode, updateType UpdateType) UpdateItem {
 	item := UpdateItem{}
 	item.ID = node.GetId()
 	item.Name = node.GetName()
 	item.TemplateID = node.GetTemplateId()
 	item.ParentID = node.GetParentId()
 	item.MasterID = node.GetMasterId()
-	item.UpdateType = Update
+	item.UpdateType = updateType
 
 	return item
 }
 
-func UpdateFieldFromFieldValue(fv FieldValue) UpdateField {
+func UpdateFieldFromFieldValue(fv FieldValueNode, updateType UpdateType) UpdateField {
 	fld := UpdateField{}
-	fld.ItemID = fv.ItemID
-	fld.FieldID = fv.FieldID
-	fld.Value = fv.Value
-	fld.Source = fv.Source
-	fld.Version = fv.Version
-	fld.Language = fv.Language
+	fld.ItemID = fv.GetItemId()
+	fld.FieldID = fv.GetFieldId()
+	fld.Value = fv.GetValue()
+	fld.Source = fv.GetSource()
+	fld.Version = fv.GetVersion()
+	fld.Language = fv.GetLanguage()
+	fld.UpdateType = updateType
 	return fld
 }
