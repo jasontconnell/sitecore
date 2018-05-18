@@ -15,9 +15,8 @@ type FieldValue struct {
 	Source       string
 }
 
-func NewFieldValue(fvId, itemId, fieldId uuid.UUID, name, value, language string, version int64, source string) FieldValueNode {
+func NewFieldValue(fieldId, itemId uuid.UUID, name, value, language string, version int64, source string) FieldValueNode {
 	fv := &FieldValue{}
-	fv.FieldValueID = fvId
 	fv.ItemID = itemId
 	fv.FieldID = fieldId
 	fv.Name = name
