@@ -40,7 +40,7 @@ func (fv *FieldValue) GetFieldId() uuid.UUID {
 }
 
 func (fv *FieldValue) GetName() string {
-	return fv.Value
+	return fv.Name
 }
 
 func (fv *FieldValue) GetValue() string {
