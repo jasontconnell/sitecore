@@ -38,8 +38,6 @@ func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) 
 				wg.Done()
 			}(grplist)
 		}
-	} else {
-		wg.Done()
 	}
 
 	if len(fields) > 0 {
@@ -52,8 +50,6 @@ func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) 
 				wg.Done()
 			}(grplist)
 		}
-	} else {
-		wg.Done()
 	}
 
 	wg.Wait()
