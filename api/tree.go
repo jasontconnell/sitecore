@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jasontconnell/sitecore/data"
 	"path"
+	"sort"
 	"strings"
 )
 
@@ -60,6 +61,10 @@ func FilterItemMap(m data.ItemMap, paths []string) data.ItemMap {
 }
 
 func AssignFieldValues(m data.ItemMap, values []data.FieldValueNode) {
+	sort.Slice(values, func(i, j int) bool {
+		return values[i].GetName() < values[j].GetName()
+	})
+
 	for _, fv := range values {
 		if item, ok := m[fv.GetItemId()]; ok {
 			item.AddFieldValue(fv)
