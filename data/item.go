@@ -21,6 +21,20 @@ type Item struct {
 	FieldValues []FieldValueNode
 }
 
+func NewBlankItemNode() ItemNode {
+	return new(Item)
+}
+
+func NewItemNode(id uuid.UUID, name string, templateId, parentId, masterId uuid.UUID) ItemNode {
+	item := &Item{}
+	item.ID = id
+	item.Name = name
+	item.TemplateID = templateId
+	item.ParentID = parentId
+	item.MasterID = masterId
+	return item
+}
+
 func (item *Item) GetId() uuid.UUID {
 	return item.ID
 }
