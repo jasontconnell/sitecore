@@ -22,13 +22,10 @@ func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 	for _, tr := range trmap {
 		if tr.ParentID == RootID {
 			root = tr
-			continue
 		}
 
 		p, ok := trmap[tr.ParentID]
-		if !ok {
-			root.Children = append(root.Children, tr)
-		} else {
+		if ok {
 			p.Children = append(p.Children, tr)
 		}
 	}
@@ -37,7 +34,7 @@ func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 		return nil, fmt.Errorf("No root found")
 	}
 
-	root.Path = ""
+	root.Path = "/" + root.Name
 	setTemplatePaths(root)
 
 	templates := loadTemplateData(trmap)
@@ -57,7 +54,7 @@ func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 
 func setTemplatePaths(root *data.TemplateQueryRow) {
 	for _, c := range root.Children {
-		c.Path = root.Path + "/" + root.Name
+		c.Path = root.Path + "/" + c.Name
 
 		setTemplatePaths(c)
 	}
