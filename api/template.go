@@ -1,16 +1,10 @@
 package api
 
 import (
+	"fmt"
+	"github.com/google/uuid"
 	"github.com/jasontconnell/sitecore/data"
 )
-
-var templateId = MustParseUUID("AB86861A-6030-46C5-B394-E8F99E8B87DB")
-var fieldId = MustParseUUID("455A3E98-A627-4B40-8035-E683A0331AC7")
-var templateSectionId = MustParseUUID("E269FBB5-3750-427A-9149-7AA950B49301")
-
-func GetTemplates(m data.ItemMap) []data.ItemNode {
-	return m.FindItemsByTemplate(templateId)
-}
 
 func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 	list, err := loadTemplatesFromDb(connstr)
@@ -18,58 +12,104 @@ func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 		return nil, err
 	}
 
-	itemNodes := []data.ItemNode{}
-	for _, t := range list {
-		itemNodes = append(itemNodes, t.(data.ItemNode))
+	trmap := make(map[uuid.UUID]*data.TemplateQueryRow)
+
+	for _, tr := range list {
+		trmap[tr.ID] = tr
 	}
-	_, m := LoadItemMap(itemNodes) // don't care about root
 
-	LoadTemplateData(m)
-	retList := []data.TemplateNode{}
-
-	for _, item := range itemNodes {
-		if item.GetTemplateId() == templateId {
-			retList = append(retList, item.(data.TemplateNode))
+	var root *data.TemplateQueryRow
+	for _, tr := range trmap {
+		p, ok := trmap[tr.ParentID]
+		if !ok {
+			if tr.ParentID == RootID {
+				root = tr
+				root.Path = "/sitecore"
+				continue
+			}
+			return nil, fmt.Errorf("ParentID not found in map, %v", tr.ParentID)
 		}
+		p.Children = append(p.Children, tr)
 	}
 
-	return retList, nil
+	if root == nil {
+		return nil, fmt.Errorf("No root found")
+	}
+
+	setTemplatePaths(root)
+
+	templates := loadTemplateData(trmap)
+
+	tnmap := make(map[uuid.UUID]data.TemplateNode)
+	for _, t := range templates {
+		tnmap[t.GetId()] = t
+	}
+
+	for _, t := range tnmap {
+		tr, _ := trmap[t.GetId()]
+		mapBaseTemplates(tnmap, t, tr)
+	}
+
+	return templates, nil
 }
 
-func LoadTemplateData(m data.ItemMap) {
+func setTemplatePaths(root *data.TemplateQueryRow) {
+	for _, c := range root.Children {
+		c.Path = root.Path + "/" + root.Name
+
+		setTemplatePaths(c)
+	}
+}
+
+func loadTemplateData(m map[uuid.UUID]*data.TemplateQueryRow) []data.TemplateNode {
+	templates := []data.TemplateNode{}
 	for _, tmp := range m {
-		t := tmp.(data.TemplateNode)
-		if t.GetTemplateId() == templateId {
-			getBaseTemplates(m, t)
-			mapFields(t)
+		if tmp.TemplateID == TemplateID {
+			tn := data.NewTemplateNode(tmp.ID, tmp.Name, tmp.Path)
+			flds := mapFields(tmp)
+
+			for _, f := range flds {
+				tn.AddField(f)
+			}
+
+			templates = append(templates, tn)
 		}
 	}
+	return templates
 }
 
-func mapFields(tmp data.TemplateNode) {
-	getFields(tmp, tmp.GetChildren())
+func mapFields(tmp *data.TemplateQueryRow) []data.TemplateFieldNode {
+	return getFields(tmp, tmp.Children)
 }
 
-func getFields(tmp data.TemplateNode, children []data.ItemNode) {
+func getFields(tmp *data.TemplateQueryRow, children []*data.TemplateQueryRow) []data.TemplateFieldNode {
+	flds := []data.TemplateFieldNode{}
 	for _, c := range children {
-		ct := c.(data.TemplateNode)
-		if ct.GetTemplateId() == templateSectionId {
-			getFields(tmp, ct.GetChildren())
-		} else if ct.GetTemplateId() == fieldId {
-			tf := data.NewTemplateField(c, ct.GetType())
-			tmp.AddField(tf)
+		if c.TemplateID == TemplateSectionID {
+			flds = append(flds, getFields(c, c.Children)...)
+		} else if c.TemplateID == TemplateFieldID {
+			s := "Versioned"
+			if c.Shared == "1" {
+				s = "Shared"
+			} else if c.Unversioned == "1" {
+				s = "Unversioned"
+			}
+			tf := data.NewTemplateField(c.ID, c.Name, c.Type, s)
+			flds = append(flds, tf)
 		}
 	}
+
+	return flds
 }
 
-func getBaseTemplates(m data.ItemMap, tmp data.TemplateNode) {
-	if len(tmp.GetBaseTemplateIds()) == 0 {
+func mapBaseTemplates(m map[uuid.UUID]data.TemplateNode, tmp data.TemplateNode, trow *data.TemplateQueryRow) {
+	if len(trow.BaseTemplateIds) == 0 {
 		return
 	}
 
-	for _, id := range tmp.GetBaseTemplateIds() {
+	for _, id := range trow.BaseTemplateIds {
 		if t, ok := m[id]; ok {
-			tmp.AddBaseTemplate(t.(data.TemplateNode))
+			tmp.AddBaseTemplate(t)
 		}
 	}
 }

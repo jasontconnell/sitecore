@@ -39,6 +39,10 @@ func (item *item) GetId() uuid.UUID {
 	return item.ID
 }
 
+func (item *item) SetId(id uuid.UUID) {
+	item.ID = id
+}
+
 func (item *item) GetChildren() []ItemNode {
 	return item.Children
 }
@@ -59,8 +63,16 @@ func (item *item) GetName() string {
 	return item.Name
 }
 
+func (item *item) SetName(n string) {
+	item.Name = n
+}
+
 func (item *item) GetParentId() uuid.UUID {
 	return item.ParentID
+}
+
+func (item *item) SetParentId(id uuid.UUID) {
+	item.ParentID = id
 }
 
 func (item *item) GetParent() ItemNode {
@@ -75,8 +87,16 @@ func (item *item) GetMasterId() uuid.UUID {
 	return item.MasterID
 }
 
+func (item *item) SetMasterId(id uuid.UUID) {
+	item.MasterID = id
+}
+
 func (item *item) GetTemplateId() uuid.UUID {
 	return item.TemplateID
+}
+
+func (item *item) SetTemplateId(id uuid.UUID) {
+	item.TemplateID = id
 }
 
 func (t *item) String() string {

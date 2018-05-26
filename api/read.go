@@ -147,14 +147,21 @@ func LoadFieldsParallel(connstr string, c int) ([]data.FieldValueNode, error) {
 	return fieldValues, nil
 }
 
-func loadTemplatesFromDb(connstr string) ([]data.TemplateNode, error) {
-	query := fmt.Sprintf(itemSelect, `isnull(sf.Value, '') as Type, isnull(Replace(Replace(UPPER(b.Value), '}',''), '{', ''), '') as BaseTemplates`,
+func loadTemplatesFromDb(connstr string) ([]*data.TemplateQueryRow, error) {
+	query := fmt.Sprintf(itemSelect, `isnull(sf.Value, '') as Type, isnull(Replace(Replace(UPPER(b.Value), '}',''), '{', ''), '') as BaseTemplates, isnull(sh.Value, '0') as Shared, isnull(unv.Value, '0') as Unversioned`,
 		`left join SharedFields sf
                     on i.ID = sf.ItemId
                         and sf.FieldId = 'AB162CC0-DC80-4ABF-8871-998EE5D7BA32'
                 left join SharedFields b
                     on i.ID = b.ItemID
-                        and b.FieldId = '12C33F3F-86C5-43A5-AEB4-5598CEC45116'`)
+						and b.FieldId = '12C33F3F-86C5-43A5-AEB4-5598CEC45116'
+				left join SharedFields sh
+					on i.ID = sh.ItemID
+						and sh.FieldId = 'BE351A73-FCB0-4213-93FA-C302D8AB4F51'
+				left join SharedFields unv
+					on i.ID = unv.ItemID
+						and unv.FieldId = '39847666-389D-409B-95BD-F2016F11EED5'
+						`)
 
 	conn, cerr := sql.Open("mssql", connstr)
 	if cerr != nil {
@@ -169,15 +176,23 @@ func loadTemplatesFromDb(connstr string) ([]data.TemplateNode, error) {
 		return nil, rerr
 	}
 
-	var items []data.TemplateNode
+	var rows []*data.TemplateQueryRow
 	for _, row := range records {
-		inner := data.NewItemNode(getUUID(row["ID"]), row["Name"].(string), getUUID(row["TemplateID"]), getUUID(row["ParentID"]), getUUID(row["MasterID"]))
-		tmp := data.NewTemplateNode(inner, row["Type"].(string), getUUIDs(row["BaseTemplates"], "|"))
+		tmp := &data.TemplateQueryRow{
+			ID:              getUUID(row["ID"]),
+			Name:            row["Name"].(string),
+			TemplateID:      getUUID(row["TemplateID"]),
+			ParentID:        getUUID(row["ParentID"]),
+			BaseTemplateIds: getUUIDs(row["BaseTemplates"], "|"),
+			Type:            row["Type"].(string),
+		}
+		// inner := data.NewItemNode(getUUID(row["ID"]), row["Name"].(string), getUUID(row["TemplateID"]), getUUID(row["ParentID"]), getUUID(row["MasterID"]))
+		// tmp := data.NewTemplateNode(inner, row["Type"].(string), getUUIDs(row["BaseTemplates"], "|"))
 
-		items = append(items, tmp)
+		rows = append(rows, tmp)
 	}
 
-	return items, nil
+	return rows, nil
 }
 
 func getUUIDs(val interface{}, splitchar string) []uuid.UUID {

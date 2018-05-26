@@ -4,23 +4,34 @@ import (
 	"github.com/google/uuid"
 )
 
-type ItemNode interface {
-	GetParentId() uuid.UUID
+type ItemData interface {
 	GetId() uuid.UUID
+	SetId(id uuid.UUID)
+
+	GetParentId() uuid.UUID
+	SetParentId(id uuid.UUID)
+
 	GetTemplateId() uuid.UUID
+	SetTemplateId(id uuid.UUID)
+
+	GetMasterId() uuid.UUID
+	SetMasterId(id uuid.UUID)
+
+	GetPath() string
+	SetPath(p string)
+
+	GetName() string
+	SetName(n string)
+}
+
+type ItemNode interface {
+	ItemData
 
 	GetChildren() []ItemNode
 	AddChild(node ItemNode)
 
 	GetParent() ItemNode
 	SetParent(node ItemNode)
-
-	GetMasterId() uuid.UUID
-
-	GetPath() string
-	SetPath(p string)
-
-	GetName() string
 
 	GetFieldValues() []FieldValueNode
 	AddFieldValue(fv FieldValueNode)

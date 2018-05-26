@@ -4,22 +4,40 @@ import (
 	"github.com/google/uuid"
 )
 
-type templateMeta struct {
-	Type            string
+type TemplateQueryRow struct {
+	ID              uuid.UUID
+	Name            string
+	TemplateID      uuid.UUID
+	ParentID        uuid.UUID
+	MasterID        uuid.UUID
 	BaseTemplateIds []uuid.UUID
+	Type            string
+	Shared          string
+	Unversioned     string
+
+	Path     string
+	Children []*TemplateQueryRow
 }
 
 type template struct {
-	templateMeta
-	ItemNode
+	ID            uuid.UUID
+	Name          string
+	Path          string
 	Fields        []TemplateFieldNode
 	BaseTemplates []TemplateNode
-	Namespace     string
 }
 
-func NewTemplateNode(item ItemNode, fldType string, baseTemplateIds []uuid.UUID) TemplateNode {
-	template := &template{ItemNode: item, templateMeta: templateMeta{Type: fldType, BaseTemplateIds: baseTemplateIds}}
+func NewTemplateNode(id uuid.UUID, name string, path string) TemplateNode {
+	template := &template{ID: id, Name: name, Path: path}
 	return template
+}
+
+func (t template) GetId() uuid.UUID {
+	return t.ID
+}
+
+func (t template) GetName() string {
+	return t.Name
 }
 
 func (t template) GetFields() []TemplateFieldNode {
@@ -38,39 +56,46 @@ func (t template) GetBaseTemplates() []TemplateNode {
 	return t.BaseTemplates
 }
 
-func (t template) GetBaseTemplateIds() []uuid.UUID {
-	return t.BaseTemplateIds
-}
-
-func (t template) GetType() string {
-	return t.Type
-}
-
 type TemplateNode interface {
-	ItemNode
+	GetId() uuid.UUID
+	GetName() string
 	AddField(tf TemplateFieldNode)
 	GetFields() []TemplateFieldNode
 	GetBaseTemplates() []TemplateNode
-	GetBaseTemplateIds() []uuid.UUID
 	AddBaseTemplate(base TemplateNode)
-	GetType() string
 }
 
 type TemplateFieldNode interface {
-	ItemNode
+	GetId() uuid.UUID
+	GetName() string
 	GetType() string
+	GetSource() string
 }
 
-func NewTemplateField(inner ItemNode, t string) TemplateFieldNode {
-	tf := &templateField{ItemNode: inner, Type: t}
+func NewTemplateField(id uuid.UUID, name, t, source string) TemplateFieldNode {
+	tf := &templateField{ID: id, Name: name, Type: t, Source: source}
 	return tf
 }
 
 type templateField struct {
-	ItemNode
-	Type string
+	ID     uuid.UUID
+	Name   string
+	Type   string
+	Source string
+}
+
+func (tf templateField) GetId() uuid.UUID {
+	return tf.ID
+}
+
+func (tf templateField) GetName() string {
+	return tf.Name
 }
 
 func (tf templateField) GetType() string {
 	return tf.Type
+}
+
+func (tf templateField) GetSource() string {
+	return tf.Source
 }
