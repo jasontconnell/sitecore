@@ -20,22 +20,24 @@ func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 
 	var root *data.TemplateQueryRow
 	for _, tr := range trmap {
+		if tr.ParentID == RootID {
+			root = tr
+			continue
+		}
+
 		p, ok := trmap[tr.ParentID]
 		if !ok {
-			if tr.ParentID == RootID {
-				root = tr
-				root.Path = "/sitecore"
-				continue
-			}
-			return nil, fmt.Errorf("ParentID not found in map, %v", tr.ParentID)
+			root.Children = append(root.Children, tr)
+		} else {
+			p.Children = append(p.Children, tr)
 		}
-		p.Children = append(p.Children, tr)
 	}
 
 	if root == nil {
 		return nil, fmt.Errorf("No root found")
 	}
 
+	root.Path = "/" + root.Name
 	setTemplatePaths(root)
 
 	templates := loadTemplateData(trmap)
