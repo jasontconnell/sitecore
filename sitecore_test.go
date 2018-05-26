@@ -91,10 +91,14 @@ func TestLoadItemMap(t *testing.T) {
 }
 
 func TestLoadTemplates(t *testing.T) {
-	_, err := api.LoadTemplates(connstr)
+	list, err := api.LoadTemplates(connstr)
 
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	for _, tmp := range list {
+		t.Log(tmp.GetPath())
 	}
 }
 

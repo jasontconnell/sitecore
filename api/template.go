@@ -37,7 +37,7 @@ func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 		return nil, fmt.Errorf("No root found")
 	}
 
-	root.Path = "/" + root.Name
+	root.Path = ""
 	setTemplatePaths(root)
 
 	templates := loadTemplateData(trmap)
