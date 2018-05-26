@@ -40,6 +40,10 @@ func (t template) GetName() string {
 	return t.Name
 }
 
+func (t template) GetPath() string {
+	return t.Path
+}
+
 func (t template) GetFields() []TemplateFieldNode {
 	return t.Fields
 }
@@ -59,6 +63,7 @@ func (t template) GetBaseTemplates() []TemplateNode {
 type TemplateNode interface {
 	GetId() uuid.UUID
 	GetName() string
+	GetPath() string
 	AddField(tf TemplateFieldNode)
 	GetFields() []TemplateFieldNode
 	GetBaseTemplates() []TemplateNode
