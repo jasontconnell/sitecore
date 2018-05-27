@@ -5,7 +5,7 @@ import (
 	"github.com/jasontconnell/sitecore/data"
 )
 
-func BuildUpdateItems(filteredMap data.ItemMap, referenceList []data.ItemNode, updateList []data.ItemNode) ([]data.UpdateItem, []data.UpdateField) {
+func BuildUpdateItems(filteredMap data.ItemMap, referenceList []data.ItemNode, updateList []data.ItemNode, deleteMissing bool) ([]data.UpdateItem, []data.UpdateField) {
 	updateItems := []data.UpdateItem{}
 	updateFields := []data.UpdateField{}
 	itemMap := make(data.ItemMap)
@@ -30,13 +30,15 @@ func BuildUpdateItems(filteredMap data.ItemMap, referenceList []data.ItemNode, u
 		}
 	}
 
-	for _, sitem := range referenceList {
-		_, inFilter := filteredMap[sitem.GetId()]
-		if _, ok := deserializedItemMap[sitem.GetId()]; !ok && inFilter {
-			updateItems = append(updateItems, data.UpdateItemFromItemNode(sitem, data.Delete))
+	if deleteMissing {
+		for _, sitem := range referenceList {
+			_, inFilter := filteredMap[sitem.GetId()]
+			if _, ok := deserializedItemMap[sitem.GetId()]; !ok && inFilter {
+				updateItems = append(updateItems, data.UpdateItemFromItemNode(sitem, data.Delete))
 
-			for _, sfield := range sitem.GetFieldValues() {
-				updateFields = append(updateFields, data.UpdateFieldFromFieldValue(sfield, data.Delete))
+				for _, sfield := range sitem.GetFieldValues() {
+					updateFields = append(updateFields, data.UpdateFieldFromFieldValue(sfield, data.Delete))
+				}
 			}
 		}
 	}
