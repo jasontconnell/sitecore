@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) int64 {
+func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) (int64, error) {
 	itemGroups := 2
 	itemGroupSize := len(items)/itemGroups + 1
 
@@ -27,6 +27,7 @@ func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) 
 
 	var updated int64 = 0
 	var wg sync.WaitGroup
+	var processError error
 
 	if len(items) > 0 {
 		wg.Add(itemGroups)
@@ -34,7 +35,13 @@ func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) 
 		for i := 0; i < itemGroups; i++ {
 			grplist := items[i*itemGroupSize : (i+1)*itemGroupSize]
 			go func(grp []data.UpdateItem) {
-				updated += updateItems(connstr, grp)
+				up, err := updateItems(connstr, grp)
+				if err != nil {
+					processError = err
+					return
+				}
+
+				updated += up
 				wg.Done()
 			}(grplist)
 		}
@@ -46,7 +53,12 @@ func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) 
 		for i := 0; i < fieldGroups; i++ {
 			grplist := fields[i*fieldGroupSize : (i+1)*fieldGroupSize]
 			go func(grp []data.UpdateField) {
-				updated += updateFields(connstr, grp)
+				up, err := updateFields(connstr, grp)
+				if err != nil {
+					processError = err
+					return
+				}
+				updated += up
 				wg.Done()
 			}(grplist)
 		}
@@ -54,10 +66,10 @@ func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) 
 
 	wg.Wait()
 
-	return updated
+	return updated, processError
 }
 
-func updateItems(connstr string, items []data.UpdateItem) int64 {
+func updateItems(connstr string, items []data.UpdateItem) (int64, error) {
 	var updated int64 = 0
 	if db, err := sql.Open("mssql", connstr); err == nil {
 		defer db.Close()
@@ -67,16 +79,15 @@ func updateItems(connstr string, items []data.UpdateItem) int64 {
 				i, _ := result.RowsAffected()
 				updated += i
 			} else {
-				fmt.Println(err)
-				return -1
+				return -1, fmt.Errorf("Updating items, encountered an error, %v", err)
 			}
 		}
 	}
 
-	return updated
+	return updated, nil
 }
 
-func updateFields(connstr string, fields []data.UpdateField) int64 {
+func updateFields(connstr string, fields []data.UpdateField) (int64, error) {
 	var updated int64 = 0
 	if db, err := sql.Open("mssql", connstr); err == nil {
 		defer db.Close()
@@ -86,12 +97,11 @@ func updateFields(connstr string, fields []data.UpdateField) int64 {
 				i, _ := result.RowsAffected()
 				updated += i
 			} else {
-				fmt.Println(err)
-				return -1
+				return -1, fmt.Errorf("Updating fields, encountered an error, %v", err)
 			}
 		}
 	}
-	return updated
+	return updated, nil
 }
 
 var updateitemfmt string = "update Items set Name = '%[1]v', TemplateID = '%[2]v', ParentID = '%[3]v', MasterID = '%[4]v' where ID = '%[5]v'"
@@ -163,7 +173,7 @@ func getSqlForFields(fields []data.UpdateField) []string {
 	return sqllist
 }
 
-func CleanOrphanedItems(connstr string) (rows int64) {
+func CleanOrphanedItems(connstr string) (rows int64, err error) {
 	subq := "select ID from Items where ParentID not in (select ID from Items) and ParentID <> '00000000-0000-0000-0000-000000000000'"
 	sqlfmt := `
         delete from SharedFields where ItemID in ( %[1]v )
@@ -180,7 +190,7 @@ func CleanOrphanedItems(connstr string) (rows int64) {
 		if result, err := db.Exec(sqlstr); err == nil {
 			rows, _ = result.RowsAffected()
 		} else {
-			fmt.Println("cleaning orphaned items", err)
+			return -1, fmt.Errorf("Cleaning up orphaned items, encountered an error: %v", err)
 		}
 	}
 
