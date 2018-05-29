@@ -35,6 +35,8 @@ func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) 
 		for i := 0; i < itemGroups; i++ {
 			grplist := items[i*itemGroupSize : (i+1)*itemGroupSize]
 			go func(grp []data.UpdateItem) {
+				defer wg.Done()
+
 				up, err := updateItems(connstr, grp)
 				if err != nil {
 					processError = err
@@ -42,7 +44,6 @@ func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) 
 				}
 
 				updated += up
-				wg.Done()
 			}(grplist)
 		}
 	}
@@ -53,13 +54,13 @@ func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) 
 		for i := 0; i < fieldGroups; i++ {
 			grplist := fields[i*fieldGroupSize : (i+1)*fieldGroupSize]
 			go func(grp []data.UpdateField) {
+				defer wg.Done()
 				up, err := updateFields(connstr, grp)
 				if err != nil {
 					processError = err
 					return
 				}
 				updated += up
-				wg.Done()
 			}(grplist)
 		}
 	}
