@@ -30,7 +30,7 @@ func MergeItems(current data.ItemMap, updateList []data.ItemNode) ([]data.Update
 			for _, field := range item.GetFieldValues() {
 				key := getFieldKey(item, field)
 				if existingField, ok := existingFieldMap[key]; !ok {
-					updateFields = append(updateFields, data.UpdateFieldFromFieldValue(existingField, data.Insert))
+					updateFields = append(updateFields, data.UpdateFieldFromFieldValue(field, data.Insert))
 				} else {
 					if existingField.GetValue() != field.GetValue() || existingField.GetVersion() != field.GetVersion() || existingField.GetLanguage() != field.GetLanguage() {
 						updateFields = append(updateFields, data.UpdateFieldFromFieldValue(field, data.Update))
