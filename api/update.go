@@ -153,16 +153,26 @@ func getSqlForFields(fields []data.UpdateField) []string {
 		var sql string
 		value := strings.Replace(field.Value, "'", "''", -1)
 
+		prms := []interface{}{field.Source, field.ItemID, field.FieldID, value}
+		if field.Source == "UnversionedFields" {
+			prms = append(prms, field.Language)
+		}
+
+		if field.Source == "VersionedFields" {
+			prms = append(prms, field.Language)
+			prms = append(prms, field.Version)
+		}
+
 		switch field.UpdateType {
 		case data.Update:
 			sqlfmt, _ := updatemap[field.Source]
-			sql = fmt.Sprintf(sqlfmt, field.Source, field.ItemID, field.FieldID, value, field.Language, field.Version)
+			sql = fmt.Sprintf(sqlfmt, prms...)
 		case data.Insert:
 			sqlfmt, _ := insertmap[field.Source]
-			sql = fmt.Sprintf(sqlfmt, field.Source, field.ItemID, field.FieldID, value, field.Language, field.Version)
+			sql = fmt.Sprintf(sqlfmt, prms...)
 		case data.Delete:
 			sqlfmt, _ := deletemap[field.Source]
-			sql = fmt.Sprintf(sqlfmt, field.Source, field.ItemID, field.FieldID, value, field.Language, field.Version)
+			sql = fmt.Sprintf(sqlfmt, prms...)
 		case data.Ignore:
 			sql = ""
 		}
