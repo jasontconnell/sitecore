@@ -5,7 +5,46 @@ import (
 	"github.com/jasontconnell/sitecore/data"
 )
 
-func BuildUpdateItems(filteredMap data.ItemMap, referenceList []data.ItemNode, updateList []data.ItemNode, deleteMissing bool) ([]data.UpdateItem, []data.UpdateField) {
+func MergeItems(current data.ItemMap, updateList []data.ItemNode) ([]data.UpdateItem, []data.UpdateField) {
+	updateItems := []data.UpdateItem{}
+	updateFields := []data.UpdateField{}
+	fieldMap := make(map[string]data.FieldValueNode)
+
+	for _, sitem := range updateList {
+		current[sitem.GetId()] = sitem
+		for _, field := range sitem.GetFieldValues() {
+			key := getFieldKey(sitem, field)
+			fieldMap[key] = field
+		}
+	}
+
+	for _, item := range updateList {
+		_, ok := current[item.GetId()]
+
+		if !ok {
+			updateItems = append(updateItems, data.UpdateItemFromItemNode(item, data.Insert))
+			for _, field := range item.GetFieldValues() {
+				updateFields = append(updateFields, data.UpdateFieldFromFieldValue(field, data.Insert))
+			}
+		} else {
+			updateItems = append(updateItems, data.UpdateItemFromItemNode(item, data.Update))
+			for _, field := range item.GetFieldValues() {
+				key := getFieldKey(item, field)
+				if existingField, ok := fieldMap[key]; !ok {
+					updateFields = append(updateFields, data.UpdateFieldFromFieldValue(existingField, data.Insert))
+				} else {
+					if existingField.GetValue() != field.GetValue() || existingField.GetVersion() != field.GetVersion() || existingField.GetLanguage() != field.GetLanguage() {
+						updateFields = append(updateFields, data.UpdateFieldFromFieldValue(field, data.Update))
+					}
+				}
+			}
+		}
+	}
+
+	return updateItems, updateFields
+}
+
+func BuildUpdateItems(filteredMap data.ItemMap, referenceList []data.ItemNode, updateList []data.ItemNode) ([]data.UpdateItem, []data.UpdateField) {
 	updateItems := []data.UpdateItem{}
 	updateFields := []data.UpdateField{}
 	itemMap := make(data.ItemMap)
@@ -30,15 +69,13 @@ func BuildUpdateItems(filteredMap data.ItemMap, referenceList []data.ItemNode, u
 		}
 	}
 
-	if deleteMissing {
-		for _, sitem := range referenceList {
-			_, inFilter := filteredMap[sitem.GetId()]
-			if _, ok := deserializedItemMap[sitem.GetId()]; !ok && inFilter {
-				updateItems = append(updateItems, data.UpdateItemFromItemNode(sitem, data.Delete))
+	for _, sitem := range referenceList {
+		_, inFilter := filteredMap[sitem.GetId()]
+		if _, ok := deserializedItemMap[sitem.GetId()]; !ok && inFilter {
+			updateItems = append(updateItems, data.UpdateItemFromItemNode(sitem, data.Delete))
 
-				for _, sfield := range sitem.GetFieldValues() {
-					updateFields = append(updateFields, data.UpdateFieldFromFieldValue(sfield, data.Delete))
-				}
+			for _, sfield := range sitem.GetFieldValues() {
+				updateFields = append(updateFields, data.UpdateFieldFromFieldValue(sfield, data.Delete))
 			}
 		}
 	}
