@@ -8,13 +8,12 @@ import (
 func MergeItems(current data.ItemMap, updateList []data.ItemNode) ([]data.UpdateItem, []data.UpdateField) {
 	updateItems := []data.UpdateItem{}
 	updateFields := []data.UpdateField{}
-	fieldMap := make(map[string]data.FieldValueNode)
+	existingFieldMap := make(map[string]data.FieldValueNode)
 
-	for _, sitem := range updateList {
-		current[sitem.GetId()] = sitem
-		for _, field := range sitem.GetFieldValues() {
-			key := getFieldKey(sitem, field)
-			fieldMap[key] = field
+	for _, eitem := range current {
+		for _, field := range eitem.GetFieldValues() {
+			key := getFieldKey(eitem, field)
+			existingFieldMap[key] = field
 		}
 	}
 
@@ -30,7 +29,7 @@ func MergeItems(current data.ItemMap, updateList []data.ItemNode) ([]data.Update
 			updateItems = append(updateItems, data.UpdateItemFromItemNode(item, data.Update))
 			for _, field := range item.GetFieldValues() {
 				key := getFieldKey(item, field)
-				if existingField, ok := fieldMap[key]; !ok {
+				if existingField, ok := existingFieldMap[key]; !ok {
 					updateFields = append(updateFields, data.UpdateFieldFromFieldValue(existingField, data.Insert))
 				} else {
 					if existingField.GetValue() != field.GetValue() || existingField.GetVersion() != field.GetVersion() || existingField.GetLanguage() != field.GetLanguage() {
@@ -48,13 +47,13 @@ func BuildUpdateItems(filteredMap data.ItemMap, referenceList []data.ItemNode, u
 	updateItems := []data.UpdateItem{}
 	updateFields := []data.UpdateField{}
 	itemMap := make(data.ItemMap)
-	fieldMap := make(map[string]data.FieldValueNode)
+	existingFieldMap := make(map[string]data.FieldValueNode)
 
 	for _, sitem := range referenceList {
 		itemMap[sitem.GetId()] = sitem
 		for _, field := range sitem.GetFieldValues() {
 			key := getFieldKey(sitem, field)
-			fieldMap[key] = field
+			existingFieldMap[key] = field
 		}
 	}
 
@@ -89,7 +88,7 @@ func BuildUpdateItems(filteredMap data.ItemMap, referenceList []data.ItemNode, u
 		} else {
 			for _, field := range ditem.GetFieldValues() {
 				key := getFieldKey(ditem, field)
-				if existingField, ok := fieldMap[key]; !ok {
+				if existingField, ok := existingFieldMap[key]; !ok {
 					updateFields = append(updateFields, data.UpdateFieldFromFieldValue(existingField, data.Insert))
 				} else {
 					if existingField.GetValue() != field.GetValue() || existingField.GetVersion() != field.GetVersion() || existingField.GetLanguage() != field.GetLanguage() {
