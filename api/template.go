@@ -87,11 +87,11 @@ func getFields(tmp *data.TemplateQueryRow, children []*data.TemplateQueryRow) []
 		if c.TemplateID == TemplateSectionID {
 			flds = append(flds, getFields(c, c.Children)...)
 		} else if c.TemplateID == TemplateFieldID {
-			s := "Versioned"
+			s := "VersionedFields"
 			if c.Shared == "1" {
-				s = "Shared"
+				s = "SharedFields"
 			} else if c.Unversioned == "1" {
-				s = "Unversioned"
+				s = "UnversionedFields"
 			}
 			tf := data.NewTemplateField(c.ID, c.Name, c.Type, s)
 			flds = append(flds, tf)
