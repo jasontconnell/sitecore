@@ -17,6 +17,7 @@ type item struct {
 	Path       string
 	Parent     ItemNode
 	Children   []ItemNode
+	Level int
 
 	FieldValues []FieldValueNode
 }
@@ -49,6 +50,14 @@ func (item *item) GetChildren() []ItemNode {
 
 func (item *item) AddChild(node ItemNode) {
 	item.Children = append(item.Children, node)
+}
+
+func (item *item) GetLevel() int {
+	return item.Level
+}
+
+func (item *item) SetLevel(level int){
+	item.Level = level
 }
 
 func (item *item) GetPath() string {

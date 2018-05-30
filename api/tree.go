@@ -13,7 +13,7 @@ var rootID uuid.UUID = MustParseUUID("00000000-0000-0000-0000-000000000000")
 func LoadItemMap(list []data.ItemNode) (root data.ItemNode, m data.ItemMap) {
 	root, m = getMap(list)
 	if root != nil {
-		setPaths(root)
+		setTreeData(root, 0)
 	}
 	return root, m
 }
@@ -93,13 +93,15 @@ func getMap(list []data.ItemNode) (root data.ItemNode, m data.ItemMap) {
 	return root, m
 }
 
-func setPaths(root data.ItemNode) {
+func setTreeData(root data.ItemNode, level int) {
 	if root.GetParent() == nil {
 		root.SetPath("/" + root.GetName())
+		root.SetLevel(0)
 	}
 
 	for _, item := range root.GetChildren() {
 		item.SetPath(root.GetPath() + "/" + item.GetName())
-		setPaths(item)
+		item.SetLevel(level + 1)
+		setTreeData(item, level + 1)
 	}
 }

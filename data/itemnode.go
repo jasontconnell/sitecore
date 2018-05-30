@@ -17,6 +17,8 @@ type ItemData interface {
 	GetMasterId() uuid.UUID
 	SetMasterId(id uuid.UUID)
 
+	GetLevel() int
+	SetLevel(level int)
 	GetPath() string
 	SetPath(p string)
 
