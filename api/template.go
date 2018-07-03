@@ -102,14 +102,19 @@ func getFields(tmp *data.TemplateQueryRow, children []*data.TemplateQueryRow) []
 }
 
 func mapBaseTemplates(m map[uuid.UUID]data.TemplateNode, tmp data.TemplateNode, trow *data.TemplateQueryRow) {
-	_, ok := m[StandardTemplateID]
-	if ok {
-		trow.BaseTemplateIds = append(trow.BaseTemplateIds, StandardTemplateID)
-	}
-
+	hasStdTemplate := false
 	for _, id := range trow.BaseTemplateIds {
 		if t, ok := m[id]; ok {
 			tmp.AddBaseTemplate(t)
 		}
+
+		if id == StandardTemplateID {
+			hasStdTemplate = true
+		}
+	}
+
+	stdTemplate, stdTempFound := m[StandardTemplateID]
+	if !hasStdTemplate && stdTempFound {
+		tmp.AddBaseTemplate(stdTemplate)
 	}
 }
