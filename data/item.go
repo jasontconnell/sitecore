@@ -17,7 +17,7 @@ type item struct {
 	Path       string
 	Parent     ItemNode
 	Children   []ItemNode
-	Level int
+	Level      int
 
 	FieldValues []FieldValueNode
 }
@@ -56,7 +56,7 @@ func (item *item) GetLevel() int {
 	return item.Level
 }
 
-func (item *item) SetLevel(level int){
+func (item *item) SetLevel(level int) {
 	item.Level = level
 }
 

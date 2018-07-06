@@ -102,6 +102,6 @@ func setTreeData(root data.ItemNode, level int) {
 	for _, item := range root.GetChildren() {
 		item.SetPath(root.GetPath() + "/" + item.GetName())
 		item.SetLevel(level + 1)
-		setTreeData(item, level + 1)
+		setTreeData(item, level+1)
 	}
 }

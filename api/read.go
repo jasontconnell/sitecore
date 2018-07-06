@@ -185,6 +185,8 @@ func loadTemplatesFromDb(connstr string) ([]*data.TemplateQueryRow, error) {
 			ParentID:        getUUID(row["ParentID"]),
 			BaseTemplateIds: getUUIDs(row["BaseTemplates"], "|"),
 			Type:            row["Type"].(string),
+			Shared:          row["Shared"].(string),
+			Unversioned:     row["Unversioned"].(string),
 		}
 		// inner := data.NewItemNode(getUUID(row["ID"]), row["Name"].(string), getUUID(row["TemplateID"]), getUUID(row["ParentID"]), getUUID(row["MasterID"]))
 		// tmp := data.NewTemplateNode(inner, row["Type"].(string), getUUIDs(row["BaseTemplates"], "|"))
