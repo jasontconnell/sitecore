@@ -20,6 +20,9 @@ type item struct {
 	Level      int
 
 	FieldValues []FieldValueNode
+
+	Renderings      []DeviceRendering
+	FinalRenderings []DeviceRendering
 }
 
 func NewBlankItemNode() ItemNode {
@@ -118,4 +121,19 @@ func (t *item) GetFieldValues() []FieldValueNode {
 
 func (t *item) AddFieldValue(fv FieldValueNode) {
 	t.FieldValues = append(t.FieldValues, fv)
+}
+
+func (t *item) GetRenderings() []DeviceRendering {
+	return t.Renderings
+}
+
+func (t *item) GetFinalRenderings() []DeviceRendering {
+	return t.FinalRenderings
+}
+
+func (t *item) AddRendering(r DeviceRendering) {
+	t.Renderings = append(t.Renderings, r)
+}
+func (t *item) AddFinalRendering(r DeviceRendering) {
+	t.FinalRenderings = append(t.FinalRenderings, r)
 }

@@ -11,9 +11,11 @@ type TemplateQueryRow struct {
 	ParentID        uuid.UUID
 	MasterID        uuid.UUID
 	BaseTemplateIds []uuid.UUID
-	Type            string
-	Shared          string
-	Unversioned     string
+
+	StandardValuesId uuid.UUID
+	Type             string
+	Shared           string
+	Unversioned      string
 
 	Path     string
 	Children []*TemplateQueryRow
@@ -25,10 +27,12 @@ type template struct {
 	Path          string
 	Fields        []TemplateFieldNode
 	BaseTemplates []TemplateNode
+
+	StandardValuesID uuid.UUID
 }
 
-func NewTemplateNode(id uuid.UUID, name string, path string) TemplateNode {
-	template := &template{ID: id, Name: name, Path: path}
+func NewTemplateNode(id uuid.UUID, name string, path string, standardValuesId uuid.UUID) TemplateNode {
+	template := &template{ID: id, Name: name, Path: path, StandardValuesID: standardValuesId}
 	return template
 }
 
@@ -60,6 +64,14 @@ func (t template) GetBaseTemplates() []TemplateNode {
 	return t.BaseTemplates
 }
 
+func (t template) HasStandardValues() bool {
+	return t.StandardValuesID != EmptyID
+}
+
+func (t template) GetStandardValuesId() uuid.UUID {
+	return t.StandardValuesID
+}
+
 type TemplateNode interface {
 	GetId() uuid.UUID
 	GetName() string
@@ -68,6 +80,9 @@ type TemplateNode interface {
 	GetFields() []TemplateFieldNode
 	GetBaseTemplates() []TemplateNode
 	AddBaseTemplate(base TemplateNode)
+
+	HasStandardValues() bool
+	GetStandardValuesId() uuid.UUID
 }
 
 type TemplateFieldNode interface {

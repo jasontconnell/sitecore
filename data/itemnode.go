@@ -24,6 +24,12 @@ type ItemData interface {
 
 	GetName() string
 	SetName(n string)
+
+	GetRenderings() []DeviceRendering
+	GetFinalRenderings() []DeviceRendering
+
+	AddRendering(r DeviceRendering)
+	AddFinalRendering(r DeviceRendering)
 }
 
 type ItemNode interface {

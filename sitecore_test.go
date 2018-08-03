@@ -10,6 +10,7 @@ import (
 var connstr string = os.Getenv("SitecoreAPITestConnectionString")
 
 func TestLoadItemMap(t *testing.T) {
+	t.Log(connstr)
 	start := time.Now()
 	items, err := api.LoadItems(connstr)
 	t.Log("Loaded items", time.Since(start))
@@ -99,6 +100,47 @@ func TestLoadTemplates(t *testing.T) {
 
 	for _, tmp := range list {
 		t.Log(tmp.GetPath())
+	}
+}
+
+func TestRenderings(t *testing.T) {
+	testId := api.MustParseUUID("EDB14023-0D37-45D0-92DB-F84D69108E27")
+	items, err := api.LoadItems(connstr)
+	if err != nil {
+		t.Log(err)
+		t.Fail()
+	}
+	tlist, err := api.LoadTemplates(connstr)
+	if err != nil {
+		t.Log(err)
+		t.Fail()
+	}
+
+	_, itemMap := api.LoadItemMap(items)
+
+	npfields, nperr := api.LoadFieldsParallel(connstr, 12)
+	if nperr != nil {
+		t.Fatal(nperr)
+	}
+
+	api.AssignFieldValues(itemMap, npfields)
+
+	tm := api.GetTemplateMap(tlist)
+
+	t.Log("Mapping Layouts")
+	mperr := api.MapAllLayouts(itemMap, tm)
+	if mperr != nil {
+		t.Fatal(mperr)
+	}
+
+	testItem, ok := itemMap[testId]
+	if !ok {
+		t.Log("Item not found")
+		t.Fail()
+	}
+
+	for _, r := range testItem.GetRenderings() {
+		t.Log(r)
 	}
 }
 

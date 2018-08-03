@@ -148,13 +148,16 @@ func LoadFieldsParallel(connstr string, c int) ([]data.FieldValueNode, error) {
 }
 
 func loadTemplatesFromDb(connstr string) ([]*data.TemplateQueryRow, error) {
-	query := fmt.Sprintf(itemSelect, `isnull(sf.Value, '') as Type, isnull(Replace(Replace(UPPER(b.Value), '}',''), '{', ''), '') as BaseTemplates, isnull(sh.Value, '0') as Shared, isnull(unv.Value, '0') as Unversioned`,
+	query := fmt.Sprintf(itemSelect, `isnull(sf.Value, '') as Type, isnull(Replace(Replace(UPPER(b.Value), '}',''), '{', ''), '') as BaseTemplates, isnull(Replace(Replace(UPPER(sv.Value), '}',''), '{', ''), '') as StandardValuesId, isnull(sh.Value, '0') as Shared, isnull(unv.Value, '0') as Unversioned`,
 		`left join SharedFields sf
                     on i.ID = sf.ItemId
                         and sf.FieldId = 'AB162CC0-DC80-4ABF-8871-998EE5D7BA32'
                 left join SharedFields b
                     on i.ID = b.ItemID
 						and b.FieldId = '12C33F3F-86C5-43A5-AEB4-5598CEC45116'
+				left join SharedFields sv
+						on i.ID = sv.ItemID
+							and sv.FieldId = 'F7D48A55-2158-4F02-9356-756654404F73'
 				left join SharedFields sh
 					on i.ID = sh.ItemID
 						and sh.FieldId = 'BE351A73-FCB0-4213-93FA-C302D8AB4F51'
@@ -179,14 +182,15 @@ func loadTemplatesFromDb(connstr string) ([]*data.TemplateQueryRow, error) {
 	var rows []*data.TemplateQueryRow
 	for _, row := range records {
 		tmp := &data.TemplateQueryRow{
-			ID:              getUUID(row["ID"]),
-			Name:            row["Name"].(string),
-			TemplateID:      getUUID(row["TemplateID"]),
-			ParentID:        getUUID(row["ParentID"]),
-			BaseTemplateIds: getUUIDs(row["BaseTemplates"], "|"),
-			Type:            row["Type"].(string),
-			Shared:          row["Shared"].(string),
-			Unversioned:     row["Unversioned"].(string),
+			ID:               getUUID(row["ID"]),
+			Name:             row["Name"].(string),
+			TemplateID:       getUUID(row["TemplateID"]),
+			ParentID:         getUUID(row["ParentID"]),
+			BaseTemplateIds:  getUUIDs(row["BaseTemplates"], "|"),
+			StandardValuesId: getUUID(row["StandardValuesId"]),
+			Type:             row["Type"].(string),
+			Shared:           row["Shared"].(string),
+			Unversioned:      row["Unversioned"].(string),
 		}
 		// inner := data.NewItemNode(getUUID(row["ID"]), row["Name"].(string), getUUID(row["TemplateID"]), getUUID(row["ParentID"]), getUUID(row["MasterID"]))
 		// tmp := data.NewTemplateNode(inner, row["Type"].(string), getUUIDs(row["BaseTemplates"], "|"))

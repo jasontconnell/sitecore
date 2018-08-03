@@ -20,7 +20,7 @@ func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 
 	var root *data.TemplateQueryRow
 	for _, tr := range trmap {
-		if tr.ParentID == RootID {
+		if tr.ParentID == data.RootID {
 			root = tr
 		}
 
@@ -52,6 +52,14 @@ func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 	return templates, nil
 }
 
+func GetTemplateMap(tlist []data.TemplateNode) map[uuid.UUID]data.TemplateNode {
+	m := make(map[uuid.UUID]data.TemplateNode)
+	for _, t := range tlist {
+		m[t.GetId()] = t
+	}
+	return m
+}
+
 func setTemplatePaths(root *data.TemplateQueryRow) {
 	for _, c := range root.Children {
 		c.Path = root.Path + "/" + c.Name
@@ -63,8 +71,8 @@ func setTemplatePaths(root *data.TemplateQueryRow) {
 func loadTemplateData(m map[uuid.UUID]*data.TemplateQueryRow) []data.TemplateNode {
 	templates := []data.TemplateNode{}
 	for _, tmp := range m {
-		if tmp.TemplateID == TemplateID {
-			tn := data.NewTemplateNode(tmp.ID, tmp.Name, tmp.Path)
+		if tmp.TemplateID == data.TemplateID {
+			tn := data.NewTemplateNode(tmp.ID, tmp.Name, tmp.Path, tmp.StandardValuesId)
 			flds := mapFields(tmp)
 
 			for _, f := range flds {
@@ -84,9 +92,9 @@ func mapFields(tmp *data.TemplateQueryRow) []data.TemplateFieldNode {
 func getFields(tmp *data.TemplateQueryRow, children []*data.TemplateQueryRow) []data.TemplateFieldNode {
 	flds := []data.TemplateFieldNode{}
 	for _, c := range children {
-		if c.TemplateID == TemplateSectionID {
+		if c.TemplateID == data.TemplateSectionID {
 			flds = append(flds, getFields(c, c.Children)...)
-		} else if c.TemplateID == TemplateFieldID {
+		} else if c.TemplateID == data.TemplateFieldID {
 			s := "VersionedFields"
 			if c.Shared == "1" {
 				s = "SharedFields"
@@ -108,12 +116,12 @@ func mapBaseTemplates(m map[uuid.UUID]data.TemplateNode, tmp data.TemplateNode, 
 			tmp.AddBaseTemplate(t)
 		}
 
-		if id == StandardTemplateID {
+		if id == data.StandardTemplateID {
 			hasStdTemplate = true
 		}
 	}
 
-	stdTemplate, stdTempFound := m[StandardTemplateID]
+	stdTemplate, stdTempFound := m[data.StandardTemplateID]
 	if !hasStdTemplate && stdTempFound {
 		tmp.AddBaseTemplate(stdTemplate)
 	}
