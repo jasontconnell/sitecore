@@ -38,6 +38,7 @@ type Root struct {
 type Device struct {
 	XMLName      xml.Name      `xml:"d"`
 	ID           string        `xml:"id,attr"`
+	Layout       string        `xml:"l,attr"`
 	Placeholders []Placeholder `xml:"p"`
 	Renderings   []Rendering   `xml:"r"`
 }

@@ -28,14 +28,11 @@ type RenderingInstance struct {
 }
 
 type Device struct {
-	Item ItemNode
+	Item   ItemNode
+	Layout ItemNode
 }
 
 type DeviceRendering struct {
 	Device             Device
 	RenderingInstances []RenderingInstance
-}
-
-type Layout struct {
-	DeviceRenderings []DeviceRendering
 }

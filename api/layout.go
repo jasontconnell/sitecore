@@ -147,7 +147,15 @@ func getRenderingsFromXml(x, loc string, m data.ItemMap, rendmap map[uuid.UUID]d
 		if !ok {
 			return nil, fmt.Errorf("Can't find item with id for device, %v", dx.ID)
 		}
-		device := data.Device{Item: deviceItem}
+
+		var layoutid = data.EmptyID
+		var layout data.ItemNode
+		if len(dx.Layout) != 0 {
+			layoutid = MustParseUUID(dx.Layout)
+			layout, _ = m[layoutid]
+		}
+
+		device := data.Device{Item: deviceItem, Layout: layout}
 
 		dr := data.DeviceRendering{Device: device, RenderingInstances: []data.RenderingInstance{}}
 
