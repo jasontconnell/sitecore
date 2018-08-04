@@ -12,9 +12,11 @@ const (
 	View
 	XSLTBullshit
 	SomeOtherCrap
+	NotFound
 )
 
 type Rendering struct {
+	ID uuid.UUID
 	Type RenderingType
 	Item ItemNode
 	Uid  uuid.UUID

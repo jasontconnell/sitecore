@@ -11,12 +11,20 @@ import (
 	"strings"
 )
 
-func joinRenderings(l ...[]data.ItemNode) []data.Rendering {
+func getRenderings(items []data.ItemNode, t data.RenderingType) []data.Rendering {
+	all := []data.Rendering{}
+	for _, item := range items {
+		r := data.Rendering{Type: t, Item: item}
+		all = append(all, r)
+	}
+	return all
+}
+
+func joinRenderings(lists ...[]data.Rendering) []data.Rendering {
 	all := []data.Rendering{}
 
-	for _, list := range l {
-		for _, item := range list {
-			r := data.Rendering{Type: data.Controller, Item: item}
+	for _, list := range lists {
+		for _, r := range list {
 			all = append(all, r)
 		}
 
@@ -25,12 +33,13 @@ func joinRenderings(l ...[]data.ItemNode) []data.Rendering {
 }
 
 func GetLayouts(m data.ItemMap) []data.Rendering {
-	controllers := m.FindItemsByTemplate(data.ControllerRenderingId)
-	sublayouts := m.FindItemsByTemplate(data.SublayoutRenderingId)
-	views := m.FindItemsByTemplate(data.ViewRenderingId)
-	webcontrols := m.FindItemsByTemplate(data.WebControlRenderingId)
+	controllers := getRenderings(m.FindItemsByTemplate(data.ControllerRenderingId), data.Controller)
+	sublayouts := getRenderings(m.FindItemsByTemplate(data.SublayoutRenderingId), data.Sublayout)
+	views := getRenderings(m.FindItemsByTemplate(data.ViewRenderingId), data.View)
+	webcontrols := getRenderings(m.FindItemsByTemplate(data.WebControlRenderingId), data.SomeOtherCrap)
+	xslcontrols := getRenderings(m.FindItemsByTemplate(data.XslRenderingId), data.XSLTBullshit)
 
-	return joinRenderings(controllers, sublayouts, views, webcontrols)
+	return joinRenderings(controllers, sublayouts, views, webcontrols, xslcontrols)
 }
 
 func GetLayoutXml(item data.ItemNode) (renderings, finalRenderings string) {
@@ -167,8 +176,11 @@ func getRenderingsFromXml(x, loc string, m data.ItemMap, rendmap map[uuid.UUID]d
 
 			rend, ok := rendmap[rid]
 			if !ok {
-				//return nil, fmt.Errorf("Couldn't find rendering with id %v in %v", rid, x)
-				fmt.Printf("Couldn't find rendering with id %v in %v\n", rid, x)
+				r := data.Rendering{ ID: rid, Type: data.NotFound }
+				rendmap[rid] = r
+				// return nil, fmt.Errorf("Couldn't find rendering with id %v in %v", rid, x)
+				// fmt.Printf("Couldn't find rendering with id %v in %v\n", rid, x)
+				// fmt.Printf("Item is %v\n", m[rid])
 				continue
 			}
 
