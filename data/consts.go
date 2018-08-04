@@ -7,7 +7,7 @@ import (
 var RenderingsFieldId = uuid.Must(uuid.Parse("F1A1FE9E-A60C-4DDB-A3A0-BB5B29FE732E"))
 var FinalRenderingsFieldId = uuid.Must(uuid.Parse("04BF00DB-F5FB-41F7-8AB7-22408372A981"))
 
-var ControllerRenderingId = uuid.Must(uuid.Parse("04BF00DB-F5FB-41F7-8AB7-22408372A981"))
+var ControllerRenderingId = uuid.Must(uuid.Parse("2A3E91A0-7987-44B5-AB34-35C2D9DE83B9"))
 var ItemRenderingId = uuid.Must(uuid.Parse("86776923-ECA5-4310-8DC0-AE65FE88D078"))
 var MethodRenderingId = uuid.Must(uuid.Parse("39587D7D-F06D-4CB4-A25E-AA7D847EDDD0"))
 var SublayoutRenderingId = uuid.Must(uuid.Parse("0A98E368-CDB9-4E1E-927C-8E0C24A003FB"))
