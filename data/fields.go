@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type FieldValue struct {
+type fieldValue struct {
 	FieldValueID uuid.UUID
 	ItemID       uuid.UUID
 	FieldID      uuid.UUID
@@ -16,7 +16,7 @@ type FieldValue struct {
 }
 
 func NewFieldValue(fieldId, itemId uuid.UUID, name, value, language string, version int64, source string) FieldValueNode {
-	fv := &FieldValue{}
+	fv := &fieldValue{}
 	fv.ItemID = itemId
 	fv.FieldID = fieldId
 	fv.Name = name
@@ -27,35 +27,35 @@ func NewFieldValue(fieldId, itemId uuid.UUID, name, value, language string, vers
 	return fv
 }
 
-func (fv *FieldValue) GetFieldValueId() uuid.UUID {
+func (fv *fieldValue) GetFieldValueId() uuid.UUID {
 	return fv.FieldValueID
 }
 
-func (fv *FieldValue) GetItemId() uuid.UUID {
+func (fv *fieldValue) GetItemId() uuid.UUID {
 	return fv.ItemID
 }
 
-func (fv *FieldValue) GetFieldId() uuid.UUID {
+func (fv *fieldValue) GetFieldId() uuid.UUID {
 	return fv.FieldID
 }
 
-func (fv *FieldValue) GetName() string {
+func (fv *fieldValue) GetName() string {
 	return fv.Name
 }
 
-func (fv *FieldValue) GetValue() string {
+func (fv *fieldValue) GetValue() string {
 	return fv.Value
 }
 
-func (fv *FieldValue) GetLanguage() string {
+func (fv *fieldValue) GetLanguage() string {
 	return fv.Language
 }
 
-func (fv *FieldValue) GetVersion() int64 {
+func (fv *fieldValue) GetVersion() int64 {
 	return fv.Version
 }
 
-func (fv *FieldValue) GetSource() string {
+func (fv *fieldValue) GetSource() string {
 	return fv.Source
 }
 

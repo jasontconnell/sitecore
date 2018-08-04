@@ -19,6 +19,7 @@ type Rendering struct {
 	Type RenderingType
 	Item ItemNode
 	Uid  uuid.UUID
+	Info string
 }
 
 type RenderingInstance struct {

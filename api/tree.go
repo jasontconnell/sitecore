@@ -105,3 +105,14 @@ func setTreeData(root data.ItemNode, level int) {
 		setTreeData(item, level+1)
 	}
 }
+
+func getFieldValue(name string, fv []data.FieldValueNode) string {
+	v := ""
+	for _, f := range fv {
+		if f.GetName() == name {
+			v = f.GetValue()
+			break
+		}
+	}
+	return v
+}

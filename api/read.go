@@ -112,16 +112,15 @@ func LoadFieldsParallel(connstr string, c int) ([]data.FieldValueNode, error) {
 			count := 0
 
 			for row := range records {
-				fieldValue := &data.FieldValue{
-					FieldValueID: getUUID(row["ValueID"]),
-					ItemID:       getUUID(row["ItemID"]),
-					Name:         row["Name"].(string),
-					FieldID:      getUUID(row["FieldID"]),
-					Value:        row["Value"].(string),
-					Language:     row["Language"].(string),
-					Version:      row["Version"].(int64),
-					Source:       row["Source"].(string),
-				}
+				fieldValue := data.NewFieldValue(
+					getUUID(row["FieldID"]),
+					getUUID(row["ItemID"]),
+					row["Name"].(string),
+					row["Value"].(string),
+					row["Language"].(string),
+					row["Version"].(int64),
+					row["Source"].(string),
+				)
 				fv <- fieldValue
 				count++
 			}
