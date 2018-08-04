@@ -76,7 +76,6 @@ func MapAllLayouts(m data.ItemMap, tm map[uuid.UUID]data.TemplateNode) error {
 	}
 
 	for _, item := range m {
-		fmt.Println("doing it for ", item.GetId(), item.GetPath())
 		t, ok := tm[item.GetTemplateId()]
 		if !ok {
 			return fmt.Errorf("Template not found, %v", item.GetTemplateId())
