@@ -36,8 +36,8 @@ func GetLayouts(m data.ItemMap) []data.Rendering {
 	controllers := getRenderings(m.FindItemsByTemplate(data.ControllerRenderingId), data.Controller)
 	sublayouts := getRenderings(m.FindItemsByTemplate(data.SublayoutRenderingId), data.Sublayout)
 	views := getRenderings(m.FindItemsByTemplate(data.ViewRenderingId), data.View)
-	webcontrols := getRenderings(m.FindItemsByTemplate(data.WebControlRenderingId), data.SomeOtherCrap)
-	xslcontrols := getRenderings(m.FindItemsByTemplate(data.XslRenderingId), data.XSLTBullshit)
+	webcontrols := getRenderings(m.FindItemsByTemplate(data.WebControlRenderingId), data.Other)
+	xslcontrols := getRenderings(m.FindItemsByTemplate(data.XslRenderingId), data.Other)
 
 	return joinRenderings(controllers, sublayouts, views, webcontrols, xslcontrols)
 }

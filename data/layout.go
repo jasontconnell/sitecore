@@ -10,8 +10,7 @@ const (
 	Sublayout RenderingType = iota
 	Controller
 	View
-	XSLTBullshit
-	SomeOtherCrap
+	Other
 	NotFound
 )
 
