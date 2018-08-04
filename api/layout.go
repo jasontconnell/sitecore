@@ -18,7 +18,7 @@ func getRenderings(items []data.ItemNode, t data.RenderingType) []data.Rendering
 		switch t {
 		case data.Controller:
 			r.Info = getFieldValue("Controller", item.GetFieldValues()) + "." + getFieldValue("Controller Action", item.GetFieldValues())
-		case data.Sublayout,data.View:
+		case data.Sublayout, data.View:
 			r.Info = getFieldValue("Path", item.GetFieldValues())
 		}
 		all = append(all, r)
@@ -182,7 +182,7 @@ func getRenderingsFromXml(x, loc string, m data.ItemMap, rendmap map[uuid.UUID]d
 
 			rend, ok := rendmap[rid]
 			if !ok {
-				rend = data.Rendering{ ID: rid, Type: data.NotFound }
+				rend = data.Rendering{ID: rid, Type: data.NotFound}
 				rendmap[rid] = rend
 				// return nil, fmt.Errorf("Couldn't find rendering with id %v in %v", rid, x)
 				// fmt.Printf("Couldn't find rendering with id %v in %v\n", rid, x)

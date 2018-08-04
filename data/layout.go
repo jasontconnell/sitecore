@@ -15,7 +15,7 @@ const (
 )
 
 type Rendering struct {
-	ID uuid.UUID
+	ID   uuid.UUID
 	Type RenderingType
 	Item ItemNode
 	Uid  uuid.UUID
