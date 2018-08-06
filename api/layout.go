@@ -193,7 +193,7 @@ func getRenderingsFromXml(x, loc string, m data.ItemMap, rendmap map[uuid.UUID]d
 			}
 
 			rinst := data.RenderingInstance{Rendering: rend, Placeholder: rx.Placeholder, Uid: ruid, DataSource: rx.DataSource}
-			if len(rx.Parameters) > 0 && strings.Contains(rx.Parameters, "&amp;") {
+			if len(rx.Parameters) > 0 {
 				params := strings.Split(rx.Parameters, "&amp;")
 				for _, p := range params {
 					ps := strings.Split(p, "=")
