@@ -8,6 +8,7 @@ import (
 	"github.com/jasontconnell/sitecore/data"
 	xr "github.com/jasontconnell/sitecore/data/xml"
 	"io"
+	"net/url"
 	"strings"
 )
 
@@ -194,7 +195,11 @@ func getRenderingsFromXml(x, loc string, m data.ItemMap, rendmap map[uuid.UUID]d
 
 			rinst := data.RenderingInstance{Rendering: rend, Placeholder: rx.Placeholder, Uid: ruid, DataSource: rx.DataSource}
 			if len(rx.Parameters) > 0 {
-				params := strings.Split(rx.Parameters, "&amp;")
+				parstr, err := url.PathUnescape(rx.Parameters)
+				if err != nil {
+					return nil, fmt.Errorf("Couldn't path unescape %s.  %v", rx.Parameters, err)
+				}
+				params := strings.Split(parstr, "&") // after xml entity ref processing it's just & not &amp;
 				for _, p := range params {
 					ps := strings.Split(p, "=")
 					k := ps[0]
