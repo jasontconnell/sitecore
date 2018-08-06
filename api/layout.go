@@ -68,6 +68,7 @@ func GetRenderings(xmldata string) (xr.Root, error) {
 	if strings.IndexAny(xmldata, ` s:id="{`) != -1 {
 		xmldata = strings.Replace(strings.Replace(xmldata, "s:ph=", "ph=", -1), "s:id=", "id=", -1)
 		xmldata = strings.Replace(xmldata, "s:ds=", "ds=", -1)
+		xmldata = strings.Replace(xmldata, "s:par=", "par=", -1)
 	}
 
 	b := bytes.NewBufferString(xmldata)
@@ -192,6 +193,19 @@ func getRenderingsFromXml(x, loc string, m data.ItemMap, rendmap map[uuid.UUID]d
 			}
 
 			rinst := data.RenderingInstance{Rendering: rend, Placeholder: rx.Placeholder, Uid: ruid, DataSource: rx.DataSource}
+			if len(rx.Parameters) > 0 && strings.Contains(rx.Parameters, "&amp;") {
+				params := strings.Split(rx.Parameters, "&amp;")
+				for _, p := range params {
+					ps := strings.Split(p, "=")
+					k := ps[0]
+					v := ""
+					if len(ps) > 1 {
+						v = ps[1]
+					}
+					rinst.Parameters = append(rinst.Parameters, data.KV{Key: k, Value: v})
+				}
+			}
+
 			dr.RenderingInstances = append(dr.RenderingInstances, rinst)
 		}
 

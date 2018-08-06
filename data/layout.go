@@ -22,11 +22,17 @@ type Rendering struct {
 	Info string
 }
 
+type KV struct {
+	Key   string
+	Value string
+}
+
 type RenderingInstance struct {
 	Rendering   Rendering
 	Placeholder string
 	Uid         uuid.UUID
 	DataSource  string
+	Parameters  []KV
 }
 
 type Device struct {
