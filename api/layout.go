@@ -174,7 +174,6 @@ func getRenderingsFromXml(x, loc string, m data.ItemMap, rendmap map[uuid.UUID]d
 			if lok {
 				layout.Path = getFieldValue("Path", layoutItem.GetFieldValues())
 				layout.Item = layoutItem
-				fmt.Println(layout.Path)
 			}
 		}
 
