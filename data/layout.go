@@ -37,7 +37,12 @@ type RenderingInstance struct {
 
 type Device struct {
 	Item   ItemNode
-	Layout ItemNode
+	Layout Layout
+}
+
+type Layout struct {
+	Path string
+	Item ItemNode
 }
 
 type DeviceRendering struct {

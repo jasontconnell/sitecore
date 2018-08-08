@@ -91,18 +91,6 @@ func TestLoadItemMap(t *testing.T) {
 	}
 }
 
-func TestLoadTemplates(t *testing.T) {
-	list, err := api.LoadTemplates(connstr)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	for _, tmp := range list {
-		t.Log(tmp.GetPath())
-	}
-}
-
 func TestRenderings(t *testing.T) {
 	testId := api.MustParseUUID("EDB14023-0D37-45D0-92DB-F84D69108E27")
 	items, err := api.LoadItems(connstr)

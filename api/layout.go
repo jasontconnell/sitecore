@@ -166,10 +166,16 @@ func getRenderingsFromXml(x, loc string, m data.ItemMap, rendmap map[uuid.UUID]d
 		}
 
 		var layoutid = data.EmptyID
-		var layout data.ItemNode
+		var layout data.Layout
 		if len(dx.Layout) != 0 {
 			layoutid = MustParseUUID(dx.Layout)
-			layout, _ = m[layoutid]
+			layoutItem, lok := m[layoutid]
+
+			if lok {
+				layout.Path = getFieldValue("Path", layoutItem.GetFieldValues())
+				layout.Item = layoutItem
+				fmt.Println(layout.Path)
+			}
 		}
 
 		device := data.Device{Item: deviceItem, Layout: layout}
