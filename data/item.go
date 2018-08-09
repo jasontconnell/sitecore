@@ -23,6 +23,8 @@ type item struct {
 
 	Renderings      []DeviceRendering
 	FinalRenderings []DeviceRendering
+
+	Template TemplateNode
 }
 
 func NewBlankItemNode() ItemNode {
@@ -109,6 +111,14 @@ func (item *item) GetTemplateId() uuid.UUID {
 
 func (item *item) SetTemplateId(id uuid.UUID) {
 	item.TemplateID = id
+}
+
+func (item *item) GetTemplate() TemplateNode {
+	return item.Template
+}
+
+func (item *item) SetTemplate(t TemplateNode) {
+	item.Template = t
 }
 
 func (t *item) String() string {

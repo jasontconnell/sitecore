@@ -14,6 +14,9 @@ type ItemData interface {
 	GetTemplateId() uuid.UUID
 	SetTemplateId(id uuid.UUID)
 
+	SetTemplate(t TemplateNode)
+	GetTemplate() TemplateNode
+
 	GetMasterId() uuid.UUID
 	SetMasterId(id uuid.UUID)
 
