@@ -1,0 +1,7 @@
+github.com/denisenkom/go-mssqldb v0.0.0-20180416134016-e32faac87a22 h1:N3ujA3a+vaGyWxGSfb8ncHPS4TNtBBHafqQ6eS86fh0=
+github.com/denisenkom/go-mssqldb v0.0.0-20180416134016-e32faac87a22/go.mod h1:xN/JuLBIz4bjkxNmByTiV1IbhfnYb6oo99phBn4Eqhc=
+github.com/google/uuid v0.0.0-20161128191214-064e2069ce9c h1:jWtZjFEUE/Bz0IeIhqCnyZ3HG6KRXSntXe4SjtuTH7c=
+github.com/google/uuid v0.0.0-20161128191214-064e2069ce9c/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/jasontconnell/sqlhelp v0.0.0-20180429142645-9375c25243c8 h1:caawugElYRa9E5CA/ADQtPQv4fv9sVMnqg9vFWiTKrg=
+github.com/jasontconnell/sqlhelp v0.0.0-20180429142645-9375c25243c8/go.mod h1:vNyJYIWMfaEHBynkqzmlVuHlhGoSy9qvQZU47LXeEuk=
+golang.org/x/crypto v0.0.0-20180430112654-db7d12313a59/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
