@@ -92,6 +92,8 @@ type TemplateFieldNode interface {
 	GetSource() string
 }
 
+type TemplateMap map[uuid.UUID]TemplateNode
+
 func NewTemplateField(id uuid.UUID, name, t, source string) TemplateFieldNode {
 	tf := &templateField{ID: id, Name: name, Type: t, Source: source}
 	return tf

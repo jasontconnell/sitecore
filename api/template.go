@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jasontconnell/sitecore/data"
+	"strings"
 )
 
 func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
@@ -52,10 +53,20 @@ func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 	return templates, nil
 }
 
-func GetTemplateMap(tlist []data.TemplateNode) map[uuid.UUID]data.TemplateNode {
-	m := make(map[uuid.UUID]data.TemplateNode)
+func GetTemplateMap(tlist []data.TemplateNode) data.TemplateMap {
+	m := make(data.TemplateMap, len(tlist))
 	for _, t := range tlist {
 		m[t.GetId()] = t
+	}
+	return m
+}
+
+func FilterTemplateMap(tmap data.TemplateMap, path string) data.TemplateMap {
+	m := make(data.TemplateMap)
+	for _, t := range tmap {
+		if strings.HasPrefix(t.GetPath(), path) {
+			m[t.GetId()] = t
+		}
 	}
 	return m
 }
