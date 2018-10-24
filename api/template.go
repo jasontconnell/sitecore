@@ -69,7 +69,7 @@ func FilterTemplateMap(tmap data.TemplateMap, paths []string) data.TemplateMap {
 			negate := b[0] == '-'
 			b := strings.TrimPrefix(b, "-")
 
-			if !include && strings.HasPrefix(item.GetPath(), b) {
+			if !include && strings.HasPrefix(t.GetPath(), b) {
 				include = !negate
 			}
 		}
