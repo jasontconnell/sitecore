@@ -61,11 +61,13 @@ func GetTemplateMap(tlist []data.TemplateNode) data.TemplateMap {
 	return m
 }
 
-func FilterTemplateMap(tmap data.TemplateMap, path string) data.TemplateMap {
+func FilterTemplateMap(tmap data.TemplateMap, paths []string) data.TemplateMap {
 	m := make(data.TemplateMap)
 	for _, t := range tmap {
-		if strings.HasPrefix(t.GetPath(), path) {
-			m[t.GetId()] = t
+		for _, b := range paths {
+			if strings.HasPrefix(t.GetPath(), b) {
+				m[t.GetId()] = t
+			}
 		}
 	}
 	return m
