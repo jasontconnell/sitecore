@@ -94,7 +94,7 @@ func (item *item) GetParent() ItemNode {
 }
 
 func (item *item) SetParent(node ItemNode) {
-	item.Parent = item
+	item.Parent = node
 }
 
 func (item *item) GetMasterId() uuid.UUID {
