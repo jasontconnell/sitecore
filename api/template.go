@@ -40,7 +40,7 @@ func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 
 	templates := loadTemplateData(trmap)
 
-	tnmap := make(map[uuid.UUID]data.TemplateNode)
+	tnmap := make(data.TemplateMap)
 	for _, t := range templates {
 		tnmap[t.GetId()] = t
 	}
@@ -61,6 +61,16 @@ func GetTemplateMap(tlist []data.TemplateNode) data.TemplateMap {
 	return m
 }
 
+func SetStandardValues(itemMap data.ItemMap, tmap data.TemplateMap) {
+	for _, t := range tmap {
+		sv, ok := itemMap[t.GetStandardValuesId()]
+
+		if ok {
+			t.SetStandardValues(sv)
+		}
+	}
+}
+
 func FilterTemplateMap(tmap data.TemplateMap, paths []string) data.TemplateMap {
 	m := make(data.TemplateMap)
 	for _, t := range tmap {
@@ -68,6 +78,9 @@ func FilterTemplateMap(tmap data.TemplateMap, paths []string) data.TemplateMap {
 		for _, b := range paths {
 			negate := b[0] == '-'
 			b := strings.TrimPrefix(b, "-")
+			if len(b) == 0 {
+				continue
+			}
 
 			if !include && strings.HasPrefix(t.GetPath(), b) {
 				include = !negate
@@ -130,7 +143,7 @@ func getFields(tmp *data.TemplateQueryRow, children []*data.TemplateQueryRow) []
 	return flds
 }
 
-func mapBaseTemplates(m map[uuid.UUID]data.TemplateNode, tmp data.TemplateNode, trow *data.TemplateQueryRow) {
+func mapBaseTemplates(m data.TemplateMap, tmp data.TemplateNode, trow *data.TemplateQueryRow) {
 	hasStdTemplate := false
 	for _, id := range trow.BaseTemplateIds {
 		if t, ok := m[id]; ok {

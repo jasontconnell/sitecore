@@ -144,6 +144,40 @@ func (t *item) GetFinalRenderings() []DeviceRendering {
 func (t *item) AddRendering(r DeviceRendering) {
 	t.Renderings = append(t.Renderings, r)
 }
+
 func (t *item) AddFinalRendering(r DeviceRendering) {
 	t.FinalRenderings = append(t.FinalRenderings, r)
+}
+
+func (t *item) RemoveRendering(r RenderingInstance) {
+	res := []DeviceRendering{}
+	for _, ritr := range t.Renderings {
+		rs := []RenderingInstance{}
+		for _, iri := range ritr.RenderingInstances {
+			if iri.Uid != r.Uid {
+				rs = append(rs, iri)
+			}
+		}
+		ritr.RenderingInstances = rs
+
+		res = append(res, ritr)
+	}
+
+	t.Renderings = res
+}
+
+func (t *item) RemoveFinalRendering(r RenderingInstance) {
+	res := []DeviceRendering{}
+	for _, ritr := range t.FinalRenderings {
+		rs := []RenderingInstance{}
+		for _, iri := range ritr.RenderingInstances {
+			if iri.Uid != r.Uid {
+				rs = append(rs, iri)
+			}
+		}
+		ritr.RenderingInstances = rs
+		res = append(res, ritr)
+	}
+
+	t.FinalRenderings = res
 }

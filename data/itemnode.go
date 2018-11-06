@@ -33,6 +33,9 @@ type ItemData interface {
 
 	AddRendering(r DeviceRendering)
 	AddFinalRendering(r DeviceRendering)
+
+	RemoveRendering(r RenderingInstance)
+	RemoveFinalRendering(r RenderingInstance)
 }
 
 type ItemNode interface {
@@ -70,10 +73,19 @@ func (m ItemMap) FindItemByPath(path string) ItemNode {
 	return node
 }
 
-func (m ItemMap) FindItemsByTemplate(id uuid.UUID) []ItemNode {
+func (m ItemMap) FindItemsByTemplate(templateId uuid.UUID) []ItemNode {
+	return m.FindItemsByTemplates([]uuid.UUID{templateId})
+}
+
+func (m ItemMap) FindItemsByTemplates(templateIds []uuid.UUID) []ItemNode {
 	list := []ItemNode{}
+	tmap := make(map[uuid.UUID]bool)
+	for _, tid := range templateIds {
+		tmap[tid] = true
+	}
+
 	for _, item := range m {
-		if item.GetTemplateId() == id {
+		if _, ok := tmap[item.GetTemplateId()]; ok {
 			list = append(list, item)
 		}
 	}

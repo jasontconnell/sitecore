@@ -29,6 +29,7 @@ type template struct {
 	BaseTemplates []TemplateNode
 
 	StandardValuesID uuid.UUID
+	StandardValues   ItemNode
 }
 
 func NewTemplateNode(id uuid.UUID, name string, path string, standardValuesId uuid.UUID) TemplateNode {
@@ -72,6 +73,14 @@ func (t template) GetStandardValuesId() uuid.UUID {
 	return t.StandardValuesID
 }
 
+func (t template) SetStandardValues(item ItemNode) {
+	t.StandardValues = item
+}
+
+func (t template) GetStandardValues() ItemNode {
+	return t.StandardValues
+}
+
 type TemplateNode interface {
 	GetId() uuid.UUID
 	GetName() string
@@ -83,6 +92,9 @@ type TemplateNode interface {
 
 	HasStandardValues() bool
 	GetStandardValuesId() uuid.UUID
+
+	SetStandardValues(item ItemNode)
+	GetStandardValues() ItemNode
 }
 
 type TemplateFieldNode interface {

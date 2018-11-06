@@ -38,6 +38,9 @@ func FilterItemMap(m data.ItemMap, paths []string) data.ItemMap {
 		for _, b := range paths {
 			negate := b[0] == '-'
 			b := strings.TrimPrefix(b, "-")
+			if len(b) == 0 {
+				continue
+			}
 
 			if !include && strings.HasPrefix(item.GetPath(), b) {
 				include = !negate
@@ -60,6 +63,29 @@ func FilterItemMap(m data.ItemMap, paths []string) data.ItemMap {
 	return filteredMap
 }
 
+func ExcludeItemMap(itemMap data.ItemMap, paths []string) data.ItemMap {
+	expaths := []string{}
+	for _, p := range paths {
+		pref := "-"
+		if p[0] == '-' {
+			p = string(p[1:])
+			pref = ""
+		}
+
+		expaths = append(expaths, pref+p)
+	}
+	return FilterItemMap(itemMap, expaths)
+}
+
+func SetTemplates(itemMap data.ItemMap, tmap data.TemplateMap) {
+	for _, item := range itemMap {
+		t, ok := tmap[item.GetTemplateId()]
+		if ok {
+			item.SetTemplate(t)
+		}
+	}
+}
+
 func AssignFieldValues(m data.ItemMap, values []data.FieldValueNode) {
 	sort.Slice(values, func(i, j int) bool {
 		return values[i].GetName() < values[j].GetName()
@@ -73,7 +99,7 @@ func AssignFieldValues(m data.ItemMap, values []data.FieldValueNode) {
 }
 
 func getMap(list []data.ItemNode) (root data.ItemNode, m data.ItemMap) {
-	m = make(map[uuid.UUID]data.ItemNode, len(list))
+	m = make(data.ItemMap, len(list))
 
 	for _, item := range list {
 		id := item.GetId()

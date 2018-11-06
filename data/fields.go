@@ -47,6 +47,10 @@ func (fv *fieldValue) GetValue() string {
 	return fv.Value
 }
 
+func (fv *fieldValue) SetValue(val string) {
+	fv.Value = val
+}
+
 func (fv *fieldValue) GetLanguage() string {
 	return fv.Language
 }
@@ -67,6 +71,7 @@ type FieldValueNode interface {
 	GetFieldId() uuid.UUID
 	GetName() string
 	GetValue() string
+	SetValue(val string)
 	GetLanguage() string
 	GetVersion() int64
 	GetSource() string

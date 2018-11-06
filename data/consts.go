@@ -17,6 +17,8 @@ var WebControlRenderingId = uuid.Must(uuid.Parse("1DDE3F02-0BD7-4779-867A-DC578A
 var XmlControlRenderingId = uuid.Must(uuid.Parse("B658CE99-894A-4CB1-936B-F23F17C63B5B"))
 var XslRenderingId = uuid.Must(uuid.Parse("F1F1D639-4F54-40C2-8BE0-81266B392CEB"))
 
+var LayoutTemplateId = uuid.Must(uuid.Parse("3A45A723-64EE-4919-9D41-02FD40FD1466"))
+
 var TemplateID = uuid.Must(uuid.Parse("AB86861A-6030-46C5-B394-E8F99E8B87DB"))
 var TemplateFieldID = uuid.Must(uuid.Parse("455A3E98-A627-4B40-8035-E683A0331AC7"))
 var TemplateSectionID = uuid.Must(uuid.Parse("E269FBB5-3750-427A-9149-7AA950B49301"))
