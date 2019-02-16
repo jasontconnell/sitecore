@@ -23,6 +23,8 @@ var TemplateID = uuid.Must(uuid.Parse("AB86861A-6030-46C5-B394-E8F99E8B87DB"))
 var TemplateFieldID = uuid.Must(uuid.Parse("455A3E98-A627-4B40-8035-E683A0331AC7"))
 var TemplateSectionID = uuid.Must(uuid.Parse("E269FBB5-3750-427A-9149-7AA950B49301"))
 
+var RenderingParametersID = uuid.Must(uuid.Parse("8CA06D6A-B353-44E8-BC31-B528C7306971"))
+
 var RootID = uuid.Must(uuid.Parse("00000000-0000-0000-0000-000000000000"))
 var EmptyID = RootID
 var StandardTemplateID = uuid.Must(uuid.Parse("1930BBEB-7805-471A-A3BE-4858AC7CF696"))
