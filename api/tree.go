@@ -1,11 +1,12 @@
 package api
 
 import (
-	"github.com/google/uuid"
-	"github.com/jasontconnell/sitecore/data"
 	"path"
 	"sort"
 	"strings"
+
+	"github.com/google/uuid"
+	"github.com/jasontconnell/sitecore/data"
 )
 
 var rootID uuid.UUID = MustParseUUID("00000000-0000-0000-0000-000000000000")
@@ -88,7 +89,17 @@ func SetTemplates(itemMap data.ItemMap, tmap data.TemplateMap) {
 
 func AssignFieldValues(m data.ItemMap, values []data.FieldValueNode) {
 	sort.Slice(values, func(i, j int) bool {
-		return values[i].GetName() < values[j].GetName()
+		lang := values[i].GetLanguage() < values[j].GetLanguage()
+		vers := values[i].GetVersion() < values[j].GetVersion()
+		name := values[i].GetName() < values[j].GetName()
+
+		if !lang && !vers {
+			return name
+		} else if !lang {
+			return vers
+		} else {
+			return lang
+		}
 	})
 
 	for _, fv := range values {
