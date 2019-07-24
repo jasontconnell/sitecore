@@ -93,13 +93,7 @@ func AssignFieldValues(m data.ItemMap, values []data.FieldValueNode) {
 		vers := values[i].GetVersion() < values[j].GetVersion()
 		name := values[i].GetName() < values[j].GetName()
 
-		if !lang && !vers {
-			return name
-		} else if !lang {
-			return vers
-		} else {
-			return lang
-		}
+		return lang && vers && name
 	})
 
 	for _, fv := range values {
