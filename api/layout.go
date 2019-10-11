@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/jasontconnell/sitecore/data"
-	xr "github.com/jasontconnell/sitecore/data/xml"
 	"io"
 	"net/url"
 	"strings"
+
+	"github.com/google/uuid"
+	"github.com/jasontconnell/sitecore/data"
+	xr "github.com/jasontconnell/sitecore/data/xml"
 )
 
 func getRenderings(items []data.ItemNode, t data.RenderingType) []data.Rendering {
@@ -78,7 +79,12 @@ func GetLayouts(m data.ItemMap) []data.Rendering {
 	return joinRenderings(controllers, sublayouts, views, webcontrols, xslcontrols, layouts)
 }
 
-func GetLayoutXml(item data.ItemNode) (renderings, finalRenderings string) {
+type finalRenderingXml struct {
+	xml     string
+	version int64
+}
+
+func GetLayoutXml(item data.ItemNode) (renderings string, finalRenderings []finalRenderingXml) {
 	if len(item.GetFieldValues()) == 0 {
 		return renderings, finalRenderings
 	}
@@ -87,7 +93,7 @@ func GetLayoutXml(item data.ItemNode) (renderings, finalRenderings string) {
 		if fv.GetFieldId() == data.RenderingsFieldId {
 			renderings = fv.GetValue()
 		} else if fv.GetFieldId() == data.FinalRenderingsFieldId {
-			finalRenderings = fv.GetValue()
+			finalRenderings = append(finalRenderings, finalRenderingXml{xml: fv.GetValue(), version: fv.GetVersion()})
 		}
 	}
 
@@ -109,7 +115,8 @@ func MapAllLayouts(m data.ItemMap, tm data.TemplateMap) error {
 		}
 
 		renderings, finalRenderings := GetLayoutXml(item)
-		var svRenderings, svfinalRenderings string
+		var svRenderings string
+		var svfinalRenderings []finalRenderingXml
 
 		if t.HasStandardValues() {
 			sv, svok := m[t.GetStandardValuesId()]
@@ -118,11 +125,11 @@ func MapAllLayouts(m data.ItemMap, tm data.TemplateMap) error {
 			}
 		}
 
-		rr, err := getRenderingsFromXml(renderings, "Item", m, rendmap, false)
+		rr, err := getRenderingsFromXml(renderings, "Item", 1, m, rendmap, false)
 		if err != nil {
 			return fmt.Errorf("Renderings from renderings, %v. %v", item.GetId(), err)
 		}
-		srr, err := getRenderingsFromXml(svRenderings, "Standard Values", m, rendmap, true)
+		srr, err := getRenderingsFromXml(svRenderings, "Standard Values", 1, m, rendmap, true)
 		if err != nil {
 			return fmt.Errorf("Renderings from standard value renderings, %v. %v", item.GetId(), err)
 		}
@@ -135,21 +142,27 @@ func MapAllLayouts(m data.ItemMap, tm data.TemplateMap) error {
 			item.AddRendering(sr)
 		}
 
-		fr, err := getRenderingsFromXml(finalRenderings, "Item", m, rendmap, false)
-		if err != nil {
-			return fmt.Errorf("Renderings from final renderings, %v. %v", item.GetId(), err)
+		for _, frfld := range finalRenderings {
+			fr, err := getRenderingsFromXml(frfld.xml, "Item", frfld.version, m, rendmap, false)
+
+			if err != nil {
+				return fmt.Errorf("Renderings from final renderings, %v. %v", item.GetId(), err)
+			}
+
+			for _, r := range fr {
+				item.AddFinalRendering(r)
+			}
 		}
 
-		sfr, err := getRenderingsFromXml(svfinalRenderings, "Standard Values", m, rendmap, true)
-		if err != nil {
-			return fmt.Errorf("Renderings from standard values final renderings, %v. %v", item.GetId(), err)
-		}
-		for _, r := range fr {
-			item.AddFinalRendering(r)
-		}
+		for _, frfld := range svfinalRenderings {
+			sfr, err := getRenderingsFromXml(frfld.xml, "Standard Values", frfld.version, m, rendmap, true)
+			if err != nil {
+				return fmt.Errorf("Renderings from standard values final renderings, %v. %v", item.GetId(), err)
+			}
 
-		for _, sr := range sfr {
-			item.AddFinalRendering(sr)
+			for _, sr := range sfr {
+				item.AddFinalRendering(sr)
+			}
 		}
 	}
 
@@ -302,7 +315,7 @@ func UpdateFinalRenderingsXml(item data.ItemNode) {
 	}
 }
 
-func getRenderingsFromXml(x, loc string, m data.ItemMap, rendmap map[uuid.UUID]data.Rendering, standardValues bool) ([]data.DeviceRendering, error) {
+func getRenderingsFromXml(x, loc string, version int64, m data.ItemMap, rendmap map[uuid.UUID]data.Rendering, standardValues bool) ([]data.DeviceRendering, error) {
 	if len(x) == 0 {
 		return []data.DeviceRendering{}, nil
 	}
@@ -334,7 +347,7 @@ func getRenderingsFromXml(x, loc string, m data.ItemMap, rendmap map[uuid.UUID]d
 
 		device := data.Device{Item: deviceItem, Layout: layout}
 
-		dr := data.DeviceRendering{Device: device, RenderingInstances: []data.RenderingInstance{}, StandardValues: standardValues}
+		dr := data.DeviceRendering{Device: device, Version: version, RenderingInstances: []data.RenderingInstance{}, StandardValues: standardValues}
 
 		for _, rx := range dx.Renderings {
 			// rendering id can be not provided.

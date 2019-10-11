@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+
 	"github.com/google/uuid"
 )
 
@@ -62,10 +63,11 @@ type DeviceRendering struct {
 	RenderingInstances   []RenderingInstance
 	PlaceholderInstances []PlaceholderInstance
 	StandardValues       bool
+	Version              int64
 }
 
 func (dr DeviceRendering) String() string {
-	return fmt.Sprintf("device: %s  renderings: %v  placeholder %v", dr.Device, dr.RenderingInstances, dr.PlaceholderInstances)
+	return fmt.Sprintf("device: %s  renderings: %v  placeholder %v  version %v", dr.Device, dr.RenderingInstances, dr.PlaceholderInstances, dr.Version)
 }
 
 func (ri RenderingInstance) String() string {

@@ -27,7 +27,7 @@ type UpdateField struct {
 	ItemID     uuid.UUID
 	FieldID    uuid.UUID
 	Value      string
-	Source     string
+	Source     FieldSource
 	Version    int64
 	Language   string
 	UpdateType UpdateType

@@ -3,10 +3,11 @@ package api
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/denisenkom/go-mssqldb"
-	"github.com/jasontconnell/sitecore/data"
 	"strings"
 	"sync"
+
+	_ "github.com/denisenkom/go-mssqldb"
+	"github.com/jasontconnell/sitecore/data"
 )
 
 func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) (int64, error) {
@@ -174,13 +175,13 @@ func getSqlForFields(fields []data.UpdateField) []string {
 
 		switch field.UpdateType {
 		case data.Update:
-			sqlfmt, _ := updatemap[field.Source]
+			sqlfmt, _ := updatemap[field.Source.String()]
 			sql = fmt.Sprintf(sqlfmt, prms...)
 		case data.Insert:
-			sqlfmt, _ := insertmap[field.Source]
+			sqlfmt, _ := insertmap[field.Source.String()]
 			sql = fmt.Sprintf(sqlfmt, prms...)
 		case data.Delete:
-			sqlfmt, _ := deletemap[field.Source]
+			sqlfmt, _ := deletemap[field.Source.String()]
 			sql = fmt.Sprintf(sqlfmt, prms...)
 		case data.Ignore:
 			sql = ""

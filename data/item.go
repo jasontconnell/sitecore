@@ -2,8 +2,10 @@ package data
 
 import (
 	"fmt"
-	"github.com/google/uuid"
+	"sort"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type item struct {
@@ -25,6 +27,8 @@ type item struct {
 	FinalRenderings []DeviceRendering
 
 	Template TemplateNode
+
+	versions map[int64]int64
 }
 
 func NewBlankItemNode() ItemNode {
@@ -130,7 +134,22 @@ func (t *item) GetFieldValues() []FieldValueNode {
 }
 
 func (t *item) AddFieldValue(fv FieldValueNode) {
+	if _, ok := t.versions[fv.GetVersion()]; !ok && fv.GetSource() == VersionedFields {
+		t.versions[fv.GetVersion()] = fv.GetVersion()
+	}
+
 	t.FieldValues = append(t.FieldValues, fv)
+}
+
+func (t item) GetVersions() []int64 {
+	list := []int64{}
+	for _, v := range t.versions {
+		list = append(list, v)
+	}
+	sort.Slice(list, func(i, j int) bool {
+		return list[i] < list[j]
+	})
+	return list
 }
 
 func (t *item) GetRenderings() []DeviceRendering {
@@ -138,7 +157,20 @@ func (t *item) GetRenderings() []DeviceRendering {
 }
 
 func (t *item) GetFinalRenderings() []DeviceRendering {
-	return t.FinalRenderings
+	v := t.GetVersions()
+	var vnum int64 = 1
+	if len(v) > 0 {
+		vnum = v[len(v)-1]
+	}
+
+	frens := []DeviceRendering{}
+	for _, dr := range t.FinalRenderings {
+		if dr.Version == vnum {
+			frens = append(frens, dr)
+		}
+	}
+
+	return frens
 }
 
 func (t *item) AddRendering(r DeviceRendering) {

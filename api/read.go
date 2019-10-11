@@ -3,12 +3,13 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"strings"
+	"sync"
+
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/google/uuid"
 	"github.com/jasontconnell/sitecore/data"
 	"github.com/jasontconnell/sqlhelp"
-	"strings"
-	"sync"
 )
 
 var emptyUuid uuid.UUID = MustParseUUID("00000000-0000-0000-0000-000000000000")
@@ -55,16 +56,6 @@ func LoadFields(connstr string) ([]data.FieldValueNode, error) {
 
 // Load Fields can return a ton of results. Pass in 'c' to specify how many goroutines should be spawned
 func LoadFieldsParallel(connstr string, c int) ([]data.FieldValueNode, error) {
-	if c <= 0 {
-		c = 12
-	}
-	conn, cerr := sql.Open("mssql", connstr)
-	if cerr != nil {
-		return nil, cerr
-	}
-
-	defer conn.Close()
-
 	sqlstr := `
         with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source)
         as
@@ -97,12 +88,23 @@ func LoadFieldsParallel(connstr string, c int) ([]data.FieldValueNode, error) {
     `
 
 	rchan := make(chan map[string]interface{}, 500000)
+
+	conn, cerr := sql.Open("mssql", connstr)
+	if cerr != nil {
+		return nil, cerr
+	}
+
+	defer conn.Close()
+
 	rserr := sqlhelp.GetResultsChannel(conn, sqlstr, rchan)
 
 	if rserr != nil {
 		return nil, rserr
 	}
 
+	if c <= 0 {
+		c = 12
+	}
 	fvchan := make(chan data.FieldValueNode, 20000000)
 
 	var wg sync.WaitGroup
@@ -119,8 +121,110 @@ func LoadFieldsParallel(connstr string, c int) ([]data.FieldValueNode, error) {
 					row["Value"].(string),
 					row["Language"].(string),
 					row["Version"].(int64),
-					row["Source"].(string),
+					data.GetSource(row["Source"].(string)),
 				)
+				fv <- fieldValue
+				count++
+			}
+			wg.Done()
+		}(i, rchan, fvchan)
+	}
+
+	wg.Wait()
+
+	close(fvchan)
+
+	wg.Add(1)
+	fieldValues := []data.FieldValueNode{}
+	go func(fv chan data.FieldValueNode) {
+		for fieldValue := range fvchan {
+			fieldValues = append(fieldValues, fieldValue)
+		}
+		wg.Done()
+	}(fvchan)
+
+	wg.Wait()
+
+	return fieldValues, nil
+}
+
+func LoadFilteredFieldValues(connstr string, fieldIds []uuid.UUID, c int) ([]data.FieldValueNode, error) {
+	filters := []string{}
+	for _, fieldId := range fieldIds {
+		filters = append(filters, "'"+fieldId.String()+"'")
+	}
+	filter := strings.Join(filters, ",")
+	sqlstr := `
+        with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source)
+        as
+        (
+            select
+                ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields'
+            from SharedFields
+            union
+            select
+                ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields'
+            from VersionedFields
+            union
+            select
+                ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields'
+            from UnversionedFields
+        )
+        select 
+            cast(fv.ValueID as char(36)) as ValueID, 
+            cast(fv.ItemID as char(36)) as ItemID, 
+            f.Name, 
+            cast(fv.FieldID as char(36)) as FieldID, 
+            fv.Value, fv.Version, 
+            fv.Language, 
+            fv.Source
+        from
+            FieldValues fv
+                join Items f
+					on fv.FieldID = f.ID
+		where fv.FieldID in (%s)
+        order by fv.Source, f.Name, fv.Language, fv.Version;
+	`
+
+	query := fmt.Sprintf(sqlstr, filter)
+
+	rchan := make(chan map[string]interface{}, 500000)
+
+	conn, cerr := sql.Open("mssql", connstr)
+	if cerr != nil {
+		return nil, cerr
+	}
+
+	defer conn.Close()
+
+	rserr := sqlhelp.GetResultsChannel(conn, query, rchan)
+
+	if rserr != nil {
+		return nil, rserr
+	}
+
+	if c <= 0 {
+		c = 12
+	}
+	fvchan := make(chan data.FieldValueNode, 20000000)
+
+	var wg sync.WaitGroup
+	for i := 0; i < c; i++ {
+		wg.Add(1)
+		go func(id int, records chan map[string]interface{}, fv chan data.FieldValueNode) {
+			count := 0
+
+			for row := range records {
+				fieldValue := data.NewFieldValue(
+					getUUID(row["FieldID"]),
+					getUUID(row["ItemID"]),
+					row["Name"].(string),
+					row["Value"].(string),
+					row["Language"].(string),
+					row["Version"].(int64),
+					data.GetSource(row["Source"].(string)),
+				)
+
 				fv <- fieldValue
 				count++
 			}

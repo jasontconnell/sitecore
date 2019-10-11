@@ -64,6 +64,16 @@ func FilterItemMap(m data.ItemMap, paths []string) data.ItemMap {
 	return filteredMap
 }
 
+func FilterItemMapCustom(m data.ItemMap, filter func(i data.ItemNode) bool) data.ItemMap {
+	filteredMap := make(data.ItemMap)
+	for _, item := range m {
+		if filter(item) {
+			filteredMap[item.GetId()] = item
+		}
+	}
+	return filteredMap
+}
+
 func ExcludeItemMap(itemMap data.ItemMap, paths []string) data.ItemMap {
 	expaths := []string{}
 	for _, p := range paths {

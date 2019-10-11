@@ -49,6 +49,8 @@ type ItemNode interface {
 
 	GetFieldValues() []FieldValueNode
 	AddFieldValue(fv FieldValueNode)
+
+	GetVersions() []int64
 }
 
 type ItemMap map[uuid.UUID]ItemNode

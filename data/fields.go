@@ -4,6 +4,22 @@ import (
 	"github.com/google/uuid"
 )
 
+type FieldSource string
+
+const (
+	VersionedFields   FieldSource = "Versioned"
+	UnversionedFields FieldSource = "Unversioned"
+	SharedFields      FieldSource = "Shared"
+)
+
+func (f FieldSource) String() string {
+	return string(f)
+}
+
+func GetSource(s string) FieldSource {
+	return FieldSource(s)
+}
+
 type fieldValue struct {
 	FieldValueID uuid.UUID
 	ItemID       uuid.UUID
@@ -12,10 +28,10 @@ type fieldValue struct {
 	Value        string
 	Language     string
 	Version      int64
-	Source       string
+	Source       FieldSource
 }
 
-func NewFieldValue(fieldId, itemId uuid.UUID, name, value, language string, version int64, source string) FieldValueNode {
+func NewFieldValue(fieldId, itemId uuid.UUID, name, value, language string, version int64, source FieldSource) FieldValueNode {
 	fv := &fieldValue{}
 	fv.ItemID = itemId
 	fv.FieldID = fieldId
@@ -59,7 +75,7 @@ func (fv *fieldValue) GetVersion() int64 {
 	return fv.Version
 }
 
-func (fv *fieldValue) GetSource() string {
+func (fv *fieldValue) GetSource() FieldSource {
 	return fv.Source
 }
 
@@ -74,5 +90,5 @@ type FieldValueNode interface {
 	SetValue(val string)
 	GetLanguage() string
 	GetVersion() int64
-	GetSource() string
+	GetSource() FieldSource
 }
