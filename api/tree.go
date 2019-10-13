@@ -43,6 +43,10 @@ func FilterItemMap(m data.ItemMap, paths []string) data.ItemMap {
 				continue
 			}
 
+			if !strings.HasSuffix(b, "/") {
+				b = b + "/"
+			}
+
 			if !include && strings.HasPrefix(item.GetPath(), b) {
 				include = !negate
 				break
