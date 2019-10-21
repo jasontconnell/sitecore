@@ -100,7 +100,7 @@ func GetLayoutXml(item data.ItemNode) (renderings string, finalRenderings []fina
 	return renderings, finalRenderings
 }
 
-func MapAllLayouts(m data.ItemMap, tm data.TemplateMap) error {
+func MapAllLayouts(m data.ItemMap, tm data.TemplateMap, strict bool) error {
 	rendlist := GetLayouts(m)
 	rendmap := make(map[uuid.UUID]data.Rendering)
 
@@ -125,11 +125,11 @@ func MapAllLayouts(m data.ItemMap, tm data.TemplateMap) error {
 			}
 		}
 
-		rr, err := getRenderingsFromXml(renderings, "Item", 1, m, rendmap, false)
+		rr, err := getRenderingsFromXml(renderings, "Item", 1, m, rendmap, false, strict)
 		if err != nil {
 			return fmt.Errorf("Renderings from renderings, %v. %v", item.GetId(), err)
 		}
-		srr, err := getRenderingsFromXml(svRenderings, "Standard Values", 1, m, rendmap, true)
+		srr, err := getRenderingsFromXml(svRenderings, "Standard Values", 1, m, rendmap, true, strict)
 		if err != nil {
 			return fmt.Errorf("Renderings from standard value renderings, %v. %v", item.GetId(), err)
 		}
@@ -143,7 +143,7 @@ func MapAllLayouts(m data.ItemMap, tm data.TemplateMap) error {
 		}
 
 		for _, frfld := range finalRenderings {
-			fr, err := getRenderingsFromXml(frfld.xml, "Item", frfld.version, m, rendmap, false)
+			fr, err := getRenderingsFromXml(frfld.xml, "Item", frfld.version, m, rendmap, false, strict)
 
 			if err != nil {
 				return fmt.Errorf("Renderings from final renderings, %v. %v", item.GetId(), err)
@@ -155,7 +155,7 @@ func MapAllLayouts(m data.ItemMap, tm data.TemplateMap) error {
 		}
 
 		for _, frfld := range svfinalRenderings {
-			sfr, err := getRenderingsFromXml(frfld.xml, "Standard Values", frfld.version, m, rendmap, true)
+			sfr, err := getRenderingsFromXml(frfld.xml, "Standard Values", frfld.version, m, rendmap, true, strict)
 			if err != nil {
 				return fmt.Errorf("Renderings from standard values final renderings, %v. %v", item.GetId(), err)
 			}
@@ -315,7 +315,7 @@ func UpdateFinalRenderingsXml(item data.ItemNode) {
 	}
 }
 
-func getRenderingsFromXml(x, loc string, version int64, m data.ItemMap, rendmap map[uuid.UUID]data.Rendering, standardValues bool) ([]data.DeviceRendering, error) {
+func getRenderingsFromXml(x, loc string, version int64, m data.ItemMap, rendmap map[uuid.UUID]data.Rendering, standardValues, strict bool) ([]data.DeviceRendering, error) {
 	if len(x) == 0 {
 		return []data.DeviceRendering{}, nil
 	}
@@ -329,7 +329,7 @@ func getRenderingsFromXml(x, loc string, version int64, m data.ItemMap, rendmap 
 	for _, dx := range rs.Devices {
 		devid := MustParseUUID(dx.ID)
 		deviceItem, ok := m[devid]
-		if !ok {
+		if !ok && strict {
 			return nil, fmt.Errorf("Can't find item with id for device, %v", dx.ID)
 		}
 
@@ -355,7 +355,7 @@ func getRenderingsFromXml(x, loc string, version int64, m data.ItemMap, rendmap 
 			ruid := MustParseUUID(rx.Uid)
 
 			rend, ok := rendmap[rid]
-			if !ok && !rx.DeleteNode.Delete && rid != emptyUuid {
+			if !ok && !rx.DeleteNode.Delete && rid != emptyUuid && strict {
 				return nil, fmt.Errorf("Couldn't find rendering with id %v in %v", rid, x)
 			}
 
