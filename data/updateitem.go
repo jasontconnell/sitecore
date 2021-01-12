@@ -29,7 +29,7 @@ type UpdateField struct {
 	Value      string
 	Source     FieldSource
 	Version    int64
-	Language   string
+	Language   Language
 	UpdateType UpdateType
 }
 

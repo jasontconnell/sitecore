@@ -7,10 +7,24 @@ import (
 type FieldSource string
 
 const (
-	VersionedFields   FieldSource = "Versioned"
-	UnversionedFields FieldSource = "Unversioned"
-	SharedFields      FieldSource = "Shared"
+	VersionedFields   FieldSource = "VersionedFields"
+	UnversionedFields FieldSource = "UnversionedFields"
+	SharedFields      FieldSource = "SharedFields"
 )
+
+type Language string
+
+const (
+	None    Language = ""
+	English Language = "en"
+)
+
+func GetLanguage(lan string) Language {
+	if lan == "" {
+		return None
+	}
+	return Language(lan)
+}
 
 func (f FieldSource) String() string {
 	return string(f)
@@ -26,12 +40,12 @@ type fieldValue struct {
 	FieldID      uuid.UUID
 	Name         string
 	Value        string
-	Language     string
+	Language     Language
 	Version      int64
 	Source       FieldSource
 }
 
-func NewFieldValue(fieldId, itemId uuid.UUID, name, value, language string, version int64, source FieldSource) FieldValueNode {
+func NewFieldValue(fieldId, itemId uuid.UUID, name, value string, language Language, version int64, source FieldSource) FieldValueNode {
 	fv := &fieldValue{}
 	fv.ItemID = itemId
 	fv.FieldID = fieldId
@@ -67,7 +81,7 @@ func (fv *fieldValue) SetValue(val string) {
 	fv.Value = val
 }
 
-func (fv *fieldValue) GetLanguage() string {
+func (fv *fieldValue) GetLanguage() Language {
 	return fv.Language
 }
 
@@ -88,7 +102,7 @@ type FieldValueNode interface {
 	GetName() string
 	GetValue() string
 	SetValue(val string)
-	GetLanguage() string
+	GetLanguage() Language
 	GetVersion() int64
 	GetSource() FieldSource
 }

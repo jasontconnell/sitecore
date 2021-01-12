@@ -2,9 +2,10 @@ package api
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/google/uuid"
 	"github.com/jasontconnell/sitecore/data"
-	"strings"
 )
 
 func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
@@ -129,11 +130,11 @@ func getFields(tmp *data.TemplateQueryRow, children []*data.TemplateQueryRow) []
 		if c.TemplateID == data.TemplateSectionID {
 			flds = append(flds, getFields(c, c.Children)...)
 		} else if c.TemplateID == data.TemplateFieldID {
-			s := "VersionedFields"
+			s := data.VersionedFields
 			if c.Shared == "1" {
-				s = "SharedFields"
+				s = data.SharedFields
 			} else if c.Unversioned == "1" {
-				s = "UnversionedFields"
+				s = data.UnversionedFields
 			}
 			tf := data.NewTemplateField(c.ID, c.Name, c.Type, s)
 			flds = append(flds, tf)

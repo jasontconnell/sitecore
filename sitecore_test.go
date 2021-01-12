@@ -1,10 +1,11 @@
 package sitecore
 
 import (
-	"github.com/jasontconnell/sitecore/api"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/jasontconnell/sitecore/api"
 )
 
 var connstr string = os.Getenv("SitecoreAPITestConnectionString")
@@ -92,7 +93,7 @@ func TestLoadItemMap(t *testing.T) {
 }
 
 func TestRenderings(t *testing.T) {
-	testId := api.MustParseUUID("EDB14023-0D37-45D0-92DB-F84D69108E27")
+	testId := api.MustParseUUID("{768D4C5A-E8D8-4D63-BD2F-6C7D4F2BD080}")
 	items, err := api.LoadItems(connstr)
 	if err != nil {
 		t.Log(err)
@@ -116,7 +117,7 @@ func TestRenderings(t *testing.T) {
 	tm := api.GetTemplateMap(tlist)
 
 	t.Log("Mapping Layouts")
-	mperr := api.MapAllLayouts(itemMap, tm)
+	mperr := api.MapAllLayouts(itemMap, tm, true)
 	if mperr != nil {
 		t.Fatal(mperr)
 	}
@@ -127,6 +128,7 @@ func TestRenderings(t *testing.T) {
 		t.Fail()
 	}
 
+	t.Log("getting renderings for ", testItem.GetId())
 	for _, r := range testItem.GetRenderings() {
 		t.Log(r)
 	}

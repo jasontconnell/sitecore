@@ -4,6 +4,16 @@ import (
 	"github.com/google/uuid"
 )
 
+type FieldValueKey struct {
+	VersionKey
+	FieldId uuid.UUID
+}
+
+type VersionKey struct {
+	Language Language
+	Version  int64
+}
+
 type ItemData interface {
 	GetId() uuid.UUID
 	SetId(id uuid.UUID)
@@ -49,6 +59,12 @@ type ItemNode interface {
 
 	GetFieldValues() []FieldValueNode
 	AddFieldValue(fv FieldValueNode)
+
+	GetVersionedFieldKeys(language Language, version int64) []FieldValueKey
+	GetLatestVersionFieldKeys(language Language) []FieldValueKey
+	GetVersionedFieldValues() map[FieldValueKey]FieldValueNode
+	GetLatestVersionFields(language Language) []FieldValueNode
+	GetFieldsByVersion(language Language, version int64) []FieldValueNode
 
 	GetVersions() []int64
 }

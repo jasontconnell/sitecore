@@ -22,11 +22,14 @@ type TemplateQueryRow struct {
 }
 
 type template struct {
-	ID            uuid.UUID
-	Name          string
-	Path          string
-	Fields        []TemplateFieldNode
-	BaseTemplates []TemplateNode
+	ID          uuid.UUID
+	Name        string
+	Path        string
+	Fields      []TemplateFieldNode
+	AllFieldMap map[uuid.UUID]TemplateFieldNode
+
+	BaseTemplates   []TemplateNode
+	BaseTemplateMap map[uuid.UUID]TemplateNode
 
 	StandardValuesID uuid.UUID
 	StandardValues   ItemNode
@@ -34,6 +37,7 @@ type template struct {
 
 func NewTemplateNode(id uuid.UUID, name string, path string, standardValuesId uuid.UUID) TemplateNode {
 	template := &template{ID: id, Name: name, Path: path, StandardValuesID: standardValuesId}
+	template.BaseTemplateMap = make(map[uuid.UUID]TemplateNode)
 	return template
 }
 
@@ -53,16 +57,82 @@ func (t template) GetFields() []TemplateFieldNode {
 	return t.Fields
 }
 
+func (t *template) GetField(id uuid.UUID) TemplateFieldNode {
+	if t.AllFieldMap == nil {
+		t.AllFieldMap = make(map[uuid.UUID]TemplateFieldNode)
+		list := t.GetAllFields()
+		for _, f := range list {
+			t.AllFieldMap[f.GetId()] = f
+		}
+	}
+
+	fld, _ := t.AllFieldMap[id]
+	return fld
+}
+
+func (t template) GetAllFields() []TemplateFieldNode {
+	v := make(map[uuid.UUID]bool)
+	return internalGetAllFields(&t, v)
+}
+
+func internalGetAllFields(t TemplateNode, v map[uuid.UUID]bool) []TemplateFieldNode {
+	if _, ok := v[t.GetId()]; ok {
+		return nil
+	}
+	list := []TemplateFieldNode{}
+	for _, f := range t.GetFields() {
+		if _, ok := v[f.GetId()]; ok {
+			continue
+		}
+		list = append(list, f)
+	}
+
+	v[t.GetId()] = true
+
+	for _, b := range t.GetBaseTemplates() {
+		bf := internalGetAllFields(b, v)
+		if bf == nil {
+			continue
+		}
+		list = append(list, bf...)
+	}
+	return list
+}
+
 func (t *template) AddField(fld TemplateFieldNode) {
 	t.Fields = append(t.Fields, fld)
 }
 
 func (t *template) AddBaseTemplate(base TemplateNode) {
-	t.BaseTemplates = append(t.BaseTemplates, base)
+	if _, ok := t.BaseTemplateMap[base.GetId()]; !ok {
+		t.BaseTemplates = append(t.BaseTemplates, base)
+		t.BaseTemplateMap[base.GetId()] = base
+	}
 }
 
 func (t template) GetBaseTemplates() []TemplateNode {
 	return t.BaseTemplates
+}
+
+func (t template) InheritsTemplate(id uuid.UUID) bool {
+	vmap := make(map[uuid.UUID]bool)
+	return internalInheritsTemplate(&t, id, vmap)
+}
+
+func internalInheritsTemplate(t TemplateNode, id uuid.UUID, v map[uuid.UUID]bool) bool {
+	if inherits, ok := v[id]; ok {
+		return inherits
+	}
+
+	for _, b := range t.GetBaseTemplates() {
+		if b.GetId() == id {
+			v[id] = true
+			break
+		} else {
+			return internalInheritsTemplate(t, id, v)
+		}
+	}
+	return v[id]
 }
 
 func (t template) HasStandardValues() bool {
@@ -81,32 +151,7 @@ func (t template) GetStandardValues() ItemNode {
 	return t.StandardValues
 }
 
-type TemplateNode interface {
-	GetId() uuid.UUID
-	GetName() string
-	GetPath() string
-	AddField(tf TemplateFieldNode)
-	GetFields() []TemplateFieldNode
-	GetBaseTemplates() []TemplateNode
-	AddBaseTemplate(base TemplateNode)
-
-	HasStandardValues() bool
-	GetStandardValuesId() uuid.UUID
-
-	SetStandardValues(item ItemNode)
-	GetStandardValues() ItemNode
-}
-
-type TemplateFieldNode interface {
-	GetId() uuid.UUID
-	GetName() string
-	GetType() string
-	GetSource() string
-}
-
-type TemplateMap map[uuid.UUID]TemplateNode
-
-func NewTemplateField(id uuid.UUID, name, t, source string) TemplateFieldNode {
+func NewTemplateField(id uuid.UUID, name, t string, source FieldSource) TemplateFieldNode {
 	tf := &templateField{ID: id, Name: name, Type: t, Source: source}
 	return tf
 }
@@ -115,7 +160,7 @@ type templateField struct {
 	ID     uuid.UUID
 	Name   string
 	Type   string
-	Source string
+	Source FieldSource
 }
 
 func (tf templateField) GetId() uuid.UUID {
@@ -130,6 +175,6 @@ func (tf templateField) GetType() string {
 	return tf.Type
 }
 
-func (tf templateField) GetSource() string {
+func (tf templateField) GetSource() FieldSource {
 	return tf.Source
 }

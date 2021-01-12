@@ -30,3 +30,5 @@ var EmptyID = RootID
 var StandardTemplateID = uuid.Must(uuid.Parse("1930BBEB-7805-471A-A3BE-4858AC7CF696"))
 
 var StandardValuesFieldId = uuid.Must(uuid.Parse("F7D48A55-2158-4F02-9356-756654404F73"))
+
+var BlobFieldId = uuid.Must(uuid.Parse("40E50ED9-BA07-4702-992E-A912738D32DC"))

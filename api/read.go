@@ -119,12 +119,103 @@ func LoadFieldsParallel(connstr string, c int) ([]data.FieldValueNode, error) {
 					getUUID(row["ItemID"]),
 					row["Name"].(string),
 					row["Value"].(string),
-					row["Language"].(string),
+					data.GetLanguage(row["Language"].(string)),
 					row["Version"].(int64),
 					data.GetSource(row["Source"].(string)),
 				)
 				fv <- fieldValue
 				count++
+			}
+			wg.Done()
+		}(i, rchan, fvchan)
+	}
+
+	wg.Wait()
+
+	close(fvchan)
+
+	wg.Add(1)
+	fieldValues := []data.FieldValueNode{}
+	go func(fv chan data.FieldValueNode) {
+		for fieldValue := range fvchan {
+			fieldValues = append(fieldValues, fieldValue)
+		}
+		wg.Done()
+	}(fvchan)
+
+	wg.Wait()
+
+	return fieldValues, nil
+}
+
+func LoadFieldValuesMetadata(connstr string, c int) ([]data.FieldValueNode, error) {
+	sqlstr := `
+	with FieldValues (ValueID, ItemID, FieldID, Version, Language, Source)
+	as
+	(
+		select
+			ID, ItemId, FieldId, 1, 'en', 'SharedFields'
+		from SharedFields
+		union
+		select
+			ID, ItemId, FieldId, Version, Language, 'VersionedFields'
+		from VersionedFields
+		union
+		select
+			ID, ItemId, FieldId, 1, Language, 'UnversionedFields'
+		from UnversionedFields
+	)
+	select 
+		cast(fv.ValueID as char(36)) as ValueID, 
+		cast(fv.ItemID as char(36)) as ItemID, 
+		f.Name, 
+		cast(fv.FieldID as char(36)) as FieldID, 
+		fv.Version, 
+		fv.Language, 
+		fv.Source
+	from
+		FieldValues fv
+			join Items f
+				on fv.FieldID = f.ID
+	order by fv.Source, f.Name, fv.Language, fv.Version;
+`
+	rchan := make(chan map[string]interface{}, 500000)
+
+	conn, cerr := sql.Open("mssql", connstr)
+	if cerr != nil {
+		return nil, cerr
+	}
+
+	defer conn.Close()
+
+	rserr := sqlhelp.GetResultsChannel(conn, sqlstr, rchan)
+
+	if rserr != nil {
+		return nil, rserr
+	}
+
+	if c <= 0 {
+		c = 12
+	}
+	fvchan := make(chan data.FieldValueNode, 20000000)
+
+	var wg sync.WaitGroup
+	for i := 0; i < c; i++ {
+		wg.Add(1)
+		go func(id int, records chan map[string]interface{}, fv chan data.FieldValueNode) {
+
+			for row := range records {
+				fieldValue := data.NewFieldValue(
+					getUUID(row["FieldID"]),
+					getUUID(row["ItemID"]),
+					row["Name"].(string),
+					"",
+					data.GetLanguage(row["Language"].(string)),
+					row["Version"].(int64),
+					data.GetSource(row["Source"].(string)),
+				)
+
+				fv <- fieldValue
 			}
 			wg.Done()
 		}(i, rchan, fvchan)
@@ -212,7 +303,6 @@ func LoadFilteredFieldValues(connstr string, fieldIds []uuid.UUID, c int) ([]dat
 	for i := 0; i < c; i++ {
 		wg.Add(1)
 		go func(id int, records chan map[string]interface{}, fv chan data.FieldValueNode) {
-			count := 0
 
 			for row := range records {
 				fieldValue := data.NewFieldValue(
@@ -220,13 +310,12 @@ func LoadFilteredFieldValues(connstr string, fieldIds []uuid.UUID, c int) ([]dat
 					getUUID(row["ItemID"]),
 					row["Name"].(string),
 					row["Value"].(string),
-					row["Language"].(string),
+					data.GetLanguage(row["Language"].(string)),
 					row["Version"].(int64),
 					data.GetSource(row["Source"].(string)),
 				)
 
 				fv <- fieldValue
-				count++
 			}
 			wg.Done()
 		}(i, rchan, fvchan)

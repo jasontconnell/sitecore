@@ -21,14 +21,15 @@ type item struct {
 	Children   []ItemNode
 	Level      int
 
-	FieldValues []FieldValueNode
+	fieldValues          []FieldValueNode
+	versionedFieldValues map[FieldValueKey]FieldValueNode
 
 	Renderings      []DeviceRendering
 	FinalRenderings []DeviceRendering
 
 	Template TemplateNode
 
-	versions map[int64]int64
+	versions map[VersionKey]VersionKey
 }
 
 func NewBlankItemNode() ItemNode {
@@ -130,21 +131,85 @@ func (t *item) String() string {
 }
 
 func (t *item) GetFieldValues() []FieldValueNode {
-	return t.FieldValues
+	return t.fieldValues
+}
+
+func (t *item) GetVersionedFieldValues() map[FieldValueKey]FieldValueNode {
+	if t.versionedFieldValues != nil {
+		return t.versionedFieldValues
+	}
+
+	sort.Slice(t.fieldValues, func(i, j int) bool {
+		return t.fieldValues[i].GetVersion() < t.fieldValues[j].GetVersion()
+	})
+
+	t.versionedFieldValues = make(map[FieldValueKey]FieldValueNode)
+	for _, fv := range t.fieldValues {
+		if fv.GetSource() != VersionedFields {
+			continue
+		}
+		k := FieldValueKey{VersionKey: VersionKey{fv.GetLanguage(), fv.GetVersion()}, FieldId: fv.GetFieldId()}
+		t.versionedFieldValues[k] = fv
+	}
+
+	return t.versionedFieldValues
+}
+
+func (t *item) GetVersionedFieldKeys(language Language, version int64) []FieldValueKey {
+	keys := []FieldValueKey{}
+	for k, _ := range t.versionedFieldValues {
+		if k.Version == version && k.Language == language {
+			keys = append(keys, k)
+		}
+	}
+	return keys
+}
+
+func (t *item) GetLatestVersionFieldKeys(language Language) []FieldValueKey {
+	vs := t.GetVersions()
+	if len(vs) == 0 {
+		return nil
+	}
+	return t.GetVersionedFieldKeys(language, vs[len(vs)-1])
+}
+
+func (t *item) GetLatestVersionFields(language Language) []FieldValueNode {
+	vs := t.GetVersions()
+	if len(vs) == 0 {
+		return nil
+	}
+	last := vs[len(vs)-1]
+	return t.GetFieldsByVersion(language, last)
+}
+
+func (t *item) GetFieldsByVersion(language Language, version int64) []FieldValueNode {
+	vals := []FieldValueNode{}
+	vk := VersionKey{Language: language, Version: version}
+	for k, vf := range t.versionedFieldValues {
+		if vk.Language == k.Language && vk.Version == k.Version {
+			vals = append(vals, vf)
+		}
+	}
+	return vals
 }
 
 func (t *item) AddFieldValue(fv FieldValueNode) {
-	if _, ok := t.versions[fv.GetVersion()]; !ok && fv.GetSource() == VersionedFields {
-		t.versions[fv.GetVersion()] = fv.GetVersion()
+	if t.versions == nil {
+		t.versions = make(map[VersionKey]VersionKey)
 	}
 
-	t.FieldValues = append(t.FieldValues, fv)
+	vk := VersionKey{Language: fv.GetLanguage(), Version: fv.GetVersion()}
+	if _, ok := t.versions[vk]; !ok && fv.GetSource() == VersionedFields {
+		t.versions[vk] = vk
+	}
+
+	t.fieldValues = append(t.fieldValues, fv)
 }
 
 func (t item) GetVersions() []int64 {
 	list := []int64{}
 	for _, v := range t.versions {
-		list = append(list, v)
+		list = append(list, v.Version)
 	}
 	sort.Slice(list, func(i, j int) bool {
 		return list[i] < list[j]
