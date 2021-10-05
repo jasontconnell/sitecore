@@ -145,9 +145,9 @@ func (t *item) GetVersionedFieldValues() map[FieldValueKey]FieldValueNode {
 
 	t.versionedFieldValues = make(map[FieldValueKey]FieldValueNode)
 	for _, fv := range t.fieldValues {
-		if fv.GetSource() != VersionedFields {
-			continue
-		}
+		// if fv.GetSource() != VersionedFields {
+		// 	continue
+		// }
 		k := FieldValueKey{VersionKey: VersionKey{fv.GetLanguage(), fv.GetVersion()}, FieldId: fv.GetFieldId()}
 		t.versionedFieldValues[k] = fv
 	}
