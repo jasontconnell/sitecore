@@ -33,6 +33,9 @@ func LoadFieldMap(list []data.FieldValueNode) data.FieldValueMap {
 }
 
 func FilterItemMap(m data.ItemMap, paths []string) data.ItemMap {
+	if len(paths) == 0 {
+		return m
+	}
 	filteredMap := make(data.ItemMap)
 	for _, item := range m {
 		include := false

@@ -70,6 +70,18 @@ func (t *template) GetField(id uuid.UUID) TemplateFieldNode {
 	return fld
 }
 
+func (t *template) FindField(name string) TemplateFieldNode {
+	flds := t.GetFields()
+	var ret TemplateFieldNode
+	for _, f := range flds {
+		if f.GetName() == name {
+			ret = f
+			break
+		}
+	}
+	return ret
+}
+
 func (t template) GetAllFields() []TemplateFieldNode {
 	v := make(map[uuid.UUID]bool)
 	return internalGetAllFields(&t, v)

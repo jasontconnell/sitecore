@@ -111,7 +111,7 @@ func MapAllLayouts(m data.ItemMap, tm data.TemplateMap, strict bool) error {
 	for _, item := range m {
 		t, ok := tm[item.GetTemplateId()]
 		if !ok {
-			return fmt.Errorf("Template not found, %v", item.GetTemplateId())
+			return fmt.Errorf("Template not found, %v on item %v", item.GetTemplateId(), item.GetId())
 		}
 
 		renderings, finalRenderings := GetLayoutXml(item)

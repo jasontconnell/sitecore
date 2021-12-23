@@ -134,6 +134,19 @@ func (t *item) GetFieldValues() []FieldValueNode {
 	return t.fieldValues
 }
 
+func (t *item) GetFieldValue(fieldId uuid.UUID, language Language) FieldValueNode {
+	vals := t.GetLatestVersionFields(language)
+
+	var ret FieldValueNode
+	for _, v := range vals {
+		if v.GetFieldId() == fieldId {
+			ret = v
+			break
+		}
+	}
+	return ret
+}
+
 func (t *item) GetVersionedFieldValues() map[FieldValueKey]FieldValueNode {
 	if t.versionedFieldValues != nil {
 		return t.versionedFieldValues
@@ -185,7 +198,7 @@ func (t *item) GetLatestVersionFields(language Language) []FieldValueNode {
 func (t *item) GetFieldsByVersion(language Language, version int64) []FieldValueNode {
 	vals := []FieldValueNode{}
 	vk := VersionKey{Language: language, Version: version}
-	for k, vf := range t.versionedFieldValues {
+	for k, vf := range t.GetVersionedFieldValues() {
 		if vk.Language == k.Language && vk.Version == k.Version {
 			vals = append(vals, vf)
 		}

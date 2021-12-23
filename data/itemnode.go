@@ -59,6 +59,7 @@ type ItemNode interface {
 
 	GetFieldValues() []FieldValueNode
 	AddFieldValue(fv FieldValueNode)
+	GetFieldValue(fieldId uuid.UUID, language Language) FieldValueNode
 
 	GetVersionedFieldKeys(language Language, version int64) []FieldValueKey
 	GetLatestVersionFieldKeys(language Language) []FieldValueKey

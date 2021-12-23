@@ -95,6 +95,16 @@ func FilterTemplateMap(tmap data.TemplateMap, paths []string) data.TemplateMap {
 	return m
 }
 
+func FilterTemplateMapCustom(tmap data.TemplateMap, filter func(t data.TemplateNode) bool) data.TemplateMap {
+	filteredMap := make(data.TemplateMap)
+	for _, t := range tmap {
+		if filter(t) {
+			filteredMap[t.GetId()] = t
+		}
+	}
+	return filteredMap
+}
+
 func setTemplatePaths(root *data.TemplateQueryRow) {
 	for _, c := range root.Children {
 		c.Path = root.Path + "/" + c.Name

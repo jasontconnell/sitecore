@@ -11,6 +11,7 @@ type TemplateNode interface {
 	GetFields() []TemplateFieldNode
 	GetAllFields() []TemplateFieldNode
 	GetField(id uuid.UUID) TemplateFieldNode
+	FindField(name string) TemplateFieldNode
 
 	GetBaseTemplates() []TemplateNode
 	AddBaseTemplate(base TemplateNode)
