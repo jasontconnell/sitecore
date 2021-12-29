@@ -1,6 +1,7 @@
 package sitecore
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -9,6 +10,18 @@ import (
 )
 
 var connstr string = os.Getenv("SitecoreAPITestConnectionString")
+
+func TestBlob(t *testing.T) {
+	id := api.MustParseUUID("{8A28BA6E-5A13-47E8-8D25-983D3BD0E761}")
+	b, err := api.LoadBlob(connstr, id)
+
+	if err != nil {
+		t.Log(err)
+		t.Fail()
+	}
+
+	fmt.Println(b.GetData(), b.GetId())
+}
 
 func TestLoadItemMap(t *testing.T) {
 	t.Log(connstr)
