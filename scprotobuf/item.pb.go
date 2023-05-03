@@ -193,385 +193,6 @@ func (x *MappedItemRecord) GetItem() *ItemRecord {
 	return nil
 }
 
-type MappedSharedData struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ID              *Guid                   `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	SharedDataItems []*MappedSharedDataItem `protobuf:"bytes,2,rep,name=SharedDataItems,proto3" json:"SharedDataItems,omitempty"`
-}
-
-func (x *MappedSharedData) Reset() {
-	*x = MappedSharedData{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_scprotobuf_item_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MappedSharedData) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MappedSharedData) ProtoMessage() {}
-
-func (x *MappedSharedData) ProtoReflect() protoreflect.Message {
-	mi := &file_scprotobuf_item_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MappedSharedData.ProtoReflect.Descriptor instead.
-func (*MappedSharedData) Descriptor() ([]byte, []int) {
-	return file_scprotobuf_item_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *MappedSharedData) GetID() *Guid {
-	if x != nil {
-		return x.ID
-	}
-	return nil
-}
-
-func (x *MappedSharedData) GetSharedDataItems() []*MappedSharedDataItem {
-	if x != nil {
-		return x.SharedDataItems
-	}
-	return nil
-}
-
-type MappedSharedDataItem struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ID    *Guid  `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
-}
-
-func (x *MappedSharedDataItem) Reset() {
-	*x = MappedSharedDataItem{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_scprotobuf_item_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MappedSharedDataItem) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MappedSharedDataItem) ProtoMessage() {}
-
-func (x *MappedSharedDataItem) ProtoReflect() protoreflect.Message {
-	mi := &file_scprotobuf_item_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MappedSharedDataItem.ProtoReflect.Descriptor instead.
-func (*MappedSharedDataItem) Descriptor() ([]byte, []int) {
-	return file_scprotobuf_item_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *MappedSharedDataItem) GetID() *Guid {
-	if x != nil {
-		return x.ID
-	}
-	return nil
-}
-
-func (x *MappedSharedDataItem) GetValue() string {
-	if x != nil {
-		return x.Value
-	}
-	return ""
-}
-
-type MappedItemsLanguagesData struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ID           *Guid                      `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	LanguageData []*MappedItemLanguagesData `protobuf:"bytes,2,rep,name=LanguageData,proto3" json:"LanguageData,omitempty"`
-}
-
-func (x *MappedItemsLanguagesData) Reset() {
-	*x = MappedItemsLanguagesData{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_scprotobuf_item_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MappedItemsLanguagesData) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MappedItemsLanguagesData) ProtoMessage() {}
-
-func (x *MappedItemsLanguagesData) ProtoReflect() protoreflect.Message {
-	mi := &file_scprotobuf_item_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MappedItemsLanguagesData.ProtoReflect.Descriptor instead.
-func (*MappedItemsLanguagesData) Descriptor() ([]byte, []int) {
-	return file_scprotobuf_item_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *MappedItemsLanguagesData) GetID() *Guid {
-	if x != nil {
-		return x.ID
-	}
-	return nil
-}
-
-func (x *MappedItemsLanguagesData) GetLanguageData() []*MappedItemLanguagesData {
-	if x != nil {
-		return x.LanguageData
-	}
-	return nil
-}
-
-type MappedItemLanguagesData struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Language     string                `protobuf:"bytes,1,opt,name=Language,proto3" json:"Language,omitempty"`
-	VersionsData []*MappedVersionsData `protobuf:"bytes,2,rep,name=VersionsData,proto3" json:"VersionsData,omitempty"`
-}
-
-func (x *MappedItemLanguagesData) Reset() {
-	*x = MappedItemLanguagesData{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_scprotobuf_item_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MappedItemLanguagesData) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MappedItemLanguagesData) ProtoMessage() {}
-
-func (x *MappedItemLanguagesData) ProtoReflect() protoreflect.Message {
-	mi := &file_scprotobuf_item_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MappedItemLanguagesData.ProtoReflect.Descriptor instead.
-func (*MappedItemLanguagesData) Descriptor() ([]byte, []int) {
-	return file_scprotobuf_item_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *MappedItemLanguagesData) GetLanguage() string {
-	if x != nil {
-		return x.Language
-	}
-	return ""
-}
-
-func (x *MappedItemLanguagesData) GetVersionsData() []*MappedVersionsData {
-	if x != nil {
-		return x.VersionsData
-	}
-	return nil
-}
-
-type MappedVersionsData struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Version int32               `protobuf:"varint,1,opt,name=Version,proto3" json:"Version,omitempty"`
-	Fields  []*MappedFieldsData `protobuf:"bytes,2,rep,name=Fields,proto3" json:"Fields,omitempty"`
-}
-
-func (x *MappedVersionsData) Reset() {
-	*x = MappedVersionsData{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_scprotobuf_item_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MappedVersionsData) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MappedVersionsData) ProtoMessage() {}
-
-func (x *MappedVersionsData) ProtoReflect() protoreflect.Message {
-	mi := &file_scprotobuf_item_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MappedVersionsData.ProtoReflect.Descriptor instead.
-func (*MappedVersionsData) Descriptor() ([]byte, []int) {
-	return file_scprotobuf_item_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *MappedVersionsData) GetVersion() int32 {
-	if x != nil {
-		return x.Version
-	}
-	return 0
-}
-
-func (x *MappedVersionsData) GetFields() []*MappedFieldsData {
-	if x != nil {
-		return x.Fields
-	}
-	return nil
-}
-
-type MappedFieldsData struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ID *Guid `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	// repeated FieldsData Fields = 2;
-	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
-}
-
-func (x *MappedFieldsData) Reset() {
-	*x = MappedFieldsData{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_scprotobuf_item_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MappedFieldsData) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MappedFieldsData) ProtoMessage() {}
-
-func (x *MappedFieldsData) ProtoReflect() protoreflect.Message {
-	mi := &file_scprotobuf_item_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MappedFieldsData.ProtoReflect.Descriptor instead.
-func (*MappedFieldsData) Descriptor() ([]byte, []int) {
-	return file_scprotobuf_item_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *MappedFieldsData) GetID() *Guid {
-	if x != nil {
-		return x.ID
-	}
-	return nil
-}
-
-func (x *MappedFieldsData) GetValue() string {
-	if x != nil {
-		return x.Value
-	}
-	return ""
-}
-
-type FieldsData struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Guid ID = 1;
-	Value string `protobuf:"bytes,1,opt,name=Value,proto3" json:"Value,omitempty"`
-}
-
-func (x *FieldsData) Reset() {
-	*x = FieldsData{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_scprotobuf_item_proto_msgTypes[9]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *FieldsData) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*FieldsData) ProtoMessage() {}
-
-func (x *FieldsData) ProtoReflect() protoreflect.Message {
-	mi := &file_scprotobuf_item_proto_msgTypes[9]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use FieldsData.ProtoReflect.Descriptor instead.
-func (*FieldsData) Descriptor() ([]byte, []int) {
-	return file_scprotobuf_item_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *FieldsData) GetValue() string {
-	if x != nil {
-		return x.Value
-	}
-	return ""
-}
-
 type ItemRecord struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -587,7 +208,7 @@ type ItemRecord struct {
 func (x *ItemRecord) Reset() {
 	*x = ItemRecord{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_scprotobuf_item_proto_msgTypes[10]
+		mi := &file_scprotobuf_item_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -600,7 +221,7 @@ func (x *ItemRecord) String() string {
 func (*ItemRecord) ProtoMessage() {}
 
 func (x *ItemRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_scprotobuf_item_proto_msgTypes[10]
+	mi := &file_scprotobuf_item_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -613,7 +234,7 @@ func (x *ItemRecord) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ItemRecord.ProtoReflect.Descriptor instead.
 func (*ItemRecord) Descriptor() ([]byte, []int) {
-	return file_scprotobuf_item_proto_rawDescGZIP(), []int{10}
+	return file_scprotobuf_item_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ItemRecord) GetID() *Guid {
@@ -651,6 +272,336 @@ func (x *ItemRecord) GetMasterID() *Guid {
 	return nil
 }
 
+type MappedSharedData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ID              *Guid                   `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	SharedDataItems []*MappedSharedDataItem `protobuf:"bytes,2,rep,name=SharedDataItems,proto3" json:"SharedDataItems,omitempty"`
+}
+
+func (x *MappedSharedData) Reset() {
+	*x = MappedSharedData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_scprotobuf_item_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MappedSharedData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MappedSharedData) ProtoMessage() {}
+
+func (x *MappedSharedData) ProtoReflect() protoreflect.Message {
+	mi := &file_scprotobuf_item_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MappedSharedData.ProtoReflect.Descriptor instead.
+func (*MappedSharedData) Descriptor() ([]byte, []int) {
+	return file_scprotobuf_item_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *MappedSharedData) GetID() *Guid {
+	if x != nil {
+		return x.ID
+	}
+	return nil
+}
+
+func (x *MappedSharedData) GetSharedDataItems() []*MappedSharedDataItem {
+	if x != nil {
+		return x.SharedDataItems
+	}
+	return nil
+}
+
+type MappedSharedDataItem struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ID    *Guid  `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+}
+
+func (x *MappedSharedDataItem) Reset() {
+	*x = MappedSharedDataItem{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_scprotobuf_item_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MappedSharedDataItem) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MappedSharedDataItem) ProtoMessage() {}
+
+func (x *MappedSharedDataItem) ProtoReflect() protoreflect.Message {
+	mi := &file_scprotobuf_item_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MappedSharedDataItem.ProtoReflect.Descriptor instead.
+func (*MappedSharedDataItem) Descriptor() ([]byte, []int) {
+	return file_scprotobuf_item_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *MappedSharedDataItem) GetID() *Guid {
+	if x != nil {
+		return x.ID
+	}
+	return nil
+}
+
+func (x *MappedSharedDataItem) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+type MappedItemsLanguagesData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ID           *Guid                      `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	LanguageData []*MappedItemLanguagesData `protobuf:"bytes,2,rep,name=LanguageData,proto3" json:"LanguageData,omitempty"`
+}
+
+func (x *MappedItemsLanguagesData) Reset() {
+	*x = MappedItemsLanguagesData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_scprotobuf_item_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MappedItemsLanguagesData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MappedItemsLanguagesData) ProtoMessage() {}
+
+func (x *MappedItemsLanguagesData) ProtoReflect() protoreflect.Message {
+	mi := &file_scprotobuf_item_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MappedItemsLanguagesData.ProtoReflect.Descriptor instead.
+func (*MappedItemsLanguagesData) Descriptor() ([]byte, []int) {
+	return file_scprotobuf_item_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *MappedItemsLanguagesData) GetID() *Guid {
+	if x != nil {
+		return x.ID
+	}
+	return nil
+}
+
+func (x *MappedItemsLanguagesData) GetLanguageData() []*MappedItemLanguagesData {
+	if x != nil {
+		return x.LanguageData
+	}
+	return nil
+}
+
+type MappedItemLanguagesData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Language     string                `protobuf:"bytes,1,opt,name=Language,proto3" json:"Language,omitempty"`
+	VersionsData []*MappedVersionsData `protobuf:"bytes,2,rep,name=VersionsData,proto3" json:"VersionsData,omitempty"`
+}
+
+func (x *MappedItemLanguagesData) Reset() {
+	*x = MappedItemLanguagesData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_scprotobuf_item_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MappedItemLanguagesData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MappedItemLanguagesData) ProtoMessage() {}
+
+func (x *MappedItemLanguagesData) ProtoReflect() protoreflect.Message {
+	mi := &file_scprotobuf_item_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MappedItemLanguagesData.ProtoReflect.Descriptor instead.
+func (*MappedItemLanguagesData) Descriptor() ([]byte, []int) {
+	return file_scprotobuf_item_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *MappedItemLanguagesData) GetLanguage() string {
+	if x != nil {
+		return x.Language
+	}
+	return ""
+}
+
+func (x *MappedItemLanguagesData) GetVersionsData() []*MappedVersionsData {
+	if x != nil {
+		return x.VersionsData
+	}
+	return nil
+}
+
+type MappedVersionsData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Version int32               `protobuf:"varint,1,opt,name=Version,proto3" json:"Version,omitempty"`
+	Fields  []*MappedFieldsData `protobuf:"bytes,2,rep,name=Fields,proto3" json:"Fields,omitempty"`
+}
+
+func (x *MappedVersionsData) Reset() {
+	*x = MappedVersionsData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_scprotobuf_item_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MappedVersionsData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MappedVersionsData) ProtoMessage() {}
+
+func (x *MappedVersionsData) ProtoReflect() protoreflect.Message {
+	mi := &file_scprotobuf_item_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MappedVersionsData.ProtoReflect.Descriptor instead.
+func (*MappedVersionsData) Descriptor() ([]byte, []int) {
+	return file_scprotobuf_item_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *MappedVersionsData) GetVersion() int32 {
+	if x != nil {
+		return x.Version
+	}
+	return 0
+}
+
+func (x *MappedVersionsData) GetFields() []*MappedFieldsData {
+	if x != nil {
+		return x.Fields
+	}
+	return nil
+}
+
+type MappedFieldsData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ID    *Guid  `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+}
+
+func (x *MappedFieldsData) Reset() {
+	*x = MappedFieldsData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_scprotobuf_item_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MappedFieldsData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MappedFieldsData) ProtoMessage() {}
+
+func (x *MappedFieldsData) ProtoReflect() protoreflect.Message {
+	mi := &file_scprotobuf_item_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MappedFieldsData.ProtoReflect.Descriptor instead.
+func (*MappedFieldsData) Descriptor() ([]byte, []int) {
+	return file_scprotobuf_item_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *MappedFieldsData) GetID() *Guid {
+	if x != nil {
+		return x.ID
+	}
+	return nil
+}
+
+func (x *MappedFieldsData) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
 var File_scprotobuf_item_proto protoreflect.FileDescriptor
 
 var file_scprotobuf_item_proto_rawDesc = []byte{
@@ -676,56 +627,53 @@ var file_scprotobuf_item_proto_rawDesc = []byte{
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e, 0x47, 0x75, 0x69, 0x64, 0x52, 0x02, 0x49, 0x44, 0x12,
 	0x1f, 0x0a, 0x04, 0x49, 0x74, 0x65, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e,
 	0x49, 0x74, 0x65, 0x6d, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x04, 0x49, 0x74, 0x65, 0x6d,
-	0x22, 0x6a, 0x0a, 0x10, 0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x53, 0x68, 0x61, 0x72, 0x65, 0x64,
+	0x22, 0xa4, 0x01, 0x0a, 0x0a, 0x49, 0x74, 0x65, 0x6d, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12,
+	0x15, 0x0a, 0x02, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e, 0x47, 0x75,
+	0x69, 0x64, 0x52, 0x02, 0x49, 0x44, 0x12, 0x12, 0x0a, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x21, 0x0a, 0x08, 0x50, 0x61,
+	0x72, 0x65, 0x6e, 0x74, 0x49, 0x44, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e, 0x47,
+	0x75, 0x69, 0x64, 0x52, 0x08, 0x50, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x49, 0x44, 0x12, 0x25, 0x0a,
+	0x0a, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x49, 0x44, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x05, 0x2e, 0x47, 0x75, 0x69, 0x64, 0x52, 0x0a, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61,
+	0x74, 0x65, 0x49, 0x44, 0x12, 0x21, 0x0a, 0x08, 0x4d, 0x61, 0x73, 0x74, 0x65, 0x72, 0x49, 0x44,
+	0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e, 0x47, 0x75, 0x69, 0x64, 0x52, 0x08, 0x4d,
+	0x61, 0x73, 0x74, 0x65, 0x72, 0x49, 0x44, 0x22, 0x6a, 0x0a, 0x10, 0x4d, 0x61, 0x70, 0x70, 0x65,
+	0x64, 0x53, 0x68, 0x61, 0x72, 0x65, 0x64, 0x44, 0x61, 0x74, 0x61, 0x12, 0x15, 0x0a, 0x02, 0x49,
+	0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e, 0x47, 0x75, 0x69, 0x64, 0x52, 0x02,
+	0x49, 0x44, 0x12, 0x3f, 0x0a, 0x0f, 0x53, 0x68, 0x61, 0x72, 0x65, 0x64, 0x44, 0x61, 0x74, 0x61,
+	0x49, 0x74, 0x65, 0x6d, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x4d, 0x61,
+	0x70, 0x70, 0x65, 0x64, 0x53, 0x68, 0x61, 0x72, 0x65, 0x64, 0x44, 0x61, 0x74, 0x61, 0x49, 0x74,
+	0x65, 0x6d, 0x52, 0x0f, 0x53, 0x68, 0x61, 0x72, 0x65, 0x64, 0x44, 0x61, 0x74, 0x61, 0x49, 0x74,
+	0x65, 0x6d, 0x73, 0x22, 0x43, 0x0a, 0x14, 0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x53, 0x68, 0x61,
+	0x72, 0x65, 0x64, 0x44, 0x61, 0x74, 0x61, 0x49, 0x74, 0x65, 0x6d, 0x12, 0x15, 0x0a, 0x02, 0x49,
+	0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e, 0x47, 0x75, 0x69, 0x64, 0x52, 0x02,
+	0x49, 0x44, 0x12, 0x14, 0x0a, 0x05, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x05, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x6f, 0x0a, 0x18, 0x4d, 0x61, 0x70, 0x70,
+	0x65, 0x64, 0x49, 0x74, 0x65, 0x6d, 0x73, 0x4c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x73,
 	0x44, 0x61, 0x74, 0x61, 0x12, 0x15, 0x0a, 0x02, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x05, 0x2e, 0x47, 0x75, 0x69, 0x64, 0x52, 0x02, 0x49, 0x44, 0x12, 0x3f, 0x0a, 0x0f, 0x53,
-	0x68, 0x61, 0x72, 0x65, 0x64, 0x44, 0x61, 0x74, 0x61, 0x49, 0x74, 0x65, 0x6d, 0x73, 0x18, 0x02,
-	0x20, 0x03, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x53, 0x68, 0x61,
-	0x72, 0x65, 0x64, 0x44, 0x61, 0x74, 0x61, 0x49, 0x74, 0x65, 0x6d, 0x52, 0x0f, 0x53, 0x68, 0x61,
-	0x72, 0x65, 0x64, 0x44, 0x61, 0x74, 0x61, 0x49, 0x74, 0x65, 0x6d, 0x73, 0x22, 0x43, 0x0a, 0x14,
-	0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x53, 0x68, 0x61, 0x72, 0x65, 0x64, 0x44, 0x61, 0x74, 0x61,
-	0x49, 0x74, 0x65, 0x6d, 0x12, 0x15, 0x0a, 0x02, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x05, 0x2e, 0x47, 0x75, 0x69, 0x64, 0x52, 0x02, 0x49, 0x44, 0x12, 0x14, 0x0a, 0x05, 0x56,
-	0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x56, 0x61, 0x6c, 0x75,
-	0x65, 0x22, 0x6f, 0x0a, 0x18, 0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x49, 0x74, 0x65, 0x6d, 0x73,
-	0x4c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x73, 0x44, 0x61, 0x74, 0x61, 0x12, 0x15, 0x0a,
-	0x02, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e, 0x47, 0x75, 0x69, 0x64,
-	0x52, 0x02, 0x49, 0x44, 0x12, 0x3c, 0x0a, 0x0c, 0x4c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65,
-	0x44, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x4d, 0x61, 0x70,
+	0x32, 0x05, 0x2e, 0x47, 0x75, 0x69, 0x64, 0x52, 0x02, 0x49, 0x44, 0x12, 0x3c, 0x0a, 0x0c, 0x4c,
+	0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x44, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x18, 0x2e, 0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x49, 0x74, 0x65, 0x6d, 0x4c, 0x61,
+	0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x73, 0x44, 0x61, 0x74, 0x61, 0x52, 0x0c, 0x4c, 0x61, 0x6e,
+	0x67, 0x75, 0x61, 0x67, 0x65, 0x44, 0x61, 0x74, 0x61, 0x22, 0x6e, 0x0a, 0x17, 0x4d, 0x61, 0x70,
 	0x70, 0x65, 0x64, 0x49, 0x74, 0x65, 0x6d, 0x4c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x73,
-	0x44, 0x61, 0x74, 0x61, 0x52, 0x0c, 0x4c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x44, 0x61,
-	0x74, 0x61, 0x22, 0x6e, 0x0a, 0x17, 0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x49, 0x74, 0x65, 0x6d,
-	0x4c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x73, 0x44, 0x61, 0x74, 0x61, 0x12, 0x1a, 0x0a,
-	0x08, 0x4c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x08, 0x4c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x12, 0x37, 0x0a, 0x0c, 0x56, 0x65, 0x72,
-	0x73, 0x69, 0x6f, 0x6e, 0x73, 0x44, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x13, 0x2e, 0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73,
-	0x44, 0x61, 0x74, 0x61, 0x52, 0x0c, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x44, 0x61,
-	0x74, 0x61, 0x22, 0x59, 0x0a, 0x12, 0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x56, 0x65, 0x72, 0x73,
-	0x69, 0x6f, 0x6e, 0x73, 0x44, 0x61, 0x74, 0x61, 0x12, 0x18, 0x0a, 0x07, 0x56, 0x65, 0x72, 0x73,
-	0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x07, 0x56, 0x65, 0x72, 0x73, 0x69,
-	0x6f, 0x6e, 0x12, 0x29, 0x0a, 0x06, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x73, 0x18, 0x02, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x11, 0x2e, 0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x46, 0x69, 0x65, 0x6c, 0x64,
-	0x73, 0x44, 0x61, 0x74, 0x61, 0x52, 0x06, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x73, 0x22, 0x3f, 0x0a,
-	0x10, 0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x73, 0x44, 0x61, 0x74,
-	0x61, 0x12, 0x15, 0x0a, 0x02, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e,
-	0x47, 0x75, 0x69, 0x64, 0x52, 0x02, 0x49, 0x44, 0x12, 0x14, 0x0a, 0x05, 0x56, 0x61, 0x6c, 0x75,
-	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x22,
-	0x0a, 0x0a, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x73, 0x44, 0x61, 0x74, 0x61, 0x12, 0x14, 0x0a, 0x05,
-	0x56, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x56, 0x61, 0x6c,
-	0x75, 0x65, 0x22, 0xa4, 0x01, 0x0a, 0x0a, 0x49, 0x74, 0x65, 0x6d, 0x52, 0x65, 0x63, 0x6f, 0x72,
-	0x64, 0x12, 0x15, 0x0a, 0x02, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e,
-	0x47, 0x75, 0x69, 0x64, 0x52, 0x02, 0x49, 0x44, 0x12, 0x12, 0x0a, 0x04, 0x4e, 0x61, 0x6d, 0x65,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x21, 0x0a, 0x08,
-	0x50, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x49, 0x44, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x05,
-	0x2e, 0x47, 0x75, 0x69, 0x64, 0x52, 0x08, 0x50, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x49, 0x44, 0x12,
-	0x25, 0x0a, 0x0a, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x49, 0x44, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e, 0x47, 0x75, 0x69, 0x64, 0x52, 0x0a, 0x54, 0x65, 0x6d, 0x70,
-	0x6c, 0x61, 0x74, 0x65, 0x49, 0x44, 0x12, 0x21, 0x0a, 0x08, 0x4d, 0x61, 0x73, 0x74, 0x65, 0x72,
-	0x49, 0x44, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e, 0x47, 0x75, 0x69, 0x64, 0x52,
-	0x08, 0x4d, 0x61, 0x73, 0x74, 0x65, 0x72, 0x49, 0x44, 0x42, 0x0f, 0x5a, 0x0d, 0x2e, 0x2e, 0x2f,
-	0x73, 0x63, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x44, 0x61, 0x74, 0x61, 0x12, 0x1a, 0x0a, 0x08, 0x4c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x4c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65,
+	0x12, 0x37, 0x0a, 0x0c, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x44, 0x61, 0x74, 0x61,
+	0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x56,
+	0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x44, 0x61, 0x74, 0x61, 0x52, 0x0c, 0x56, 0x65, 0x72,
+	0x73, 0x69, 0x6f, 0x6e, 0x73, 0x44, 0x61, 0x74, 0x61, 0x22, 0x59, 0x0a, 0x12, 0x4d, 0x61, 0x70,
+	0x70, 0x65, 0x64, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x44, 0x61, 0x74, 0x61, 0x12,
+	0x18, 0x0a, 0x07, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05,
+	0x52, 0x07, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x29, 0x0a, 0x06, 0x46, 0x69, 0x65,
+	0x6c, 0x64, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x4d, 0x61, 0x70, 0x70,
+	0x65, 0x64, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x73, 0x44, 0x61, 0x74, 0x61, 0x52, 0x06, 0x46, 0x69,
+	0x65, 0x6c, 0x64, 0x73, 0x22, 0x3f, 0x0a, 0x10, 0x4d, 0x61, 0x70, 0x70, 0x65, 0x64, 0x46, 0x69,
+	0x65, 0x6c, 0x64, 0x73, 0x44, 0x61, 0x74, 0x61, 0x12, 0x15, 0x0a, 0x02, 0x49, 0x44, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e, 0x47, 0x75, 0x69, 0x64, 0x52, 0x02, 0x49, 0x44, 0x12,
+	0x14, 0x0a, 0x05, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
+	0x56, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x0f, 0x5a, 0x0d, 0x2e, 0x2e, 0x2f, 0x73, 0x63, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -740,38 +688,37 @@ func file_scprotobuf_item_proto_rawDescGZIP() []byte {
 	return file_scprotobuf_item_proto_rawDescData
 }
 
-var file_scprotobuf_item_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_scprotobuf_item_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_scprotobuf_item_proto_goTypes = []interface{}{
 	(*Guid)(nil),                     // 0: Guid
 	(*ItemsData)(nil),                // 1: ItemsData
 	(*MappedItemRecord)(nil),         // 2: MappedItemRecord
-	(*MappedSharedData)(nil),         // 3: MappedSharedData
-	(*MappedSharedDataItem)(nil),     // 4: MappedSharedDataItem
-	(*MappedItemsLanguagesData)(nil), // 5: MappedItemsLanguagesData
-	(*MappedItemLanguagesData)(nil),  // 6: MappedItemLanguagesData
-	(*MappedVersionsData)(nil),       // 7: MappedVersionsData
-	(*MappedFieldsData)(nil),         // 8: MappedFieldsData
-	(*FieldsData)(nil),               // 9: FieldsData
-	(*ItemRecord)(nil),               // 10: ItemRecord
+	(*ItemRecord)(nil),               // 3: ItemRecord
+	(*MappedSharedData)(nil),         // 4: MappedSharedData
+	(*MappedSharedDataItem)(nil),     // 5: MappedSharedDataItem
+	(*MappedItemsLanguagesData)(nil), // 6: MappedItemsLanguagesData
+	(*MappedItemLanguagesData)(nil),  // 7: MappedItemLanguagesData
+	(*MappedVersionsData)(nil),       // 8: MappedVersionsData
+	(*MappedFieldsData)(nil),         // 9: MappedFieldsData
 }
 var file_scprotobuf_item_proto_depIdxs = []int32{
 	2,  // 0: ItemsData.ItemDefinitions:type_name -> MappedItemRecord
-	3,  // 1: ItemsData.SharedData:type_name -> MappedSharedData
-	5,  // 2: ItemsData.LanguageData:type_name -> MappedItemsLanguagesData
+	4,  // 1: ItemsData.SharedData:type_name -> MappedSharedData
+	6,  // 2: ItemsData.LanguageData:type_name -> MappedItemsLanguagesData
 	0,  // 3: MappedItemRecord.ID:type_name -> Guid
-	10, // 4: MappedItemRecord.Item:type_name -> ItemRecord
-	0,  // 5: MappedSharedData.ID:type_name -> Guid
-	4,  // 6: MappedSharedData.SharedDataItems:type_name -> MappedSharedDataItem
-	0,  // 7: MappedSharedDataItem.ID:type_name -> Guid
-	0,  // 8: MappedItemsLanguagesData.ID:type_name -> Guid
-	6,  // 9: MappedItemsLanguagesData.LanguageData:type_name -> MappedItemLanguagesData
-	7,  // 10: MappedItemLanguagesData.VersionsData:type_name -> MappedVersionsData
-	8,  // 11: MappedVersionsData.Fields:type_name -> MappedFieldsData
-	0,  // 12: MappedFieldsData.ID:type_name -> Guid
-	0,  // 13: ItemRecord.ID:type_name -> Guid
-	0,  // 14: ItemRecord.ParentID:type_name -> Guid
-	0,  // 15: ItemRecord.TemplateID:type_name -> Guid
-	0,  // 16: ItemRecord.MasterID:type_name -> Guid
+	3,  // 4: MappedItemRecord.Item:type_name -> ItemRecord
+	0,  // 5: ItemRecord.ID:type_name -> Guid
+	0,  // 6: ItemRecord.ParentID:type_name -> Guid
+	0,  // 7: ItemRecord.TemplateID:type_name -> Guid
+	0,  // 8: ItemRecord.MasterID:type_name -> Guid
+	0,  // 9: MappedSharedData.ID:type_name -> Guid
+	5,  // 10: MappedSharedData.SharedDataItems:type_name -> MappedSharedDataItem
+	0,  // 11: MappedSharedDataItem.ID:type_name -> Guid
+	0,  // 12: MappedItemsLanguagesData.ID:type_name -> Guid
+	7,  // 13: MappedItemsLanguagesData.LanguageData:type_name -> MappedItemLanguagesData
+	8,  // 14: MappedItemLanguagesData.VersionsData:type_name -> MappedVersionsData
+	9,  // 15: MappedVersionsData.Fields:type_name -> MappedFieldsData
+	0,  // 16: MappedFieldsData.ID:type_name -> Guid
 	17, // [17:17] is the sub-list for method output_type
 	17, // [17:17] is the sub-list for method input_type
 	17, // [17:17] is the sub-list for extension type_name
@@ -822,7 +769,7 @@ func file_scprotobuf_item_proto_init() {
 			}
 		}
 		file_scprotobuf_item_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MappedSharedData); i {
+			switch v := v.(*ItemRecord); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -834,7 +781,7 @@ func file_scprotobuf_item_proto_init() {
 			}
 		}
 		file_scprotobuf_item_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MappedSharedDataItem); i {
+			switch v := v.(*MappedSharedData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -846,7 +793,7 @@ func file_scprotobuf_item_proto_init() {
 			}
 		}
 		file_scprotobuf_item_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MappedItemsLanguagesData); i {
+			switch v := v.(*MappedSharedDataItem); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -858,7 +805,7 @@ func file_scprotobuf_item_proto_init() {
 			}
 		}
 		file_scprotobuf_item_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MappedItemLanguagesData); i {
+			switch v := v.(*MappedItemsLanguagesData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -870,7 +817,7 @@ func file_scprotobuf_item_proto_init() {
 			}
 		}
 		file_scprotobuf_item_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MappedVersionsData); i {
+			switch v := v.(*MappedItemLanguagesData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -882,7 +829,7 @@ func file_scprotobuf_item_proto_init() {
 			}
 		}
 		file_scprotobuf_item_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MappedFieldsData); i {
+			switch v := v.(*MappedVersionsData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -894,19 +841,7 @@ func file_scprotobuf_item_proto_init() {
 			}
 		}
 		file_scprotobuf_item_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FieldsData); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_scprotobuf_item_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ItemRecord); i {
+			switch v := v.(*MappedFieldsData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -925,7 +860,7 @@ func file_scprotobuf_item_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_scprotobuf_item_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

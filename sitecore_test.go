@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"testing"
 	"time"
 
@@ -13,7 +14,7 @@ import (
 	"github.com/jasontconnell/sitecore/scprotobuf"
 )
 
-var connstr string = "user id=aws_migration_user;password=kQ7oQ1bsSoZsSzlXWf5UHMxMrOaHMm2wpzTuujFV7CaIHaA34EtCU7ZPAQE;server=dev-mssql-1.hosted.mydelphic.com;database=Wolftrap10_Master"
+var connstr string = os.Getenv("SitecoreAPITestConnectionString")
 
 func TestBlob(t *testing.T) {
 	id := api.MustParseUUID("{8A28BA6E-5A13-47E8-8D25-983D3BD0E761}")

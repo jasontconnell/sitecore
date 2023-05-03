@@ -18,6 +18,14 @@ message MappedItemRecord {
     ItemRecord Item = 2;
 }
 
+message ItemRecord {
+    Guid ID = 1;
+    string Name = 2;
+    Guid ParentID = 3;
+    Guid TemplateID = 4;
+    Guid MasterID = 5;
+}
+
 message MappedSharedData {
     Guid ID = 1;
     repeated MappedSharedDataItem SharedDataItems = 2;
@@ -45,19 +53,5 @@ message MappedVersionsData {
 
 message MappedFieldsData {
     Guid ID = 1;
-    //repeated FieldsData Fields = 2;
     string Value = 2;
-}
-
-message FieldsData {
-    //Guid ID = 1;
-    string Value = 1;
-}
-
-message ItemRecord {
-    Guid ID = 1;
-    string Name = 2;
-    Guid ParentID = 3;
-    Guid TemplateID = 4;
-    Guid MasterID = 5;
 }
