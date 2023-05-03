@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+option go_package = "../scprotobuf";
+
+message Guid {
+    optional fixed64 lo = 1;
+    optional fixed64 hi = 2;
+}
+
+message ItemsData {
+    repeated MappedItemRecord ItemDefinitions = 1;
+    repeated MappedSharedData SharedData = 2;
+    repeated MappedItemsLanguagesData LanguageData = 3;
+}
+
+message MappedItemRecord {
+    Guid ID = 1;
+    ItemRecord Item = 2;
+}
+
+message MappedSharedData {
+    Guid ID = 1;
+    repeated MappedSharedDataItem SharedDataItems = 2;
+}
+
+message MappedSharedDataItem {
+    Guid ID = 1;
+    string Value = 2;
+}
+
+message MappedItemsLanguagesData {
+    Guid ID = 1;
+    repeated MappedItemLanguagesData LanguageData = 2;
+}
+
+message MappedItemLanguagesData {
+    string Language = 1;
+    repeated MappedVersionsData VersionsData = 2;
+}
+
+message MappedVersionsData {
+    int32 Version = 1;
+    repeated MappedFieldsData Fields = 2;
+}
+
+message MappedFieldsData {
+    Guid ID = 1;
+    //repeated FieldsData Fields = 2;
+    string Value = 2;
+}
+
+message FieldsData {
+    //Guid ID = 1;
+    string Value = 1;
+}
+
+message ItemRecord {
+    Guid ID = 1;
+    string Name = 2;
+    Guid ParentID = 3;
+    Guid TemplateID = 4;
+    Guid MasterID = 5;
+}

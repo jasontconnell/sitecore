@@ -3,13 +3,16 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"io/ioutil"
 	"strings"
 	"sync"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/google/uuid"
 	"github.com/jasontconnell/sitecore/data"
+	"github.com/jasontconnell/sitecore/scprotobuf"
 	"github.com/jasontconnell/sqlhelp"
+	"google.golang.org/protobuf/proto"
 )
 
 var emptyUuid uuid.UUID = MustParseUUID("00000000-0000-0000-0000-000000000000")
@@ -240,6 +243,10 @@ func LoadFieldValuesMetadata(connstr string, c int) ([]data.FieldValueNode, erro
 }
 
 func LoadFilteredFieldValues(connstr string, fieldIds []uuid.UUID, c int) ([]data.FieldValueNode, error) {
+	if len(fieldIds) == 0 {
+		return LoadFieldsParallel(connstr, c)
+	}
+
 	filters := []string{}
 	for _, fieldId := range fieldIds {
 		filters = append(filters, "'"+fieldId.String()+"'")
@@ -418,4 +425,30 @@ func getUUID(val interface{}) uuid.UUID {
 	}
 
 	return id
+}
+
+func ReadProtobuf(filename string) (data.ItemMap, error) {
+	b, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't read items from protobuf file %s. %w", filename, err)
+	}
+
+	m := make(data.ItemMap)
+
+	var items scprotobuf.ItemsData
+	err = proto.Unmarshal(b, &items)
+
+	for _, pitem := range items.ItemDefinitions {
+		n := data.NewItemNode(
+			MustParseUUIDProto(*pitem.ID.Lo, *pitem.ID.Hi),
+			pitem.Item.Name,
+			MustParseUUIDProto(*pitem.Item.TemplateID.Lo, *pitem.Item.TemplateID.Hi),
+			MustParseUUIDProto(*pitem.Item.ParentID.Lo, *pitem.Item.ParentID.Hi),
+			MustParseUUIDProto(*pitem.Item.MasterID.Lo, *pitem.Item.MasterID.Hi),
+		)
+
+		m[n.GetId()] = n
+	}
+
+	return m, nil
 }

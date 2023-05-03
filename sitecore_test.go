@@ -1,15 +1,19 @@
 package sitecore
 
 import (
+	"encoding/binary"
 	"fmt"
-	"os"
+	"io/ioutil"
 	"testing"
 	"time"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/google/uuid"
 	"github.com/jasontconnell/sitecore/api"
+	"github.com/jasontconnell/sitecore/scprotobuf"
 )
 
-var connstr string = os.Getenv("SitecoreAPITestConnectionString")
+var connstr string = "user id=aws_migration_user;password=kQ7oQ1bsSoZsSzlXWf5UHMxMrOaHMm2wpzTuujFV7CaIHaA34EtCU7ZPAQE;server=dev-mssql-1.hosted.mydelphic.com;database=Wolftrap10_Master"
 
 func TestBlob(t *testing.T) {
 	id := api.MustParseUUID("{8A28BA6E-5A13-47E8-8D25-983D3BD0E761}")
@@ -172,4 +176,96 @@ func BenchmarkFieldLoadParallel(b *testing.B) {
 	if len(fields) == 0 {
 		b.Fatal("No fields")
 	}
+}
+
+func TestProtobuf(t *testing.T) {
+	file := `c:\inetpub\wwwroot\Wolftrap\Website\App_Data\items\master\items.master.dat`
+
+	b, err := ioutil.ReadFile(file)
+	if err != nil {
+		t.Fail()
+	}
+	t.Log(len(b))
+
+	var items scprotobuf.ItemsData
+	err = proto.Unmarshal(b, &items)
+	if err != nil {
+		t.Log(err.Error())
+		t.Fail()
+	}
+
+	// t.Log(len(items.ItemDefinitions))
+	// for _, d := range items.ItemDefinitions {
+	// 	id, err := getUuid(*d.ID.Lo, *d.ID.Hi)
+	// 	if err != nil {
+	// 		t.Log(err.Error())
+	// 		t.Fail()
+	// 		break
+	// 	}
+
+	// 	t.Log(id)
+
+	// 	if d.Item != nil {
+	// 		t.Log(d.Item.Name)
+	// 	}
+	// }
+
+	// t.Log("Shared Data")
+	// t.Log(len(items.SharedData))
+	// for _, d := range items.SharedData {
+	// 	for _, s := range d.SharedDataItems {
+	// 		id, _ := getUuid(*s.ID.Lo, *s.ID.Hi)
+	// 		t.Log(id, s.Value)
+	// 	}
+	// }
+
+	t.Log("Languages Data")
+	t.Log(len(items.LanguageData))
+	for _, d := range items.LanguageData {
+		t.Log("language data ------------")
+		t.Log(getUuid(*d.ID.Lo, *d.ID.Hi))
+		t.Log("language data len", len(d.LanguageData))
+		for _, l := range d.LanguageData {
+			t.Log(l.Language)
+			for _, v := range l.VersionsData {
+				t.Log(v.Version, len(v.Fields))
+				for _, f := range v.Fields {
+					t.Log(getUuid(*f.ID.Lo, *f.ID.Hi))
+					t.Log(f.Value)
+				}
+			}
+		}
+	}
+}
+
+func getUuid(lo, hi uint64) (uuid.UUID, error) {
+	if lo == 0 && hi == 0 {
+		return uuid.Nil, nil
+	}
+
+	var b uint32 = uint32(lo >> 32)
+	var a uint32 = uint32(lo)
+
+	var h uint32 = uint32(hi >> 32)
+	var d uint32 = uint32(hi)
+
+	var bytes []byte
+	bytes = binary.BigEndian.AppendUint32(bytes, uint32(a))
+	bytes = binary.BigEndian.AppendUint16(bytes, uint16(b))
+	bytes = binary.BigEndian.AppendUint16(bytes, uint16(b>>16))
+
+	var bsub []byte = make([]byte, 2)
+	binary.BigEndian.PutUint16(bsub, uint16(d))
+	bytes = append(bytes, bsub[1], bsub[0])
+
+	binary.BigEndian.PutUint16(bsub, uint16(d>>16))
+	bytes = append(bytes, bsub[1], bsub[0])
+
+	binary.BigEndian.PutUint16(bsub, uint16(h))
+	bytes = append(bytes, bsub[1], bsub[0])
+
+	binary.BigEndian.PutUint16(bsub, uint16(h>>16))
+	bytes = append(bytes, bsub[1], bsub[0])
+
+	return uuid.FromBytes(bytes)
 }
