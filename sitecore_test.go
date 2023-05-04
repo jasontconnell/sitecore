@@ -185,19 +185,15 @@ func TestReadHybrid(t *testing.T) {
 	if err != nil {
 		t.Log(err)
 		t.Fail()
-		return
 	}
 	dbitems, err := api.LoadItems(connstr)
 	if err != nil {
 		t.Log(err)
 		t.Fail()
-		return
 	}
 
 	all := append(pitems, dbitems...)
-
 	root, m := api.LoadItemMap(all)
-
 	t.Log(root.GetId(), len(m))
 }
 

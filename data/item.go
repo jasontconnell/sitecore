@@ -167,7 +167,7 @@ func (t *item) GetVersionedFieldValues() map[FieldValueKey]FieldValueNode {
 
 func (t *item) GetVersionedFieldKeys(language Language, version int64) []FieldValueKey {
 	keys := []FieldValueKey{}
-	for k, _ := range t.versionedFieldValues {
+	for k := range t.versionedFieldValues {
 		if k.Version == version && k.Language == language {
 			keys = append(keys, k)
 		}

@@ -32,3 +32,8 @@ var StandardTemplateID = uuid.Must(uuid.Parse("1930BBEB-7805-471A-A3BE-4858AC7CF
 var StandardValuesFieldId = uuid.Must(uuid.Parse("F7D48A55-2158-4F02-9356-756654404F73"))
 
 var BlobFieldId = uuid.Must(uuid.Parse("40E50ED9-BA07-4702-992E-A912738D32DC"))
+
+var FieldTypeFieldId = uuid.Must(uuid.Parse("AB162CC0-DC80-4ABF-8871-998EE5D7BA32"))
+var BaseTemplatesFieldId = uuid.Must(uuid.Parse("12C33F3F-86C5-43A5-AEB4-5598CEC45116"))
+var UnversionedFieldId = uuid.Must(uuid.Parse("39847666-389d-409b-95bd-f2016f11eed5"))
+var SharedFieldId = uuid.Must(uuid.Parse("be351a73-fcb0-4213-93fa-c302d8ab4f51"))

@@ -8,15 +8,81 @@ import (
 	"github.com/jasontconnell/sitecore/data"
 )
 
-func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
+func LoadTemplatesMergeProtobuf(connstr string, items []data.ItemNode) ([]data.TemplateNode, error) {
 	list, err := loadTemplatesFromDb(connstr)
 	if err != nil {
 		return nil, err
 	}
 
+	merged := []*data.TemplateQueryRow{}
+	if items != nil {
+		for _, item := range items {
+			var btids []uuid.UUID
+			for _, fld := range item.GetFieldValues() {
+				if fld.GetFieldId() != data.BaseTemplatesFieldId {
+					continue
+				}
+
+				baseIds := strings.Split(fld.GetValue(), "|")
+				for _, b := range baseIds {
+					if len(b) == 0 {
+						continue
+					}
+					btids = append(btids, MustParseUUID(b))
+				}
+			}
+
+			var ftype string
+			var unversioned, shared string = "0", "0"
+			for _, sect := range item.GetChildren() {
+				if sect.GetTemplateId() != data.TemplateSectionID {
+					continue
+				}
+				for _, fld := range sect.GetChildren() {
+					if fld.GetTemplateId() != data.TemplateFieldID {
+						continue
+					}
+
+					for _, f := range fld.GetFieldValues() {
+						if f.GetFieldId() == data.FieldTypeFieldId {
+							ftype = f.GetValue()
+						}
+
+						if f.GetFieldId() == data.UnversionedFieldId {
+							unversioned = f.GetValue()
+						}
+
+						if f.GetFieldId() == data.SharedFieldId {
+							shared = f.GetValue()
+						}
+					}
+				}
+			}
+
+			tr := &data.TemplateQueryRow{
+				ID:              item.GetId(),
+				Name:            item.GetName(),
+				TemplateID:      item.GetTemplateId(),
+				ParentID:        item.GetParentId(),
+				MasterID:        item.GetMasterId(),
+				BaseTemplateIds: btids,
+				Type:            ftype,
+				Shared:          shared,
+				Unversioned:     unversioned,
+				Path:            "",
+			}
+
+			merged = append(merged, tr)
+		}
+	}
+
 	trmap := make(map[uuid.UUID]*data.TemplateQueryRow)
 
 	for _, tr := range list {
+		trmap[tr.ID] = tr
+	}
+
+	for _, tr := range merged {
 		trmap[tr.ID] = tr
 	}
 
@@ -52,6 +118,10 @@ func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
 	}
 
 	return templates, nil
+}
+
+func LoadTemplates(connstr string) ([]data.TemplateNode, error) {
+	return LoadTemplatesMergeProtobuf(connstr, nil)
 }
 
 func GetTemplateMap(tlist []data.TemplateNode) data.TemplateMap {

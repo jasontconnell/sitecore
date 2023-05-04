@@ -348,22 +348,23 @@ func LoadFilteredFieldValues(connstr string, fieldIds []uuid.UUID, c int) ([]dat
 
 func loadTemplatesFromDb(connstr string) ([]*data.TemplateQueryRow, error) {
 	query := fmt.Sprintf(itemSelect, `isnull(sf.Value, '') as Type, isnull(Replace(Replace(UPPER(b.Value), '}',''), '{', ''), '') as BaseTemplates, isnull(Replace(Replace(UPPER(sv.Value), '}',''), '{', ''), '') as StandardValuesId, isnull(sh.Value, '0') as Shared, isnull(unv.Value, '0') as Unversioned`,
-		`left join SharedFields sf
-                    on i.ID = sf.ItemId
-                        and sf.FieldId = 'AB162CC0-DC80-4ABF-8871-998EE5D7BA32'
-                left join SharedFields b
-                    on i.ID = b.ItemID
-						and b.FieldId = '12C33F3F-86C5-43A5-AEB4-5598CEC45116'
-				left join SharedFields sv
-						on i.ID = sv.ItemID
-							and sv.FieldId = 'F7D48A55-2158-4F02-9356-756654404F73'
-				left join SharedFields sh
-					on i.ID = sh.ItemID
-						and sh.FieldId = 'BE351A73-FCB0-4213-93FA-C302D8AB4F51'
-				left join SharedFields unv
-					on i.ID = unv.ItemID
-						and unv.FieldId = '39847666-389D-409B-95BD-F2016F11EED5'
-						`)
+		`
+		left join SharedFields sf
+			on i.ID = sf.ItemId
+				and sf.FieldId = 'AB162CC0-DC80-4ABF-8871-998EE5D7BA32'
+		left join SharedFields b
+			on i.ID = b.ItemID
+				and b.FieldId = '12C33F3F-86C5-43A5-AEB4-5598CEC45116'
+		left join SharedFields sv
+				on i.ID = sv.ItemID
+					and sv.FieldId = 'F7D48A55-2158-4F02-9356-756654404F73'
+		left join SharedFields sh
+			on i.ID = sh.ItemID
+				and sh.FieldId = 'BE351A73-FCB0-4213-93FA-C302D8AB4F51'
+		left join SharedFields unv
+			on i.ID = unv.ItemID
+				and unv.FieldId = '39847666-389D-409B-95BD-F2016F11EED5'
+		`)
 
 	conn, cerr := sql.Open("mssql", connstr)
 	if cerr != nil {
@@ -433,15 +434,14 @@ func ReadProtobuf(filename string) ([]data.ItemNode, error) {
 		return nil, fmt.Errorf("couldn't read items from protobuf file %s. %w", filename, err)
 	}
 
-	list := []data.ItemNode{}
-
 	var items scprotobuf.ItemsData
 	err = proto.Unmarshal(b, &items)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't deserialize items from protobuf file %s. %w", filename, err)
 	}
 
-	nmap := make(map[uuid.UUID]string)
+	var list []data.ItemNode
+	nmap := make(map[uuid.UUID]data.ItemNode)
 	for _, pitem := range items.ItemDefinitions {
 		n := data.NewItemNode(
 			getUUIDFromProtoGuid(pitem.ID),
@@ -451,8 +451,7 @@ func ReadProtobuf(filename string) ([]data.ItemNode, error) {
 			getUUIDFromProtoGuid(pitem.Item.MasterID),
 		)
 
-		nmap[n.GetId()] = n.GetName()
-
+		nmap[n.GetId()] = n
 		list = append(list, n)
 	}
 
@@ -469,7 +468,11 @@ func ReadProtobuf(filename string) ([]data.ItemNode, error) {
 					}
 
 					fieldID := getUUIDFromProtoGuid(f.ID)
-					name := nmap[fieldID]
+					fldItem, ok := nmap[fieldID]
+					var name string
+					if ok {
+						name = fldItem.GetName()
+					}
 
 					fv := data.NewFieldValue(fieldID, id, name, f.Value, data.Language(ld.Language), int64(v.Version), data.VersionedFields)
 					flist = append(flist, fv)
@@ -485,9 +488,12 @@ func ReadProtobuf(filename string) ([]data.ItemNode, error) {
 
 		for _, fld := range sfld.SharedDataItems {
 			fieldID := getUUIDFromProtoGuid(fld.ID)
-			name := nmap[fieldID]
+			fldItem, ok := nmap[fieldID]
+			var name string
+			if ok {
+				name = fldItem.GetName()
+			}
 			fv := data.NewFieldValue(fieldID, id, name, fld.Value, data.English, 1, data.SharedFields)
-
 			m[id] = append(m[id], fv)
 		}
 	}
@@ -497,6 +503,14 @@ func ReadProtobuf(filename string) ([]data.ItemNode, error) {
 
 		for _, f := range flds {
 			list[i].AddFieldValue(f)
+		}
+	}
+
+	for _, item := range list {
+		parent, ok := nmap[item.GetParentId()]
+		if ok {
+			item.SetParent(parent)
+			item.GetParent().AddChild(item)
 		}
 	}
 
