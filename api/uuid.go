@@ -41,19 +41,10 @@ func ParseUUIDProto(lo, hi uint64) (uuid.UUID, error) {
 	bytes = binary.BigEndian.AppendUint32(bytes, uint32(a))
 	bytes = binary.BigEndian.AppendUint16(bytes, uint16(b))
 	bytes = binary.BigEndian.AppendUint16(bytes, uint16(b>>16))
-
-	var bsub []byte = make([]byte, 2)
-	binary.BigEndian.PutUint16(bsub, uint16(d))
-	bytes = append(bytes, bsub[1], bsub[0])
-
-	binary.BigEndian.PutUint16(bsub, uint16(d>>16))
-	bytes = append(bytes, bsub[1], bsub[0])
-
-	binary.BigEndian.PutUint16(bsub, uint16(h))
-	bytes = append(bytes, bsub[1], bsub[0])
-
-	binary.BigEndian.PutUint16(bsub, uint16(h>>16))
-	bytes = append(bytes, bsub[1], bsub[0])
+	bytes = binary.LittleEndian.AppendUint16(bytes, uint16(d))
+	bytes = binary.LittleEndian.AppendUint16(bytes, uint16(d>>16))
+	bytes = binary.LittleEndian.AppendUint16(bytes, uint16(h))
+	bytes = binary.LittleEndian.AppendUint16(bytes, uint16(h>>16))
 
 	return uuid.FromBytes(bytes)
 }

@@ -179,6 +179,28 @@ func BenchmarkFieldLoadParallel(b *testing.B) {
 	}
 }
 
+func TestReadHybrid(t *testing.T) {
+	file := `c:\inetpub\wwwroot\Wolftrap\Website\App_Data\items\master\items.master.dat`
+	pitems, err := api.ReadProtobuf(file)
+	if err != nil {
+		t.Log(err)
+		t.Fail()
+		return
+	}
+	dbitems, err := api.LoadItems(connstr)
+	if err != nil {
+		t.Log(err)
+		t.Fail()
+		return
+	}
+
+	all := append(pitems, dbitems...)
+
+	root, m := api.LoadItemMap(all)
+
+	t.Log(root.GetId(), len(m))
+}
+
 func TestProtobuf(t *testing.T) {
 	file := `c:\inetpub\wwwroot\Wolftrap\Website\App_Data\items\master\items.master.dat`
 
@@ -254,19 +276,10 @@ func getUuid(lo, hi uint64) (uuid.UUID, error) {
 	bytes = binary.BigEndian.AppendUint32(bytes, uint32(a))
 	bytes = binary.BigEndian.AppendUint16(bytes, uint16(b))
 	bytes = binary.BigEndian.AppendUint16(bytes, uint16(b>>16))
-
-	var bsub []byte = make([]byte, 2)
-	binary.BigEndian.PutUint16(bsub, uint16(d))
-	bytes = append(bytes, bsub[1], bsub[0])
-
-	binary.BigEndian.PutUint16(bsub, uint16(d>>16))
-	bytes = append(bytes, bsub[1], bsub[0])
-
-	binary.BigEndian.PutUint16(bsub, uint16(h))
-	bytes = append(bytes, bsub[1], bsub[0])
-
-	binary.BigEndian.PutUint16(bsub, uint16(h>>16))
-	bytes = append(bytes, bsub[1], bsub[0])
+	bytes = binary.LittleEndian.AppendUint16(bytes, uint16(d))
+	bytes = binary.LittleEndian.AppendUint16(bytes, uint16(d>>16))
+	bytes = binary.LittleEndian.AppendUint16(bytes, uint16(h))
+	bytes = binary.LittleEndian.AppendUint16(bytes, uint16(h>>16))
 
 	return uuid.FromBytes(bytes)
 }

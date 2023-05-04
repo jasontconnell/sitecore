@@ -427,28 +427,88 @@ func getUUID(val interface{}) uuid.UUID {
 	return id
 }
 
-func ReadProtobuf(filename string) (data.ItemMap, error) {
+func ReadProtobuf(filename string) ([]data.ItemNode, error) {
 	b, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't read items from protobuf file %s. %w", filename, err)
 	}
 
-	m := make(data.ItemMap)
+	list := []data.ItemNode{}
 
 	var items scprotobuf.ItemsData
 	err = proto.Unmarshal(b, &items)
-
-	for _, pitem := range items.ItemDefinitions {
-		n := data.NewItemNode(
-			MustParseUUIDProto(*pitem.ID.Lo, *pitem.ID.Hi),
-			pitem.Item.Name,
-			MustParseUUIDProto(*pitem.Item.TemplateID.Lo, *pitem.Item.TemplateID.Hi),
-			MustParseUUIDProto(*pitem.Item.ParentID.Lo, *pitem.Item.ParentID.Hi),
-			MustParseUUIDProto(*pitem.Item.MasterID.Lo, *pitem.Item.MasterID.Hi),
-		)
-
-		m[n.GetId()] = n
+	if err != nil {
+		return nil, fmt.Errorf("couldn't deserialize items from protobuf file %s. %w", filename, err)
 	}
 
-	return m, nil
+	nmap := make(map[uuid.UUID]string)
+	for _, pitem := range items.ItemDefinitions {
+		n := data.NewItemNode(
+			getUUIDFromProtoGuid(pitem.ID),
+			pitem.Item.Name,
+			getUUIDFromProtoGuid(pitem.Item.TemplateID),
+			getUUIDFromProtoGuid(pitem.Item.ParentID),
+			getUUIDFromProtoGuid(pitem.Item.MasterID),
+		)
+
+		nmap[n.GetId()] = n.GetName()
+
+		list = append(list, n)
+	}
+
+	m := make(map[uuid.UUID][]data.FieldValueNode)
+	for _, pfld := range items.LanguageData {
+		id := getUUIDFromProtoGuid(pfld.ID)
+
+		var flist []data.FieldValueNode
+		for _, ld := range pfld.LanguageData {
+			for _, v := range ld.VersionsData {
+				for _, f := range v.Fields {
+					if f.Value == "" {
+						continue
+					}
+
+					fieldID := getUUIDFromProtoGuid(f.ID)
+					name := nmap[fieldID]
+
+					fv := data.NewFieldValue(fieldID, id, name, f.Value, data.Language(ld.Language), int64(v.Version), data.VersionedFields)
+					flist = append(flist, fv)
+				}
+			}
+		}
+
+		m[id] = flist
+	}
+
+	for _, sfld := range items.SharedData {
+		id := getUUIDFromProtoGuid(sfld.ID)
+
+		for _, fld := range sfld.SharedDataItems {
+			fieldID := getUUIDFromProtoGuid(fld.ID)
+			name := nmap[fieldID]
+			fv := data.NewFieldValue(fieldID, id, name, fld.Value, data.English, 1, data.SharedFields)
+
+			m[id] = append(m[id], fv)
+		}
+	}
+
+	for i := 0; i < len(list); i++ {
+		flds := m[list[i].GetId()]
+
+		for _, f := range flds {
+			list[i].AddFieldValue(f)
+		}
+	}
+
+	return list, nil
+}
+
+func getUUIDFromProtoGuid(g *scprotobuf.Guid) uuid.UUID {
+	var plo, phi uint64
+	if g != nil {
+		plo = *g.Lo
+		phi = *g.Hi
+	}
+
+	return MustParseUUIDProto(plo, phi)
 }
