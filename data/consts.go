@@ -47,3 +47,4 @@ var DisplayNameFieldId = uuid.Must(uuid.Parse("b5e02ad9-d56f-4c41-a065-a133db87b
 var CreatedByFieldId = uuid.Must(uuid.Parse("5dd74568-4d4b-44c1-b513-0af5f4cda34f"))
 var UpdatedByFieldId = uuid.Must(uuid.Parse("badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"))
 var CreateDateFieldId = uuid.Must(uuid.Parse("25bed78c-4957-4165-998a-ca1b52f67497"))
+var UpdateDateFieldId = uuid.Must(uuid.Parse("d9cf14b1-fa16-4ba6-9288-e8a174d4d522"))
