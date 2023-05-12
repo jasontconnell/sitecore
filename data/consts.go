@@ -37,3 +37,13 @@ var FieldTypeFieldId = uuid.Must(uuid.Parse("AB162CC0-DC80-4ABF-8871-998EE5D7BA3
 var BaseTemplatesFieldId = uuid.Must(uuid.Parse("12C33F3F-86C5-43A5-AEB4-5598CEC45116"))
 var UnversionedFieldId = uuid.Must(uuid.Parse("39847666-389d-409b-95bd-f2016f11eed5"))
 var SharedFieldId = uuid.Must(uuid.Parse("be351a73-fcb0-4213-93fa-c302d8ab4f51"))
+
+var SublayoutRenderingPathFieldId = uuid.Must(uuid.Parse("e42081b6-8a95-4a11-89ce-df70ed502f57"))
+var RenderingDatasourceLocationFieldId = uuid.Must(uuid.Parse("b5b27af1-25ef-405c-87ce-369b3a004016"))
+var RenderingDatasourceTemplateFieldId = uuid.Must(uuid.Parse("1a7c85e5-dc0b-490d-9187-bb1dbcb4c72f"))
+
+var DisplayNameFieldId = uuid.Must(uuid.Parse("b5e02ad9-d56f-4c41-a065-a133db87bdeb"))
+
+var CreatedByFieldId = uuid.Must(uuid.Parse("5dd74568-4d4b-44c1-b513-0af5f4cda34f"))
+var UpdatedByFieldId = uuid.Must(uuid.Parse("badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"))
+var CreateDateFieldId = uuid.Must(uuid.Parse("25bed78c-4957-4165-998a-ca1b52f67497"))
