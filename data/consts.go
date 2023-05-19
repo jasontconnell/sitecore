@@ -42,6 +42,8 @@ var SublayoutRenderingPathFieldId = uuid.Must(uuid.Parse("e42081b6-8a95-4a11-89c
 var RenderingDatasourceLocationFieldId = uuid.Must(uuid.Parse("b5b27af1-25ef-405c-87ce-369b3a004016"))
 var RenderingDatasourceTemplateFieldId = uuid.Must(uuid.Parse("1a7c85e5-dc0b-490d-9187-bb1dbcb4c72f"))
 
+var ControllerRenderingControllerFieldId = uuid.Must(uuid.Parse("e64ad073-dfcc-4d20-8c0b-fe5aa6226cd7"))
+
 var DisplayNameFieldId = uuid.Must(uuid.Parse("b5e02ad9-d56f-4c41-a065-a133db87bdeb"))
 
 var CreatedByFieldId = uuid.Must(uuid.Parse("5dd74568-4d4b-44c1-b513-0af5f4cda34f"))
