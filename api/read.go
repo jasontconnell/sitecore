@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/google/uuid"
+	"github.com/jasontconnell/sitecore/api/queries"
 	"github.com/jasontconnell/sitecore/data"
 	"github.com/jasontconnell/sitecore/scprotobuf"
 	"github.com/jasontconnell/sqlhelp"
@@ -51,6 +52,59 @@ func LoadItems(connstr string) ([]data.ItemNode, error) {
 	}
 
 	return items, nil
+}
+
+func LoadItemsByTemplates(connstr string, templateIds []uuid.UUID) ([]data.ItemNode, error) {
+	conn, cerr := sql.Open("mssql", connstr)
+	if cerr != nil {
+		return nil, cerr
+	}
+
+	defer conn.Close()
+
+	idstr := []string{}
+	for _, id := range templateIds {
+		idstr = append(idstr, "'"+id.String()+"'")
+	}
+
+	recursive := `with ItemSelect (ID, Name, TemplateID, ParentID, MasterID, Created, Updated)
+	as
+	(
+		select ID, Name, TemplateID, ParentID, MasterID, Created, Updated 
+		from Items
+				where TemplateID in (%s)
+		UNION ALL
+		select rec.ID, rec.Name, rec.TemplateID, rec.ParentID, rec.MasterID, rec.Created, rec.Updated
+		from Items rec
+			inner join ItemSelect its
+			on its.ParentID = rec.ID
+	)
+	select distinct
+		cast(i.ID as char(36)) as ID,
+		i.Name,
+		cast(i.TemplateID as char(36)) as TemplateID,
+		cast(i.ParentID as char(36)) as ParentID,
+		cast(i.MasterID as char(36)) as MasterID,
+		i.Created,
+		i.Updated
+	
+	from ItemSelect i;`
+
+	query := fmt.Sprintf(recursive, strings.Join(idstr, ","))
+	records, rerr := sqlhelp.GetResultSet(conn, query)
+
+	if rerr != nil {
+		return nil, rerr
+	}
+
+	var items []data.ItemNode
+	for _, row := range records {
+		item := data.NewItemNode(getUUID(row["ID"]), row["Name"].(string), getUUID(row["TemplateID"]), getUUID(row["ParentID"]), getUUID(row["MasterID"]))
+		items = append(items, item)
+	}
+
+	return items, nil
+
 }
 
 func LoadFields(connstr string) ([]data.FieldValueNode, error) {
@@ -346,25 +400,126 @@ func LoadFilteredFieldValues(connstr string, fieldIds []uuid.UUID, c int) ([]dat
 	return fieldValues, nil
 }
 
+func LoadFieldValuesTemplates(connstr string, fieldIds, templateIds []uuid.UUID, c int) ([]data.FieldValueNode, error) {
+	if len(fieldIds) == 0 {
+		return LoadFieldsParallel(connstr, c)
+	}
+
+	if len(templateIds) == 0 {
+		return LoadFilteredFieldValues(connstr, fieldIds, c)
+	}
+
+	fields := []string{}
+	for _, fieldId := range fieldIds {
+		fields = append(fields, "'"+fieldId.String()+"'")
+	}
+	fieldFilter := strings.Join(fields, ",")
+
+	templates := []string{}
+	for _, tmpId := range templateIds {
+		templates = append(templates, "'"+tmpId.String()+"'")
+	}
+	templateFilter := strings.Join(templates, ",")
+
+	sqlstr := `
+        with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source)
+        as
+        (
+            select
+                ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields'
+            from SharedFields
+            union
+            select
+                ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields'
+            from VersionedFields
+            union
+            select
+                ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields'
+            from UnversionedFields
+        )
+        select 
+            cast(fv.ValueID as char(36)) as ValueID, 
+            cast(fv.ItemID as char(36)) as ItemID, 
+            f.Name, 
+            cast(fv.FieldID as char(36)) as FieldID, 
+            fv.Value, fv.Version, 
+            fv.Language, 
+            fv.Source
+        from
+            FieldValues fv
+                join Items f
+					on fv.FieldID = f.ID
+				join Items i
+					on fv.ItemID = i.ID
+		where fv.FieldID in (%s) and i.TemplateID in (%s)
+        order by fv.Source, f.Name, fv.Language, fv.Version;
+	`
+
+	query := fmt.Sprintf(sqlstr, fieldFilter, templateFilter)
+
+	rchan := make(chan map[string]interface{}, 500000)
+
+	conn, cerr := sql.Open("mssql", connstr)
+	if cerr != nil {
+		return nil, cerr
+	}
+
+	defer conn.Close()
+
+	rserr := sqlhelp.GetResultsChannel(conn, query, rchan)
+
+	if rserr != nil {
+		return nil, rserr
+	}
+
+	if c <= 0 {
+		c = 12
+	}
+	fvchan := make(chan data.FieldValueNode, 20000000)
+
+	var wg sync.WaitGroup
+	for i := 0; i < c; i++ {
+		wg.Add(1)
+		go func(id int, records chan map[string]interface{}, fv chan data.FieldValueNode) {
+
+			for row := range records {
+				fieldValue := data.NewFieldValue(
+					getUUID(row["FieldID"]),
+					getUUID(row["ItemID"]),
+					row["Name"].(string),
+					row["Value"].(string),
+					data.GetLanguage(row["Language"].(string)),
+					row["Version"].(int64),
+					data.GetSource(row["Source"].(string)),
+				)
+
+				fv <- fieldValue
+			}
+			wg.Done()
+		}(i, rchan, fvchan)
+	}
+
+	wg.Wait()
+
+	close(fvchan)
+
+	wg.Add(1)
+	fieldValues := []data.FieldValueNode{}
+	go func(fv chan data.FieldValueNode) {
+		for fieldValue := range fvchan {
+			fieldValues = append(fieldValues, fieldValue)
+		}
+		wg.Done()
+	}(fvchan)
+
+	wg.Wait()
+
+	return fieldValues, nil
+}
+
 func loadTemplatesFromDb(connstr string) ([]*data.TemplateQueryRow, error) {
-	query := fmt.Sprintf(itemSelect, `isnull(sf.Value, '') as Type, isnull(Replace(Replace(UPPER(b.Value), '}',''), '{', ''), '') as BaseTemplates, isnull(Replace(Replace(UPPER(sv.Value), '}',''), '{', ''), '') as StandardValuesId, isnull(sh.Value, '0') as Shared, isnull(unv.Value, '0') as Unversioned`,
-		`
-		left join SharedFields sf
-			on i.ID = sf.ItemId
-				and sf.FieldId = 'AB162CC0-DC80-4ABF-8871-998EE5D7BA32'
-		left join SharedFields b
-			on i.ID = b.ItemID
-				and b.FieldId = '12C33F3F-86C5-43A5-AEB4-5598CEC45116'
-		left join SharedFields sv
-				on i.ID = sv.ItemID
-					and sv.FieldId = 'F7D48A55-2158-4F02-9356-756654404F73'
-		left join SharedFields sh
-			on i.ID = sh.ItemID
-				and sh.FieldId = 'BE351A73-FCB0-4213-93FA-C302D8AB4F51'
-		left join SharedFields unv
-			on i.ID = unv.ItemID
-				and unv.FieldId = '39847666-389D-409B-95BD-F2016F11EED5'
-		`)
+	rootIdStr := data.TemplatesRootID.String()
+	query := fmt.Sprintf(queries.TemplatesByRoot, rootIdStr, rootIdStr)
 
 	conn, cerr := sql.Open("mssql", connstr)
 	if cerr != nil {
@@ -392,8 +547,6 @@ func loadTemplatesFromDb(connstr string) ([]*data.TemplateQueryRow, error) {
 			Shared:           row["Shared"].(string),
 			Unversioned:      row["Unversioned"].(string),
 		}
-		// inner := data.NewItemNode(getUUID(row["ID"]), row["Name"].(string), getUUID(row["TemplateID"]), getUUID(row["ParentID"]), getUUID(row["MasterID"]))
-		// tmp := data.NewTemplateNode(inner, row["Type"].(string), getUUIDs(row["BaseTemplates"], "|"))
 
 		rows = append(rows, tmp)
 	}

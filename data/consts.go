@@ -4,8 +4,16 @@ import (
 	"github.com/google/uuid"
 )
 
-var RenderingsFieldId = uuid.Must(uuid.Parse("F1A1FE9E-A60C-4DDB-A3A0-BB5B29FE732E"))
-var FinalRenderingsFieldId = uuid.Must(uuid.Parse("04BF00DB-F5FB-41F7-8AB7-22408372A981"))
+// items
+var RootID = uuid.Must(uuid.Parse("00000000-0000-0000-0000-000000000000"))
+var EmptyID = RootID
+
+var TemplatesRootID = uuid.Must(uuid.Parse("3c1715fe-6a13-4fcf-845f-de308ba9741d"))
+var TemplateID = uuid.Must(uuid.Parse("AB86861A-6030-46C5-B394-E8F99E8B87DB"))
+var TemplateFieldID = uuid.Must(uuid.Parse("455A3E98-A627-4B40-8035-E683A0331AC7"))
+var TemplateSectionID = uuid.Must(uuid.Parse("E269FBB5-3750-427A-9149-7AA950B49301"))
+var StandardTemplateID = uuid.Must(uuid.Parse("1930BBEB-7805-471A-A3BE-4858AC7CF696"))
+var LayoutTemplateId = uuid.Must(uuid.Parse("3A45A723-64EE-4919-9D41-02FD40FD1466"))
 
 var ControllerRenderingId = uuid.Must(uuid.Parse("2A3E91A0-7987-44B5-AB34-35C2D9DE83B9"))
 var ItemRenderingId = uuid.Must(uuid.Parse("86776923-ECA5-4310-8DC0-AE65FE88D078"))
@@ -17,22 +25,14 @@ var WebControlRenderingId = uuid.Must(uuid.Parse("1DDE3F02-0BD7-4779-867A-DC578A
 var XmlControlRenderingId = uuid.Must(uuid.Parse("B658CE99-894A-4CB1-936B-F23F17C63B5B"))
 var XslRenderingId = uuid.Must(uuid.Parse("F1F1D639-4F54-40C2-8BE0-81266B392CEB"))
 
-var LayoutTemplateId = uuid.Must(uuid.Parse("3A45A723-64EE-4919-9D41-02FD40FD1466"))
-
-var TemplateID = uuid.Must(uuid.Parse("AB86861A-6030-46C5-B394-E8F99E8B87DB"))
-var TemplateFieldID = uuid.Must(uuid.Parse("455A3E98-A627-4B40-8035-E683A0331AC7"))
-var TemplateSectionID = uuid.Must(uuid.Parse("E269FBB5-3750-427A-9149-7AA950B49301"))
-
 var RenderingParametersID = uuid.Must(uuid.Parse("8CA06D6A-B353-44E8-BC31-B528C7306971"))
 
-var RootID = uuid.Must(uuid.Parse("00000000-0000-0000-0000-000000000000"))
-var EmptyID = RootID
-var StandardTemplateID = uuid.Must(uuid.Parse("1930BBEB-7805-471A-A3BE-4858AC7CF696"))
+// fields
 
+var RenderingsFieldId = uuid.Must(uuid.Parse("f1a1fe9e-a60c-4ddb-a3a0-bb5b29fe732e"))
+var FinalRenderingsFieldId = uuid.Must(uuid.Parse("04bf00db-f5fb-41f7-8ab7-22408372a981"))
 var StandardValuesFieldId = uuid.Must(uuid.Parse("F7D48A55-2158-4F02-9356-756654404F73"))
-
 var BlobFieldId = uuid.Must(uuid.Parse("40E50ED9-BA07-4702-992E-A912738D32DC"))
-
 var FieldTypeFieldId = uuid.Must(uuid.Parse("AB162CC0-DC80-4ABF-8871-998EE5D7BA32"))
 var BaseTemplatesFieldId = uuid.Must(uuid.Parse("12C33F3F-86C5-43A5-AEB4-5598CEC45116"))
 var UnversionedFieldId = uuid.Must(uuid.Parse("39847666-389d-409b-95bd-f2016f11eed5"))
