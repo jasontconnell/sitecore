@@ -18,18 +18,6 @@ import (
 
 var emptyUuid uuid.UUID = MustParseUUID("00000000-0000-0000-0000-000000000000")
 
-const itemSelect = `select 
-            cast(i.ID as char(36)) ID, 
-            i.Name, 
-            cast(i.TemplateID as char(36)) as TemplateID, 
-            cast(i.ParentID as char(36)) as ParentID, 
-            cast(i.MasterID as char(36)) as MasterID, 
-            i.Created, 
-            i.Updated,
-            %v
-        from Items i %v
-        order by i.Name`
-
 func LoadItems(connstr string) ([]data.ItemNode, error) {
 	conn, cerr := sql.Open("mssql", connstr)
 	if cerr != nil {
@@ -38,8 +26,7 @@ func LoadItems(connstr string) ([]data.ItemNode, error) {
 
 	defer conn.Close()
 
-	query := fmt.Sprintf(itemSelect, "0", "")
-	records, rerr := sqlhelp.GetResultSet(conn, query)
+	records, rerr := sqlhelp.GetResultSet(conn, queries.Items)
 
 	if rerr != nil {
 		return nil, rerr
@@ -59,7 +46,6 @@ func LoadItemsByTemplates(connstr string, templateIds []uuid.UUID) ([]data.ItemN
 	if cerr != nil {
 		return nil, cerr
 	}
-
 	defer conn.Close()
 
 	idstr := []string{}
@@ -67,30 +53,7 @@ func LoadItemsByTemplates(connstr string, templateIds []uuid.UUID) ([]data.ItemN
 		idstr = append(idstr, "'"+id.String()+"'")
 	}
 
-	recursive := `with ItemSelect (ID, Name, TemplateID, ParentID, MasterID, Created, Updated)
-	as
-	(
-		select ID, Name, TemplateID, ParentID, MasterID, Created, Updated 
-		from Items
-				where TemplateID in (%s)
-		UNION ALL
-		select rec.ID, rec.Name, rec.TemplateID, rec.ParentID, rec.MasterID, rec.Created, rec.Updated
-		from Items rec
-			inner join ItemSelect its
-			on its.ParentID = rec.ID
-	)
-	select distinct
-		cast(i.ID as char(36)) as ID,
-		i.Name,
-		cast(i.TemplateID as char(36)) as TemplateID,
-		cast(i.ParentID as char(36)) as ParentID,
-		cast(i.MasterID as char(36)) as MasterID,
-		i.Created,
-		i.Updated
-	
-	from ItemSelect i;`
-
-	query := fmt.Sprintf(recursive, strings.Join(idstr, ","))
+	query := fmt.Sprintf(queries.ItemsByTemplate, strings.Join(idstr, ","))
 	records, rerr := sqlhelp.GetResultSet(conn, query)
 
 	if rerr != nil {
@@ -112,49 +75,15 @@ func LoadFields(connstr string) ([]data.FieldValueNode, error) {
 }
 
 // Load Fields can return a ton of results. Pass in 'c' to specify how many goroutines should be spawned
-func LoadFieldsParallel(connstr string, c int) ([]data.FieldValueNode, error) {
-	sqlstr := `
-        with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source)
-        as
-        (
-            select
-                ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields'
-            from SharedFields
-            union
-            select
-                ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields'
-            from VersionedFields
-            union
-            select
-                ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields'
-            from UnversionedFields
-        )
-        select 
-            cast(fv.ValueID as char(36)) as ValueID, 
-            cast(fv.ItemID as char(36)) as ItemID, 
-            f.Name, 
-            cast(fv.FieldID as char(36)) as FieldID, 
-            fv.Value, fv.Version, 
-            fv.Language, 
-            fv.Source
-        from
-            FieldValues fv
-                join Items f
-                    on fv.FieldID = f.ID
-        order by fv.Source, f.Name, fv.Language, fv.Version;
-    `
-
+func processFieldValueQuery(connstr string, query string, c int) ([]data.FieldValueNode, error) {
 	rchan := make(chan map[string]interface{}, 500000)
-
 	conn, cerr := sql.Open("mssql", connstr)
 	if cerr != nil {
 		return nil, cerr
 	}
-
 	defer conn.Close()
 
-	rserr := sqlhelp.GetResultsChannel(conn, sqlstr, rchan)
-
+	rserr := sqlhelp.GetResultsChannel(conn, query, rchan)
 	if rserr != nil {
 		return nil, rserr
 	}
@@ -199,101 +128,13 @@ func LoadFieldsParallel(connstr string, c int) ([]data.FieldValueNode, error) {
 		}
 		wg.Done()
 	}(fvchan)
-
 	wg.Wait()
 
 	return fieldValues, nil
 }
 
-func LoadFieldValuesMetadata(connstr string, c int) ([]data.FieldValueNode, error) {
-	sqlstr := `
-	with FieldValues (ValueID, ItemID, FieldID, Version, Language, Source)
-	as
-	(
-		select
-			ID, ItemId, FieldId, 1, 'en', 'SharedFields'
-		from SharedFields
-		union
-		select
-			ID, ItemId, FieldId, Version, Language, 'VersionedFields'
-		from VersionedFields
-		union
-		select
-			ID, ItemId, FieldId, 1, Language, 'UnversionedFields'
-		from UnversionedFields
-	)
-	select 
-		cast(fv.ValueID as char(36)) as ValueID, 
-		cast(fv.ItemID as char(36)) as ItemID, 
-		f.Name, 
-		cast(fv.FieldID as char(36)) as FieldID, 
-		fv.Version, 
-		fv.Language, 
-		fv.Source
-	from
-		FieldValues fv
-			join Items f
-				on fv.FieldID = f.ID
-	order by fv.Source, f.Name, fv.Language, fv.Version;
-`
-	rchan := make(chan map[string]interface{}, 500000)
-
-	conn, cerr := sql.Open("mssql", connstr)
-	if cerr != nil {
-		return nil, cerr
-	}
-
-	defer conn.Close()
-
-	rserr := sqlhelp.GetResultsChannel(conn, sqlstr, rchan)
-
-	if rserr != nil {
-		return nil, rserr
-	}
-
-	if c <= 0 {
-		c = 12
-	}
-	fvchan := make(chan data.FieldValueNode, 20000000)
-
-	var wg sync.WaitGroup
-	for i := 0; i < c; i++ {
-		wg.Add(1)
-		go func(id int, records chan map[string]interface{}, fv chan data.FieldValueNode) {
-
-			for row := range records {
-				fieldValue := data.NewFieldValue(
-					getUUID(row["FieldID"]),
-					getUUID(row["ItemID"]),
-					row["Name"].(string),
-					"",
-					data.GetLanguage(row["Language"].(string)),
-					row["Version"].(int64),
-					data.GetSource(row["Source"].(string)),
-				)
-
-				fv <- fieldValue
-			}
-			wg.Done()
-		}(i, rchan, fvchan)
-	}
-
-	wg.Wait()
-
-	close(fvchan)
-
-	wg.Add(1)
-	fieldValues := []data.FieldValueNode{}
-	go func(fv chan data.FieldValueNode) {
-		for fieldValue := range fvchan {
-			fieldValues = append(fieldValues, fieldValue)
-		}
-		wg.Done()
-	}(fvchan)
-
-	wg.Wait()
-
-	return fieldValues, nil
+func LoadFieldsParallel(connstr string, c int) ([]data.FieldValueNode, error) {
+	return processFieldValueQuery(connstr, queries.FieldValues, c)
 }
 
 func LoadFilteredFieldValues(connstr string, fieldIds []uuid.UUID, c int) ([]data.FieldValueNode, error) {
@@ -306,98 +147,9 @@ func LoadFilteredFieldValues(connstr string, fieldIds []uuid.UUID, c int) ([]dat
 		filters = append(filters, "'"+fieldId.String()+"'")
 	}
 	filter := strings.Join(filters, ",")
-	sqlstr := `
-        with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source)
-        as
-        (
-            select
-                ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields'
-            from SharedFields
-            union
-            select
-                ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields'
-            from VersionedFields
-            union
-            select
-                ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields'
-            from UnversionedFields
-        )
-        select 
-            cast(fv.ValueID as char(36)) as ValueID, 
-            cast(fv.ItemID as char(36)) as ItemID, 
-            f.Name, 
-            cast(fv.FieldID as char(36)) as FieldID, 
-            fv.Value, fv.Version, 
-            fv.Language, 
-            fv.Source
-        from
-            FieldValues fv
-                join Items f
-					on fv.FieldID = f.ID
-		where fv.FieldID in (%s)
-        order by fv.Source, f.Name, fv.Language, fv.Version;
-	`
 
-	query := fmt.Sprintf(sqlstr, filter)
-
-	rchan := make(chan map[string]interface{}, 500000)
-
-	conn, cerr := sql.Open("mssql", connstr)
-	if cerr != nil {
-		return nil, cerr
-	}
-
-	defer conn.Close()
-
-	rserr := sqlhelp.GetResultsChannel(conn, query, rchan)
-
-	if rserr != nil {
-		return nil, rserr
-	}
-
-	if c <= 0 {
-		c = 12
-	}
-	fvchan := make(chan data.FieldValueNode, 20000000)
-
-	var wg sync.WaitGroup
-	for i := 0; i < c; i++ {
-		wg.Add(1)
-		go func(id int, records chan map[string]interface{}, fv chan data.FieldValueNode) {
-
-			for row := range records {
-				fieldValue := data.NewFieldValue(
-					getUUID(row["FieldID"]),
-					getUUID(row["ItemID"]),
-					row["Name"].(string),
-					row["Value"].(string),
-					data.GetLanguage(row["Language"].(string)),
-					row["Version"].(int64),
-					data.GetSource(row["Source"].(string)),
-				)
-
-				fv <- fieldValue
-			}
-			wg.Done()
-		}(i, rchan, fvchan)
-	}
-
-	wg.Wait()
-
-	close(fvchan)
-
-	wg.Add(1)
-	fieldValues := []data.FieldValueNode{}
-	go func(fv chan data.FieldValueNode) {
-		for fieldValue := range fvchan {
-			fieldValues = append(fieldValues, fieldValue)
-		}
-		wg.Done()
-	}(fvchan)
-
-	wg.Wait()
-
-	return fieldValues, nil
+	query := fmt.Sprintf(queries.FieldValuesByField, filter)
+	return processFieldValueQuery(connstr, query, c)
 }
 
 func LoadFieldValuesTemplates(connstr string, fieldIds, templateIds []uuid.UUID, c int) ([]data.FieldValueNode, error) {
@@ -421,100 +173,8 @@ func LoadFieldValuesTemplates(connstr string, fieldIds, templateIds []uuid.UUID,
 	}
 	templateFilter := strings.Join(templates, ",")
 
-	sqlstr := `
-        with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source)
-        as
-        (
-            select
-                ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields'
-            from SharedFields
-            union
-            select
-                ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields'
-            from VersionedFields
-            union
-            select
-                ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields'
-            from UnversionedFields
-        )
-        select 
-            cast(fv.ValueID as char(36)) as ValueID, 
-            cast(fv.ItemID as char(36)) as ItemID, 
-            f.Name, 
-            cast(fv.FieldID as char(36)) as FieldID, 
-            fv.Value, fv.Version, 
-            fv.Language, 
-            fv.Source
-        from
-            FieldValues fv
-                join Items f
-					on fv.FieldID = f.ID
-				join Items i
-					on fv.ItemID = i.ID
-		where fv.FieldID in (%s) and i.TemplateID in (%s)
-        order by fv.Source, f.Name, fv.Language, fv.Version;
-	`
-
-	query := fmt.Sprintf(sqlstr, fieldFilter, templateFilter)
-
-	rchan := make(chan map[string]interface{}, 500000)
-
-	conn, cerr := sql.Open("mssql", connstr)
-	if cerr != nil {
-		return nil, cerr
-	}
-
-	defer conn.Close()
-
-	rserr := sqlhelp.GetResultsChannel(conn, query, rchan)
-
-	if rserr != nil {
-		return nil, rserr
-	}
-
-	if c <= 0 {
-		c = 12
-	}
-	fvchan := make(chan data.FieldValueNode, 20000000)
-
-	var wg sync.WaitGroup
-	for i := 0; i < c; i++ {
-		wg.Add(1)
-		go func(id int, records chan map[string]interface{}, fv chan data.FieldValueNode) {
-
-			for row := range records {
-				fieldValue := data.NewFieldValue(
-					getUUID(row["FieldID"]),
-					getUUID(row["ItemID"]),
-					row["Name"].(string),
-					row["Value"].(string),
-					data.GetLanguage(row["Language"].(string)),
-					row["Version"].(int64),
-					data.GetSource(row["Source"].(string)),
-				)
-
-				fv <- fieldValue
-			}
-			wg.Done()
-		}(i, rchan, fvchan)
-	}
-
-	wg.Wait()
-
-	close(fvchan)
-
-	wg.Add(1)
-	fieldValues := []data.FieldValueNode{}
-	go func(fv chan data.FieldValueNode) {
-		for fieldValue := range fvchan {
-			fieldValues = append(fieldValues, fieldValue)
-		}
-		wg.Done()
-	}(fvchan)
-
-	wg.Wait()
-
-	return fieldValues, nil
+	query := fmt.Sprintf(queries.FieldValuesByFieldAndTemplate, fieldFilter, templateFilter)
+	return processFieldValueQuery(connstr, query, c)
 }
 
 func loadTemplatesFromDb(connstr string) ([]*data.TemplateQueryRow, error) {
@@ -525,7 +185,6 @@ func loadTemplatesFromDb(connstr string) ([]*data.TemplateQueryRow, error) {
 	if cerr != nil {
 		return nil, cerr
 	}
-
 	defer conn.Close()
 
 	records, rerr := sqlhelp.GetResultSet(conn, query)

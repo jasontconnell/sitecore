@@ -77,7 +77,6 @@ func LoadTemplatesMergeProtobuf(connstr string, items []data.ItemNode) ([]data.T
 	}
 
 	trmap := make(map[uuid.UUID]*data.TemplateQueryRow)
-
 	for _, tr := range list {
 		trmap[tr.ID] = tr
 	}
