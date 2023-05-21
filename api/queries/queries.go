@@ -10,17 +10,20 @@ const Items = `
 			i.Created, 
 			i.Updated
 		from Items i
-		order by i.Name
 `
 
 const ItemsByTemplate = `
-	with ItemSelect (ID, Name, TemplateID, ParentID, MasterID, Created, Updated)
+with ItemSelect(ID, Name, TemplateID, ParentID, MasterID, Created, Updated)
+as (
+		select ID, Name, TemplateID, ParentID, MasterID, Created, Updated 
+		from Items
+), ParentSelect (ID, Name, TemplateID, ParentID, MasterID, Created, Updated)
 	as
 	(
 		select ID, Name, TemplateID, ParentID, MasterID, Created, Updated 
 		from Items
-				where TemplateID in (%s)
-		UNION ALL
+					where TemplateID in (%s)
+    	UNION ALL
 		select rec.ID, rec.Name, rec.TemplateID, rec.ParentID, rec.MasterID, rec.Created, rec.Updated
 		from Items rec
 			inner join ItemSelect its
@@ -35,7 +38,7 @@ const ItemsByTemplate = `
 		i.Created,
 		i.Updated
 	
-	from ItemSelect i;`
+	from ParentSelect i `
 
 const TemplatesByRoot = `
 with ChildSelect (ID, Name, TemplateID, ParentID, MasterID, Type, BaseTemplates, StandardValuesField, Shared, Unversioned)
@@ -91,37 +94,43 @@ from ChildSelect t
 from ParentSelect t`
 
 const FieldValuesByFieldAndTemplate = `
-with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source)
+with FieldValues (ValueID, ItemID, FieldID, Name, Value, Version, Language, Source)
 as
 (
 	select
-		ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields'
-	from SharedFields
+		fv.ID, fv.ItemId, fv.FieldId, f.Name, fv.Value, 1, 'en', 'SharedFields'
+	from SharedFields fv
+		join items f on fv.FieldId = f.ID
+		join Items i on fv.ItemId = i.ID 
+     where fv.FieldID in (%[1]s)
+        and i.TemplateID in(%[2]s)
 	union
 	select
-		ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields'
-	from VersionedFields
+		fv.ID, fv.ItemId, fv.FieldId, f.Name, fv.Value, Version, Language, 'VersionedFields'
+	from VersionedFields fv
+		join items f on fv.FieldId = f.ID
+		join Items i on fv.ItemId = i.ID 
+	where fv.FieldID in (%[1]s)
+        and i.TemplateID in(%[2]s)
 	union
 	select
-		ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields'
-	from UnversionedFields
+		fv.ID, fv.ItemId, fv.FieldId, f.Name, fv.Value, 1, Language, 'UnversionedFields'
+	from UnversionedFields fv
+		join items f on fv.FieldId = f.ID
+		join Items i on fv.ItemId = i.ID 
+	where fv.FieldID in (%[1]s)
+        and i.TemplateID in(%[2]s)
 )
 select 
 	cast(fv.ValueID as char(36)) as ValueID, 
 	cast(fv.ItemID as char(36)) as ItemID, 
-	f.Name, 
+	fv.Name, 
 	cast(fv.FieldID as char(36)) as FieldID, 
 	fv.Value, fv.Version, 
 	fv.Language, 
 	fv.Source
 from
-	FieldValues fv
-		join Items f
-			on fv.FieldID = f.ID
-		join Items i
-			on fv.ItemID = i.ID
-where fv.FieldID in (%s) and i.TemplateID in (%s)
-order by fv.Source, f.Name, fv.Language, fv.Version;
+	FieldValues fv;
 `
 
 const FieldValuesByField = `with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source)
@@ -151,8 +160,7 @@ from
 	FieldValues fv
 		join Items f
 			on fv.FieldID = f.ID
-where fv.FieldID in (%s)
-order by fv.Source, f.Name, fv.Language, fv.Version;
+where fv.FieldID in (%s);
 `
 
 const FieldValues = `
@@ -182,8 +190,7 @@ select
 from
 	FieldValues fv
 		join Items f
-			on fv.FieldID = f.ID
-order by fv.Source, f.Name, fv.Language, fv.Version;
+			on fv.FieldID = f.ID;
 `
 
 const FieldValuesMeta = `
@@ -213,6 +220,5 @@ select
 from
 	FieldValues fv
 		join Items f
-			on fv.FieldID = f.ID
-order by fv.Source, f.Name, fv.Language, fv.Version;
+			on fv.FieldID = f.ID;
 `

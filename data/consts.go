@@ -32,7 +32,6 @@ var RenderingParametersID = uuid.Must(uuid.Parse("8CA06D6A-B353-44E8-BC31-B528C7
 var RenderingsFieldId = uuid.Must(uuid.Parse("f1a1fe9e-a60c-4ddb-a3a0-bb5b29fe732e"))
 var FinalRenderingsFieldId = uuid.Must(uuid.Parse("04bf00db-f5fb-41f7-8ab7-22408372a981"))
 var StandardValuesFieldId = uuid.Must(uuid.Parse("F7D48A55-2158-4F02-9356-756654404F73"))
-var BlobFieldId = uuid.Must(uuid.Parse("40E50ED9-BA07-4702-992E-A912738D32DC"))
 var FieldTypeFieldId = uuid.Must(uuid.Parse("AB162CC0-DC80-4ABF-8871-998EE5D7BA32"))
 var BaseTemplatesFieldId = uuid.Must(uuid.Parse("12C33F3F-86C5-43A5-AEB4-5598CEC45116"))
 var UnversionedFieldId = uuid.Must(uuid.Parse("39847666-389d-409b-95bd-f2016f11eed5"))
@@ -50,3 +49,15 @@ var CreatedByFieldId = uuid.Must(uuid.Parse("5dd74568-4d4b-44c1-b513-0af5f4cda34
 var UpdatedByFieldId = uuid.Must(uuid.Parse("badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"))
 var CreateDateFieldId = uuid.Must(uuid.Parse("25bed78c-4957-4165-998a-ca1b52f67497"))
 var UpdateDateFieldId = uuid.Must(uuid.Parse("d9cf14b1-fa16-4ba6-9288-e8a174d4d522"))
+
+// media fields
+
+var BlobFieldId = uuid.Must(uuid.Parse("40e50ed9-ba07-4702-992e-a912738d32dc"))
+var AltFieldId = uuid.Must(uuid.Parse("65885c44-8fcd-4a7f-94f1-ee63703fe193"))
+var ExtensionFieldId = uuid.Must(uuid.Parse("c06867fe-9a43-4c7d-b739-48780492d06f"))
+var MimeTypeFieldId = uuid.Must(uuid.Parse("6f47a0a5-9c94-4b48-abeb-42d38def6054"))
+
+var VersionedBlobFieldId = uuid.Must(uuid.Parse("dbbe7d99-1388-4357-bb34-ad71edf18ed3"))
+var VersionedAltFieldId = uuid.Must(uuid.Parse("8cf45d0e-add4-4772-911a-ac6fc50f9c7d"))
+var VersionedExtensionFieldId = uuid.Must(uuid.Parse("3eb149f8-de14-4220-a8f4-9e723cfae5d9"))
+var VersionedMimeTypeFieldId = uuid.Must(uuid.Parse("aba5ce58-6d8f-43a4-b4fa-b181651347dd"))
