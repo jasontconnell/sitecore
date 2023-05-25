@@ -1,10 +1,10 @@
 module github.com/jasontconnell/sitecore
 
 require (
-	github.com/denisenkom/go-mssqldb v0.12.3
 	github.com/golang/protobuf v1.5.3
 	github.com/google/uuid v1.3.0
 	github.com/jasontconnell/sqlhelp v1.0.0
+	github.com/microsoft/go-mssqldb v0.21.0
 	google.golang.org/protobuf v1.26.0
 )
 

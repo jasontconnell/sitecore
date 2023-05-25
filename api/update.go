@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
-	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/jasontconnell/sitecore/data"
+	_ "github.com/microsoft/go-mssqldb"
 )
 
 func Update(connstr string, items []data.UpdateItem, fields []data.UpdateField) (int64, error) {
