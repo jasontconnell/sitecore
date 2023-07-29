@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"strings"
 	"sync"
 
@@ -77,7 +76,6 @@ func LoadFields(connstr string) ([]data.FieldValueNode, error) {
 
 // Load Fields can return a ton of results. Pass in 'c' to specify how many goroutines should be spawned
 func processFieldValueQuery(connstr string, query string, c int) ([]data.FieldValueNode, error) {
-	log.Println(query)
 	rchan := make(chan map[string]interface{}, 500000)
 	conn, cerr := sql.Open("mssql", connstr)
 	if cerr != nil {
