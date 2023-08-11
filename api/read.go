@@ -201,7 +201,7 @@ func loadTemplatesFromDb(connstr string) ([]*data.TemplateQueryRow, error) {
 			TemplateID:       getUUID(row["TemplateID"]),
 			ParentID:         getUUID(row["ParentID"]),
 			BaseTemplateIds:  getUUIDs(row["BaseTemplates"], "|"),
-			StandardValuesId: getUUID(row["StandardValuesId"]),
+			StandardValuesId: getUUID(row["StandardValuesField"]),
 			Type:             row["Type"].(string),
 			Shared:           row["Shared"].(string),
 			Unversioned:      row["Unversioned"].(string),

@@ -14,21 +14,24 @@ func LoadTemplatesMergeProtobuf(connstr string, items []data.ItemNode) ([]data.T
 		return nil, err
 	}
 
+	var stdvalid uuid.UUID
 	merged := []*data.TemplateQueryRow{}
 	if items != nil {
 		for _, item := range items {
 			var btids []uuid.UUID
 			for _, fld := range item.GetFieldValues() {
-				if fld.GetFieldId() != data.BaseTemplatesFieldId {
-					continue
+				if fld.GetFieldId() == data.BaseTemplatesFieldId {
+					baseIds := strings.Split(fld.GetValue(), "|")
+					for _, b := range baseIds {
+						if len(b) == 0 {
+							continue
+						}
+						btids = append(btids, MustParseUUID(b))
+					}
 				}
 
-				baseIds := strings.Split(fld.GetValue(), "|")
-				for _, b := range baseIds {
-					if len(b) == 0 {
-						continue
-					}
-					btids = append(btids, MustParseUUID(b))
+				if fld.GetFieldId() == data.StandardValuesFieldId {
+					stdvalid = MustParseUUID(fld.GetValue())
 				}
 			}
 
@@ -60,16 +63,17 @@ func LoadTemplatesMergeProtobuf(connstr string, items []data.ItemNode) ([]data.T
 			}
 
 			tr := &data.TemplateQueryRow{
-				ID:              item.GetId(),
-				Name:            item.GetName(),
-				TemplateID:      item.GetTemplateId(),
-				ParentID:        item.GetParentId(),
-				MasterID:        item.GetMasterId(),
-				BaseTemplateIds: btids,
-				Type:            ftype,
-				Shared:          shared,
-				Unversioned:     unversioned,
-				Path:            "",
+				ID:               item.GetId(),
+				Name:             item.GetName(),
+				TemplateID:       item.GetTemplateId(),
+				ParentID:         item.GetParentId(),
+				MasterID:         item.GetMasterId(),
+				StandardValuesId: stdvalid,
+				BaseTemplateIds:  btids,
+				Type:             ftype,
+				Shared:           shared,
+				Unversioned:      unversioned,
+				Path:             "",
 			}
 
 			merged = append(merged, tr)

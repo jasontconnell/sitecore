@@ -155,7 +155,7 @@ func (t template) GetStandardValuesId() uuid.UUID {
 	return t.StandardValuesID
 }
 
-func (t template) SetStandardValues(item ItemNode) {
+func (t *template) SetStandardValues(item ItemNode) {
 	t.StandardValues = item
 }
 
