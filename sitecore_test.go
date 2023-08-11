@@ -2,7 +2,6 @@ package sitecore
 
 import (
 	"encoding/binary"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -25,7 +24,7 @@ func TestBlob(t *testing.T) {
 		t.Fail()
 	}
 
-	fmt.Println(b.GetData(), b.GetId())
+	t.Log(b.GetData(), b.GetId())
 }
 
 func TestLoadItemMap(t *testing.T) {
