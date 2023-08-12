@@ -144,6 +144,7 @@ func (t *item) GetFieldValue(fieldId uuid.UUID, language Language) FieldValueNod
 			break
 		}
 	}
+
 	return ret
 }
 
@@ -204,7 +205,7 @@ func (t *item) GetFieldsByVersion(language Language, version int64) []FieldValue
 	for k, vf := range t.GetVersionedFieldValues() {
 		if vf.GetSource() == SharedFields {
 			vals = append(vals, vf)
-		} else if vf.GetSource() == UnversionedFields && vf.GetLanguage() == language {
+		} else if vf.GetSource() == UnversionedFields && vf.GetLanguage() == vk.Language {
 			vals = append(vals, vf)
 		} else if vk.Language == k.Language && vk.Version == k.Version {
 			vals = append(vals, vf)
