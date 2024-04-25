@@ -3,9 +3,10 @@ package api
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jasontconnell/sitecore/api/queries"
@@ -107,6 +108,8 @@ func processFieldValueQuery(connstr string, query string, c int) ([]data.FieldVa
 					row["Value"].(string),
 					data.GetLanguage(row["Language"].(string)),
 					row["Version"].(int64),
+					row["Created"].(time.Time),
+					row["Updated"].(time.Time),
 					data.GetSource(row["Source"].(string)),
 				)
 				fv <- fieldValue
@@ -241,7 +244,12 @@ func getUUID(val interface{}) uuid.UUID {
 }
 
 func ReadProtobuf(filename string) ([]data.ItemNode, error) {
-	b, err := ioutil.ReadFile(filename)
+	stat, err := os.Stat(filename)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't stat file %s. %w", filename, err)
+	}
+
+	b, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't read items from protobuf file %s. %w", filename, err)
 	}
@@ -286,7 +294,7 @@ func ReadProtobuf(filename string) ([]data.ItemNode, error) {
 						name = fldItem.GetName()
 					}
 
-					fv := data.NewFieldValue(fieldID, id, name, f.Value, data.Language(ld.Language), int64(v.Version), data.VersionedFields)
+					fv := data.NewFieldValue(fieldID, id, name, f.Value, data.Language(ld.Language), int64(v.Version), stat.ModTime(), stat.ModTime(), data.VersionedFields)
 					flist = append(flist, fv)
 				}
 			}
@@ -305,7 +313,7 @@ func ReadProtobuf(filename string) ([]data.ItemNode, error) {
 			if ok {
 				name = fldItem.GetName()
 			}
-			fv := data.NewFieldValue(fieldID, id, name, fld.Value, data.English, 1, data.SharedFields)
+			fv := data.NewFieldValue(fieldID, id, name, fld.Value, data.English, 1, stat.ModTime(), stat.ModTime(), data.SharedFields)
 			m[id] = append(m[id], fv)
 		}
 	}

@@ -204,14 +204,14 @@ func loadTemplateData(m map[uuid.UUID]*data.TemplateQueryRow) []data.TemplateNod
 }
 
 func mapFields(tmp *data.TemplateQueryRow) []data.TemplateFieldNode {
-	return getFields(tmp, tmp.Children)
+	return getFields(tmp.Children)
 }
 
-func getFields(tmp *data.TemplateQueryRow, children []*data.TemplateQueryRow) []data.TemplateFieldNode {
+func getFields(children []*data.TemplateQueryRow) []data.TemplateFieldNode {
 	flds := []data.TemplateFieldNode{}
 	for _, c := range children {
 		if c.TemplateID == data.TemplateSectionID {
-			flds = append(flds, getFields(c, c.Children)...)
+			flds = append(flds, getFields(c.Children)...)
 		} else if c.TemplateID == data.TemplateFieldID {
 			s := data.VersionedFields
 			if c.Shared == "1" {

@@ -59,6 +59,14 @@ func (item *item) SetId(id uuid.UUID) {
 	item.ID = id
 }
 
+func (item *item) GetCreated() time.Time {
+	return item.Created
+}
+
+func (item *item) GetUpdated() time.Time {
+	return item.Updated
+}
+
 func (item *item) GetChildren() []ItemNode {
 	return item.Children
 }

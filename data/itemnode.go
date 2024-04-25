@@ -1,6 +1,8 @@
 package data
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -30,6 +32,9 @@ type ItemData interface {
 
 	GetMasterId() uuid.UUID
 	SetMasterId(id uuid.UUID)
+
+	GetCreated() time.Time
+	GetUpdated() time.Time
 
 	GetLevel() int
 	SetLevel(level int)

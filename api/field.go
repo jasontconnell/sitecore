@@ -1,14 +1,14 @@
 package api
 
 import (
-	// "fmt"
-	"github.com/google/uuid"
-	"github.com/jasontconnell/sitecore/data"
 	"regexp"
 	"strings"
+
+	"github.com/google/uuid"
+	"github.com/jasontconnell/sitecore/data"
 )
 
-func getRepFunc(itemMap data.ItemMap, repMap map[uuid.UUID]uuid.UUID, notFound string) func(string) string {
+func getRepFunc(itemMap data.ItemMap, repMap map[uuid.UUID]uuid.UUID) func(string) string {
 	uidMap := make(map[uuid.UUID]uuid.UUID)
 	for _, item := range itemMap {
 		if repMap == nil {
@@ -60,7 +60,7 @@ func getRepFunc(itemMap data.ItemMap, repMap map[uuid.UUID]uuid.UUID, notFound s
 var uuidReg *regexp.Regexp = regexp.MustCompile(`(?i){?([a-f0-9]{8})-?([a-f0-9]{4}-?){3}([a-f0-9]{12})}?`)
 
 func FilterFields(itemMap, filterBy data.ItemMap) {
-	f := getRepFunc(filterBy, nil, "")
+	f := getRepFunc(filterBy, nil)
 	for _, item := range itemMap {
 		for _, fv := range item.GetFieldValues() {
 			newval := uuidReg.ReplaceAllStringFunc(fv.GetValue(), f)

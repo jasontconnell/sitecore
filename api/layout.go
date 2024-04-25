@@ -125,11 +125,11 @@ func MapAllLayouts(m data.ItemMap, tm data.TemplateMap, strict bool) error {
 			}
 		}
 
-		rr, err := getRenderingsFromXml(renderings, "Item", 1, m, rendmap, false, strict)
+		rr, err := getRenderingsFromXml(renderings, 1, m, rendmap, false, strict)
 		if err != nil {
 			return fmt.Errorf("Renderings from renderings, %v. %v", item.GetId(), err)
 		}
-		srr, err := getRenderingsFromXml(svRenderings, "Standard Values", 1, m, rendmap, true, strict)
+		srr, err := getRenderingsFromXml(svRenderings, 1, m, rendmap, true, strict)
 		if err != nil {
 			return fmt.Errorf("Renderings from standard value renderings, %v. %v", item.GetId(), err)
 		}
@@ -143,7 +143,7 @@ func MapAllLayouts(m data.ItemMap, tm data.TemplateMap, strict bool) error {
 		}
 
 		for _, frfld := range finalRenderings {
-			fr, err := getRenderingsFromXml(frfld.xml, "Item", frfld.version, m, rendmap, false, strict)
+			fr, err := getRenderingsFromXml(frfld.xml, frfld.version, m, rendmap, false, strict)
 
 			if err != nil {
 				return fmt.Errorf("Renderings from final renderings, %v. %v", item.GetId(), err)
@@ -155,7 +155,7 @@ func MapAllLayouts(m data.ItemMap, tm data.TemplateMap, strict bool) error {
 		}
 
 		for _, frfld := range svfinalRenderings {
-			sfr, err := getRenderingsFromXml(frfld.xml, "Standard Values", frfld.version, m, rendmap, true, strict)
+			sfr, err := getRenderingsFromXml(frfld.xml, frfld.version, m, rendmap, true, strict)
 			if err != nil {
 				return fmt.Errorf("Renderings from standard values final renderings, %v. %v", item.GetId(), err)
 			}
@@ -315,7 +315,7 @@ func UpdateFinalRenderingsXml(item data.ItemNode) {
 	}
 }
 
-func getRenderingsFromXml(x, loc string, version int64, m data.ItemMap, rendmap map[uuid.UUID]data.Rendering, standardValues, strict bool) ([]data.DeviceRendering, error) {
+func getRenderingsFromXml(x string, version int64, m data.ItemMap, rendmap map[uuid.UUID]data.Rendering, standardValues, strict bool) ([]data.DeviceRendering, error) {
 	if len(x) == 0 {
 		return []data.DeviceRendering{}, nil
 	}

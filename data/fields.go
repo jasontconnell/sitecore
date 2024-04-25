@@ -1,6 +1,8 @@
 package data
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -43,9 +45,11 @@ type fieldValue struct {
 	Language     Language
 	Version      int64
 	Source       FieldSource
+	Created      time.Time
+	Updated      time.Time
 }
 
-func NewFieldValue(fieldId, itemId uuid.UUID, name, value string, language Language, version int64, source FieldSource) FieldValueNode {
+func NewFieldValue(fieldId, itemId uuid.UUID, name, value string, language Language, version int64, created, updated time.Time, source FieldSource) FieldValueNode {
 	fv := &fieldValue{}
 	fv.ItemID = itemId
 	fv.FieldID = fieldId
@@ -54,6 +58,8 @@ func NewFieldValue(fieldId, itemId uuid.UUID, name, value string, language Langu
 	fv.Language = language
 	fv.Version = version
 	fv.Source = source
+	fv.Created = created
+	fv.Updated = updated
 	return fv
 }
 

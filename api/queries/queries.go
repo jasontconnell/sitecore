@@ -94,11 +94,11 @@ from ChildSelect t
 from ParentSelect t`
 
 const FieldValuesByFieldAndTemplate = `
-with FieldValues (ValueID, ItemID, FieldID, Name, Value, Version, Language, Source)
+with FieldValues (ValueID, ItemID, FieldID, Name, Value, Version, Language, Source, Created, Updated)
 as
 (
 	select
-		fv.ID, fv.ItemId, fv.FieldId, f.Name, fv.Value, 1, 'en', 'SharedFields'
+		fv.ID, fv.ItemId, fv.FieldId, f.Name, fv.Value, 1, 'en', 'SharedFields', fv.Created, fv.Updated
 	from SharedFields fv
 		join items f on fv.FieldId = f.ID
 		join Items i on fv.ItemId = i.ID 
@@ -106,7 +106,7 @@ as
         and i.TemplateID in(%[2]s)
 	union
 	select
-		fv.ID, fv.ItemId, fv.FieldId, f.Name, fv.Value, Version, Language, 'VersionedFields'
+		fv.ID, fv.ItemId, fv.FieldId, f.Name, fv.Value, Version, Language, 'VersionedFields', fv.Created, fv.Updated
 	from VersionedFields fv
 		join items f on fv.FieldId = f.ID
 		join Items i on fv.ItemId = i.ID 
@@ -114,7 +114,7 @@ as
         and i.TemplateID in(%[2]s)
 	union
 	select
-		fv.ID, fv.ItemId, fv.FieldId, f.Name, fv.Value, 1, Language, 'UnversionedFields'
+		fv.ID, fv.ItemId, fv.FieldId, f.Name, fv.Value, 1, Language, 'UnversionedFields', fv.Created, fv.Updated
 	from UnversionedFields fv
 		join items f on fv.FieldId = f.ID
 		join Items i on fv.ItemId = i.ID 
@@ -128,24 +128,26 @@ select
 	cast(fv.FieldID as char(36)) as FieldID, 
 	fv.Value, fv.Version, 
 	fv.Language, 
-	fv.Source
+	fv.Source,
+	fv.Created,
+	fv.Updated
 from
 	FieldValues fv;
 `
 
-const FieldValuesByField = `with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source)
+const FieldValuesByField = `with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source, Created, Updated)
 as
 (
 	select
-		ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields'
+		ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields', fv.Created, fv.Updated
 	from SharedFields
 	union
 	select
-		ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields'
+		ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields', fv.Created, fv.Updated
 	from VersionedFields
 	union
 	select
-		ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields'
+		ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields', fv.Created, fv.Updated
 	from UnversionedFields
 )
 select 
@@ -155,7 +157,9 @@ select
 	cast(fv.FieldID as char(36)) as FieldID, 
 	fv.Value, fv.Version, 
 	fv.Language, 
-	fv.Source
+	fv.Source,
+	fv.Created,
+	fv.Updated
 from
 	FieldValues fv
 		join Items f
@@ -164,19 +168,19 @@ where fv.FieldID in (%s);
 `
 
 const FieldValues = `
-with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source)
+with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source, Created, Updated)
 as
 (
 	select
-		ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields'
+		ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields', fv.Created, fv.Updated
 	from SharedFields
 	union
 	select
-		ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields'
+		ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields', fv.Created, fv.Updated
 	from VersionedFields
 	union
 	select
-		ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields'
+		ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields', fv.Created, fv.Updated
 	from UnversionedFields
 )
 select 
@@ -186,7 +190,9 @@ select
 	cast(fv.FieldID as char(36)) as FieldID, 
 	fv.Value, fv.Version, 
 	fv.Language, 
-	fv.Source
+	fv.Source,
+	fv.Created,
+	fv.Updated
 from
 	FieldValues fv
 		join Items f
@@ -194,19 +200,19 @@ from
 `
 
 const FieldValuesMeta = `
-with FieldValues (ValueID, ItemID, FieldID, Version, Language, Source)
+with FieldValues (ValueID, ItemID, FieldID, Version, Language, Source, Created, Updated)
 as
 (
 	select
-		ID, ItemId, FieldId, 1, 'en', 'SharedFields'
+		ID, ItemId, FieldId, 1, 'en', 'SharedFields', fv.Created, fv.Updated
 	from SharedFields
 	union
 	select
-		ID, ItemId, FieldId, Version, Language, 'VersionedFields'
+		ID, ItemId, FieldId, Version, Language, 'VersionedFields', fv.Created, fv.Updated
 	from VersionedFields
 	union
 	select
-		ID, ItemId, FieldId, 1, Language, 'UnversionedFields'
+		ID, ItemId, FieldId, 1, Language, 'UnversionedFields', fv.Created, fv.Updated
 	from UnversionedFields
 )
 select 
@@ -216,7 +222,9 @@ select
 	cast(fv.FieldID as char(36)) as FieldID, 
 	fv.Version, 
 	fv.Language, 
-	fv.Source
+	fv.Source,
+	fv.Created,
+	fv.Updated
 from
 	FieldValues fv
 		join Items f
