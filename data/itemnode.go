@@ -12,6 +12,7 @@ type FieldValueKey struct {
 type VersionKey struct {
 	Language Language
 	Version  int64
+	Source   FieldSource
 }
 
 type ItemData interface {

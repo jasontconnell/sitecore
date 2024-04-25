@@ -23,6 +23,7 @@ type item struct {
 
 	fieldValues          []FieldValueNode
 	versionedFieldValues map[FieldValueKey]FieldValueNode
+	fieldSourceLookup    map[uuid.UUID]FieldSource
 
 	Renderings      []DeviceRendering
 	FinalRenderings []DeviceRendering
@@ -43,6 +44,10 @@ func NewItemNode(id uuid.UUID, name string, templateId, parentId, masterId uuid.
 	item.TemplateID = templateId
 	item.ParentID = parentId
 	item.MasterID = masterId
+	if item.fieldSourceLookup == nil {
+		item.fieldSourceLookup = make(map[uuid.UUID]FieldSource)
+	}
+
 	return item
 }
 
@@ -124,6 +129,9 @@ func (item *item) GetTemplate() TemplateNode {
 
 func (item *item) SetTemplate(t TemplateNode) {
 	item.Template = t
+	for _, fld := range t.GetAllFields() {
+		item.fieldSourceLookup[fld.GetId()] = fld.GetSource()
+	}
 }
 
 func (t *item) String() string {
@@ -139,7 +147,7 @@ func (t *item) GetFieldValue(fieldId uuid.UUID, language Language) FieldValueNod
 
 	var ret FieldValueNode
 	for _, v := range vals {
-		if v.GetFieldId() == fieldId {
+		if src, ok := t.fieldSourceLookup[v.GetFieldId()]; ok && v.GetSource() == src && fieldId == v.GetFieldId() {
 			ret = v
 			break
 		}
@@ -159,7 +167,8 @@ func (t *item) GetVersionedFieldValues() map[FieldValueKey]FieldValueNode {
 
 	t.versionedFieldValues = make(map[FieldValueKey]FieldValueNode)
 	for _, fv := range t.fieldValues {
-		k := FieldValueKey{VersionKey: VersionKey{fv.GetLanguage(), fv.GetVersion()}, FieldId: fv.GetFieldId()}
+		vk := VersionKey{Language: fv.GetLanguage(), Version: fv.GetVersion(), Source: fv.GetSource()}
+		k := FieldValueKey{VersionKey: vk, FieldId: fv.GetFieldId()}
 		t.versionedFieldValues[k] = fv
 	}
 
@@ -169,7 +178,7 @@ func (t *item) GetVersionedFieldValues() map[FieldValueKey]FieldValueNode {
 func (t *item) GetVersionedFieldKeys(language Language, version int64) []FieldValueKey {
 	keys := []FieldValueKey{}
 	for k := range t.versionedFieldValues {
-		if k.Version == version && k.Language == language {
+		if (k.Source == VersionedFields && k.Version == version && k.Language == language) || (k.Source == SharedFields) || (k.Source == UnversionedFields && k.Language == language) {
 			keys = append(keys, k)
 		}
 	}
@@ -196,19 +205,30 @@ func (t *item) GetLatestVersionFields(language Language) []FieldValueNode {
 			last = fvk.Version
 		}
 	}
+
 	return t.GetFieldsByVersion(language, last)
 }
 
 func (t *item) GetFieldsByVersion(language Language, version int64) []FieldValueNode {
 	vals := []FieldValueNode{}
-	vk := VersionKey{Language: language, Version: version}
-	for k, vf := range t.GetVersionedFieldValues() {
-		if vf.GetSource() == SharedFields {
-			vals = append(vals, vf)
-		} else if vf.GetSource() == UnversionedFields && vf.GetLanguage() == vk.Language {
-			vals = append(vals, vf)
-		} else if vk.Language == k.Language && vk.Version == k.Version {
-			vals = append(vals, vf)
+	for _, vf := range t.GetVersionedFieldValues() {
+		src, ok := t.fieldSourceLookup[vf.GetFieldId()]
+		if ok {
+			if src == SharedFields {
+				vals = append(vals, vf)
+			} else if src == UnversionedFields && vf.GetLanguage() == language {
+				vals = append(vals, vf)
+			} else if src == VersionedFields && vf.GetLanguage() == language && vf.GetVersion() == version {
+				vals = append(vals, vf)
+			}
+		} else {
+			if vf.GetSource() == SharedFields {
+				vals = append(vals, vf)
+			} else if vf.GetSource() == UnversionedFields && vf.GetLanguage() == language {
+				vals = append(vals, vf)
+			} else if vf.GetSource() == VersionedFields && vf.GetLanguage() == language && vf.GetVersion() == version {
+				vals = append(vals, vf)
+			}
 		}
 	}
 	return vals
@@ -219,7 +239,7 @@ func (t *item) AddFieldValue(fv FieldValueNode) {
 		t.versions = make(map[VersionKey]VersionKey)
 	}
 
-	vk := VersionKey{Language: fv.GetLanguage(), Version: fv.GetVersion()}
+	vk := VersionKey{Language: fv.GetLanguage(), Version: fv.GetVersion(), Source: fv.GetSource()}
 	if _, ok := t.versions[vk]; !ok {
 		t.versions[vk] = vk
 	}
