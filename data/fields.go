@@ -99,6 +99,14 @@ func (fv *fieldValue) GetSource() FieldSource {
 	return fv.Source
 }
 
+func (fv *fieldValue) GetCreated() time.Time {
+	return fv.Created
+}
+
+func (fv *fieldValue) GetUpdated() time.Time {
+	return fv.Updated
+}
+
 type FieldValueMap map[uuid.UUID][]FieldValueNode
 
 type FieldValueNode interface {
@@ -111,4 +119,6 @@ type FieldValueNode interface {
 	GetLanguage() Language
 	GetVersion() int64
 	GetSource() FieldSource
+	GetCreated() time.Time
+	GetUpdated() time.Time
 }
