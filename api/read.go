@@ -35,7 +35,15 @@ func LoadItems(connstr string) ([]data.ItemNode, error) {
 
 	var items []data.ItemNode
 	for _, row := range records {
-		item := data.NewItemNode(getUUID(row["ID"]), row["Name"].(string), getUUID(row["TemplateID"]), getUUID(row["ParentID"]), getUUID(row["MasterID"]))
+		item := data.NewItemNode(
+			getUUID(row["ID"]),
+			row["Name"].(string),
+			getUUID(row["TemplateID"]),
+			getUUID(row["ParentID"]),
+			getUUID(row["MasterID"]),
+			row["Created"].(time.Time),
+			row["Updated"].(time.Time),
+		)
 		items = append(items, item)
 	}
 
@@ -63,7 +71,15 @@ func LoadItemsByTemplates(connstr string, templateIds []uuid.UUID) ([]data.ItemN
 
 	var items []data.ItemNode
 	for _, row := range records {
-		item := data.NewItemNode(getUUID(row["ID"]), row["Name"].(string), getUUID(row["TemplateID"]), getUUID(row["ParentID"]), getUUID(row["MasterID"]))
+		item := data.NewItemNode(
+			getUUID(row["ID"]),
+			row["Name"].(string),
+			getUUID(row["TemplateID"]),
+			getUUID(row["ParentID"]),
+			getUUID(row["MasterID"]),
+			row["Created"].(time.Time),
+			row["Updated"].(time.Time),
+		)
 		items = append(items, item)
 	}
 
@@ -269,6 +285,8 @@ func ReadProtobuf(filename string) ([]data.ItemNode, error) {
 			getUUIDFromProtoGuid(pitem.Item.TemplateID),
 			getUUIDFromProtoGuid(pitem.Item.ParentID),
 			getUUIDFromProtoGuid(pitem.Item.MasterID),
+			stat.ModTime(),
+			stat.ModTime(),
 		)
 
 		nmap[n.GetId()] = n

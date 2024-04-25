@@ -37,13 +37,15 @@ func NewBlankItemNode() ItemNode {
 	return new(item)
 }
 
-func NewItemNode(id uuid.UUID, name string, templateId, parentId, masterId uuid.UUID) ItemNode {
+func NewItemNode(id uuid.UUID, name string, templateId, parentId, masterId uuid.UUID, created, updated time.Time) ItemNode {
 	item := &item{}
 	item.ID = id
 	item.Name = name
 	item.TemplateID = templateId
 	item.ParentID = parentId
 	item.MasterID = masterId
+	item.Created = created
+	item.Updated = updated
 	if item.fieldSourceLookup == nil {
 		item.fieldSourceLookup = make(map[uuid.UUID]FieldSource)
 	}
