@@ -161,6 +161,10 @@ func (t *item) GetFieldValue(fieldId uuid.UUID, language Language) FieldValueNod
 			ret = v
 			break
 		}
+		if len(t.fieldSourceLookup) == 0 && v.GetFieldId() == fieldId && v.GetLanguage() == language {
+			ret = v
+			break
+		}
 	}
 
 	return ret
