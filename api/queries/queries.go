@@ -172,15 +172,15 @@ with FieldValues (ValueID, ItemID, FieldID, Value, Version, Language, Source, Cr
 as
 (
 	select
-		ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields', fv.Created, fv.Updated
+		ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields', Created, Updated
 	from SharedFields
 	union
 	select
-		ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields', fv.Created, fv.Updated
+		ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields', Created, Updated
 	from VersionedFields
 	union
 	select
-		ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields', fv.Created, fv.Updated
+		ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields', Created, Updated
 	from UnversionedFields
 )
 select 
