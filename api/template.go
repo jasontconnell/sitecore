@@ -2,7 +2,6 @@ package api
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/google/uuid"
@@ -99,12 +98,6 @@ func LoadTemplatesMergeProtobuf(connstr string, items []data.ItemNode) ([]data.T
 		p, ok := trmap[tr.ParentID]
 		if ok {
 			p.Children = append(p.Children, tr)
-			if strings.Contains(tr.Name, "Jason") {
-				log.Println(tr.Name, "parent is", p.Name)
-				log.Println("path", p.ParentID, trmap[p.ParentID].Name)
-			}
-		} else {
-			log.Println("can't find parent for ", tr.ID, "parent id is ", tr.ParentID)
 		}
 	}
 
