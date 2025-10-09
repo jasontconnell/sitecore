@@ -46,7 +46,6 @@ as
 (
     select i.ID, i.Name, i.TemplateID, i.ParentID, i.MasterID, cast('' as nvarchar(max)) as Type, cast('' as nvarchar(max)) as BaseTemplates, cast('' as nvarchar(max)) as StandardValuesId, cast('0' as nvarchar(max)) as Shared, cast('0' as nvarchar(max)) as Unversioned
     from Items i
-    where i.ParentID = '%s'
 
     UNION ALL
     select rec.ID, rec.Name, rec.TemplateID, rec.ParentID, rec.MasterID,  isnull(Replace(Replace(sf.Value, '{',''), '}', ''), '') as Type, isnull(Replace(Replace(UPPER(b.Value), '{',''), '}', ''), '') as BaseTemplates, isnull(Replace(Replace(UPPER(sv.[Value]), '{',''), '}', ''), '') as StandardValuesId, isnull(sh.Value, '0') as Shared, isnull(unv.Value, '0') as Unversioned
@@ -63,7 +62,6 @@ as
 (
     select i.ID, i.Name, i.TemplateID, i.ParentID, i.MasterID, cast('' as nvarchar(max)) as Type, cast('' as nvarchar(max)) as BaseTemplates, cast('' as nvarchar(max)) as StandardValuesId, cast('0' as nvarchar(max)) as Shared, cast('0' as nvarchar(max)) as Unversioned
     from Items i
-    where i.ParentID = '%s'
 
     UNION ALL
     select rec.ID, rec.Name, rec.TemplateID, rec.ParentID, rec.MasterID,  isnull(Replace(Replace(sf.Value, '{',''), '}', ''), '') as Type, isnull(Replace(Replace(UPPER(b.Value), '{',''), '}', ''), '') as BaseTemplates, isnull(Replace(Replace(UPPER(sv.[Value]), '{',''), '}', ''), '') as StandardValuesId, isnull(sh.Value, '0') as Shared, isnull(unv.Value, '0') as Unversioned
@@ -139,15 +137,15 @@ const FieldValuesByField = `with FieldValues (ValueID, ItemID, FieldID, Value, V
 as
 (
 	select
-		ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields', fv.Created, fv.Updated
+		ID, ItemId, FieldId, Value, 1, 'en', 'SharedFields', Created, Updated
 	from SharedFields
 	union
 	select
-		ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields', fv.Created, fv.Updated
+		ID, ItemId, FieldId, Value, Version, Language, 'VersionedFields', Created, Updated
 	from VersionedFields
 	union
 	select
-		ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields', fv.Created, fv.Updated
+		ID, ItemId, FieldId, Value, 1, Language, 'UnversionedFields', Created, Updated
 	from UnversionedFields
 )
 select 

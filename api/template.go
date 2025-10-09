@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/google/uuid"
@@ -16,68 +17,68 @@ func LoadTemplatesMergeProtobuf(connstr string, items []data.ItemNode) ([]data.T
 
 	var stdvalid uuid.UUID
 	merged := []*data.TemplateQueryRow{}
-	if items != nil {
-		for _, item := range items {
-			var btids []uuid.UUID
-			for _, fld := range item.GetFieldValues() {
-				if fld.GetFieldId() == data.BaseTemplatesFieldId {
-					baseIds := strings.Split(fld.GetValue(), "|")
-					for _, b := range baseIds {
-						if len(b) == 0 {
-							continue
-						}
-						btids = append(btids, MustParseUUID(b))
+	for _, item := range items {
+		var btids []uuid.UUID
+		for _, fld := range item.GetFieldValues() {
+			if fld.GetFieldId() == data.BaseTemplatesFieldId {
+				baseIds := strings.Split(fld.GetValue(), "|")
+				for _, b := range baseIds {
+					if len(b) == 0 {
+						continue
 					}
+					btids = append(btids, MustParseUUID(b))
 				}
+			}
 
-				if fld.GetFieldId() == data.StandardValuesFieldId {
+			if fld.GetFieldId() == data.StandardValuesFieldId {
+				if len(fld.GetValue()) > 0 {
 					stdvalid = MustParseUUID(fld.GetValue())
 				}
 			}
+		}
 
-			var ftype string
-			var unversioned, shared string = "0", "0"
-			for _, sect := range item.GetChildren() {
-				if sect.GetTemplateId() != data.TemplateSectionID {
+		var ftype string
+		var unversioned, shared string = "0", "0"
+		for _, sect := range item.GetChildren() {
+			if sect.GetTemplateId() != data.TemplateSectionID {
+				continue
+			}
+			for _, fld := range sect.GetChildren() {
+				if fld.GetTemplateId() != data.TemplateFieldID {
 					continue
 				}
-				for _, fld := range sect.GetChildren() {
-					if fld.GetTemplateId() != data.TemplateFieldID {
-						continue
+
+				for _, f := range fld.GetFieldValues() {
+					if f.GetFieldId() == data.FieldTypeFieldId {
+						ftype = f.GetValue()
 					}
 
-					for _, f := range fld.GetFieldValues() {
-						if f.GetFieldId() == data.FieldTypeFieldId {
-							ftype = f.GetValue()
-						}
+					if f.GetFieldId() == data.UnversionedFieldId {
+						unversioned = f.GetValue()
+					}
 
-						if f.GetFieldId() == data.UnversionedFieldId {
-							unversioned = f.GetValue()
-						}
-
-						if f.GetFieldId() == data.SharedFieldId {
-							shared = f.GetValue()
-						}
+					if f.GetFieldId() == data.SharedFieldId {
+						shared = f.GetValue()
 					}
 				}
 			}
-
-			tr := &data.TemplateQueryRow{
-				ID:               item.GetId(),
-				Name:             item.GetName(),
-				TemplateID:       item.GetTemplateId(),
-				ParentID:         item.GetParentId(),
-				MasterID:         item.GetMasterId(),
-				StandardValuesId: stdvalid,
-				BaseTemplateIds:  btids,
-				Type:             ftype,
-				Shared:           shared,
-				Unversioned:      unversioned,
-				Path:             "",
-			}
-
-			merged = append(merged, tr)
 		}
+
+		tr := &data.TemplateQueryRow{
+			ID:               item.GetId(),
+			Name:             item.GetName(),
+			TemplateID:       item.GetTemplateId(),
+			ParentID:         item.GetParentId(),
+			MasterID:         item.GetMasterId(),
+			StandardValuesId: stdvalid,
+			BaseTemplateIds:  btids,
+			Type:             ftype,
+			Shared:           shared,
+			Unversioned:      unversioned,
+			Path:             "",
+		}
+
+		merged = append(merged, tr)
 	}
 
 	trmap := make(map[uuid.UUID]*data.TemplateQueryRow)
@@ -98,6 +99,12 @@ func LoadTemplatesMergeProtobuf(connstr string, items []data.ItemNode) ([]data.T
 		p, ok := trmap[tr.ParentID]
 		if ok {
 			p.Children = append(p.Children, tr)
+			if strings.Contains(tr.Name, "Jason") {
+				log.Println(tr.Name, "parent is", p.Name)
+				log.Println("path", p.ParentID, trmap[p.ParentID].Name)
+			}
+		} else {
+			log.Println("can't find parent for ", tr.ID, "parent id is ", tr.ParentID)
 		}
 	}
 

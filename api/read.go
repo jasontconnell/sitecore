@@ -197,8 +197,7 @@ func LoadFieldValuesTemplates(connstr string, fieldIds, templateIds []uuid.UUID,
 }
 
 func loadTemplatesFromDb(connstr string) ([]*data.TemplateQueryRow, error) {
-	rootIdStr := data.TemplatesRootID.String()
-	query := fmt.Sprintf(queries.TemplatesByRoot, rootIdStr, rootIdStr)
+	query := queries.TemplatesByRoot
 
 	conn, cerr := sql.Open("mssql", connstr)
 	if cerr != nil {
