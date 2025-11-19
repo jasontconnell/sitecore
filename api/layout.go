@@ -45,7 +45,7 @@ func parseRenderings(xmldata string) (xr.Root, error) {
 	// https://go-review.googlesource.com/c/go/+/109855
 	// there's a problem with the same object being used to parse essentially two versions of the same xml, one with and one without namespaces
 
-	if strings.IndexAny(xmldata, ` s:id="{`) != -1 {
+	if strings.ContainsAny(xmldata, ` s:id="{`) {
 		xmldata = strings.Replace(xmldata, "s:ph=", "ph=", -1)
 		xmldata = strings.Replace(xmldata, "s:id=", "id=", -1)
 		xmldata = strings.Replace(xmldata, "s:ds=", "ds=", -1)

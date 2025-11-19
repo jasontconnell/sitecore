@@ -11,9 +11,15 @@ var EmptyID = RootID
 var TemplatesRootID = uuid.Must(uuid.Parse("3c1715fe-6a13-4fcf-845f-de308ba9741d"))
 var TemplateID = uuid.Must(uuid.Parse("AB86861A-6030-46C5-B394-E8F99E8B87DB"))
 var TemplateFieldID = uuid.Must(uuid.Parse("455A3E98-A627-4B40-8035-E683A0331AC7"))
+var TemplateFolderID = uuid.Must(uuid.Parse("0437FEE2-44C9-46A6-ABE9-28858D9FEE8C"))
 var TemplateSectionID = uuid.Must(uuid.Parse("E269FBB5-3750-427A-9149-7AA950B49301"))
 var StandardTemplateID = uuid.Must(uuid.Parse("1930BBEB-7805-471A-A3BE-4858AC7CF696"))
 var LayoutTemplateId = uuid.Must(uuid.Parse("3A45A723-64EE-4919-9D41-02FD40FD1466"))
+
+var FolderTemplateID = uuid.Must(uuid.Parse("A87A00B1-E6DB-45AB-8B54-636FEC3B5523"))
+
+var RootTemplateID = uuid.Must(uuid.Parse("C6576836-910C-4A3D-BA03-C277DBD3B827"))
+var MainSectionTemplateID = uuid.Must(uuid.Parse("E3E2D58C-DF95-4230-ADC9-279924CECE84"))
 
 var ControllerRenderingId = uuid.Must(uuid.Parse("2A3E91A0-7987-44B5-AB34-35C2D9DE83B9"))
 var ItemRenderingId = uuid.Must(uuid.Parse("86776923-ECA5-4310-8DC0-AE65FE88D078"))

@@ -22,8 +22,8 @@ func getRepFunc(itemMap data.ItemMap, repMap map[uuid.UUID]uuid.UUID) func(strin
 	return func(s string) string {
 		orig := s
 		curlies := s[0] == '{'
-		nohyphens := strings.IndexAny(s, "-") == -1
-		upper := strings.IndexAny(s, "ABCDEF") != -1
+		nohyphens := !strings.ContainsAny(s, "-")
+		upper := strings.ContainsAny(s, "ABCDEF")
 		if curlies {
 			s = string(s[1 : len(s)-1])
 		}
