@@ -18,6 +18,9 @@ func LoadTemplatesMergeProtobuf(connstr string, items []data.ItemNode) ([]data.T
 	merged := []*data.TemplateQueryRow{}
 	for _, item := range items {
 		var btids []uuid.UUID
+
+		var ftype string
+		var unversioned, shared string = "0", "0"
 		for _, fld := range item.GetFieldValues() {
 			if fld.GetFieldId() == data.BaseTemplatesFieldId {
 				baseIds := strings.Split(fld.GetValue(), "|")
@@ -34,32 +37,17 @@ func LoadTemplatesMergeProtobuf(connstr string, items []data.ItemNode) ([]data.T
 					stdvalid = MustParseUUID(fld.GetValue())
 				}
 			}
-		}
 
-		var ftype string
-		var unversioned, shared string = "0", "0"
-		for _, sect := range item.GetChildren() {
-			if sect.GetTemplateId() != data.TemplateSectionID {
-				continue
+			if fld.GetFieldId() == data.FieldTypeFieldId {
+				ftype = fld.GetValue()
 			}
-			for _, fld := range sect.GetChildren() {
-				if fld.GetTemplateId() != data.TemplateFieldID {
-					continue
-				}
 
-				for _, f := range fld.GetFieldValues() {
-					if f.GetFieldId() == data.FieldTypeFieldId {
-						ftype = f.GetValue()
-					}
+			if fld.GetFieldId() == data.UnversionedFieldId {
+				unversioned = fld.GetValue()
+			}
 
-					if f.GetFieldId() == data.UnversionedFieldId {
-						unversioned = f.GetValue()
-					}
-
-					if f.GetFieldId() == data.SharedFieldId {
-						shared = f.GetValue()
-					}
-				}
+			if fld.GetFieldId() == data.SharedFieldId {
+				shared = fld.GetValue()
 			}
 		}
 

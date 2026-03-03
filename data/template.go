@@ -71,8 +71,8 @@ func (t *template) GetField(id uuid.UUID) TemplateFieldNode {
 }
 
 func (t *template) FindField(name string) TemplateFieldNode {
-	flds := t.GetAllFields()
 	var ret TemplateFieldNode
+	flds := t.GetAllFields()
 	for _, f := range flds {
 		if f.GetName() == name {
 			ret = f
